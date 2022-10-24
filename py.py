@@ -117,47 +117,6 @@ def getTransformMatrix():
 
 
 
-def translatePerspectivePointsToInterestArea():
-    global PERSPECTIVE_POINTS
-    print(PERSPECTIVE_POINTS)
-    x_min = INTEREST_AREA[0][0]
-    x_max = INTEREST_AREA[0][0]
-    y_min = INTEREST_AREA[0][1]
-    y_max = INTEREST_AREA[0][1]
-    for p in PERSPECTIVE_POINTS:
-        p[0] -= x_min
-        p[1] -= y_min
-    print(PERSPECTIVE_POINTS)
-
-
-
-def cropToInterestArea(frame):
-    matrix = PERSPECTIVE_TRANSFORM_MATRIX
-
-    # init
-    x_min = INTEREST_AREA[0][0]
-    x_max = INTEREST_AREA[0][0]
-    y_min = INTEREST_AREA[0][1]
-    y_max = INTEREST_AREA[0][1]
-
-    for p in INTEREST_AREA:
-        x_min = min(x_min, p[0])
-        x_max = max(x_max, p[0])
-        y_min = min(y_min, p[1])
-        y_max = max(y_max, p[1])
-    #  print(x_min, x_max, y_min, y_max)
-
-    #  o_w = x_max - x_min
-    #  o_h = y_max - y_min
-    #  output = np.zeros((o_w, o_h), dtype=np.uint8)
-    output = frame[y_min: y_max, x_min: x_max]
-
-    # TODO pixels outside should be black
-
-    return output
-
-
-
 def perspectiveTransform(frame):
 
     w = frame.shape[1]
@@ -217,10 +176,6 @@ async def handleFrame(frame):
     # To grayscale
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-    # Crop to interest area (rectangle, discarded pixels in it are black)
-    #  cropped = cropToInterestArea(gray)
-    #  cropped = gray
-
     # Perspective transform
     transformed = perspectiveTransform(gray)
 
@@ -279,8 +234,6 @@ async def main():
     global w
     global h
     global FPS
-
-    #  translatePerspectivePointsToInterestArea()
 
     # TODO Get perspective transformation matrix
     getTransformMatrix()
