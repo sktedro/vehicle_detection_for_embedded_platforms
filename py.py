@@ -35,10 +35,7 @@ def translate(m, x, y):
     [x, y, t] = m.dot([x, y, 1])
     return [x / t, y / t]
 
-
-def getPerspectiveTransformMatrix():
-    global PERSPECTIVE_TRANSFORM_MATRIX
-
+def getPerspectiveTransformPoints():
     P12 = (PERSPECTIVE_POINTS[0] + PERSPECTIVE_POINTS[1]) // 2
     P34 = (PERSPECTIVE_POINTS[2] + PERSPECTIVE_POINTS[3]) // 2
 
@@ -76,33 +73,47 @@ def getPerspectiveTransformMatrix():
     p3_req_pix += p34_diff_v
     p4_req_pix += p34_diff_v
 
-
     # Get four previous and next points: P1, P1, P3 and P4
     points_1 = np.array(PERSPECTIVE_POINTS, np.float32)
     points_2 = np.array([PERSPECTIVE_POINTS[0], PERSPECTIVE_POINTS[1], p3_req_pix.astype(int), p4_req_pix.astype(int)], np.float32)
-    #  points_2 = np.array([PERSPECTIVE_POINTS[0], PERSPECTIVE_POINTS[1], p3_req_pix.astype(int), PERSPECTIVE_POINTS[3]], np.float32)
-    #  points_2 = np.array([[0, 719], [1279, 719], [1279, 0], [0, 0]], np.float32)
-    print(points_1)
-    print(points_2)
 
-    # Get transform matrix from those sets of points
-    PERSPECTIVE_TRANSFORM_MATRIX = cv2.getPerspectiveTransform(points_1, points_2)
-    #  PERSPECTIVE_TRANSFORM_MATRIX = np.float32([[1, 0, 10], [0, 1, 10]])
-    print(PERSPECTIVE_TRANSFORM_MATRIX)
+    return points_1, points_2
 
-    # Move the top left corner to [0, 0] (create a matrix to do that)
-    wrong_origin = translate(PERSPECTIVE_TRANSFORM_MATRIX, 0, 0)
-    translation = [-i for i in wrong_origin] # Move by the negative value
-    translation_matrix = np.array([
-            [1, 0, translation[0]],
-            [0, 1, translation[1]],
-            [0, 0, 1]
-            ])
+
+def getTransformMatrix():
+    global PERSPECTIVE_TRANSFORM_MATRIX
+
+    # Get perspective transform matrix
+    points_1, points_2 = getPerspectiveTransformPoints()
+    #  points_1 = np.float32([translate(interest_area_matrix, *p) for p in points_1])
+    #  points_2 = np.float32([translate(interest_area_matrix, *p) for p in points_2])
+    perspective_transform_matrix = cv2.getPerspectiveTransform(points_1, points_2)
+    #  print(perspective_transform_matrix)
+
+    # Get matrix to move the image so the top left corner of interest area is
+    # in the top left frame corner
+    interest_area_translated = [translate(perspective_transform_matrix, p[0], p[1]) for p in INTEREST_AREA]
+    x_min = min([p[0] for p in interest_area_translated])
+    y_min = min([p[1] for p in interest_area_translated])
+    interest_area_matrix = np.array([
+            [1, 0, -x_min],
+            [0, 1, -y_min],
+            [0, 0, 1]])
+    #  print(interest_area_matrix)
 
     # TODO Rotate the frame so top left and top right have the same y
+    #  x_max = max([p[0] for p in interest_area_translated])
+    #  vector_1 = [1, 0]
+    #  vector_2 = 
+    #  angle = 
 
-    PERSPECTIVE_TRANSFORM_MATRIX = translation_matrix.dot(PERSPECTIVE_TRANSFORM_MATRIX)
-    print(PERSPECTIVE_TRANSFORM_MATRIX)
+    #  rotation_fix_matrix = 
+
+    # Multiply in the opposite order!
+    matrix = interest_area_matrix
+    matrix = matrix.dot(perspective_transform_matrix)
+
+    PERSPECTIVE_TRANSFORM_MATRIX = np.float32(matrix)
 
 
 
@@ -122,6 +133,8 @@ def translatePerspectivePointsToInterestArea():
 
 def cropToInterestArea(frame):
     matrix = PERSPECTIVE_TRANSFORM_MATRIX
+
+    # init
     x_min = INTEREST_AREA[0][0]
     x_max = INTEREST_AREA[0][0]
     y_min = INTEREST_AREA[0][1]
@@ -153,8 +166,10 @@ def perspectiveTransform(frame):
     matrix = PERSPECTIVE_TRANSFORM_MATRIX
 
     # Get size of the future frame
-    corners_points = np.array([[0, 0], [0, h - 1], [w - 1, h - 1], [w - 1, 0]], np.float32);
-    corners_points_translated = [translate(matrix, *corners_points[i]) for i in range(4)]
+    #  corners_points = np.array([[0, 0], [0, h - 1], [w - 1, h - 1], [w - 1, 0]], np.float32);
+    #  corners_points_translated = [translate(matrix, *corners_points[i]) for i in range(4)]
+    corners_points_translated = [translate(matrix, *p) for p in INTEREST_AREA]
+
     max_x = int(max(p[0] for p in corners_points_translated))
     max_y = int(max(p[1] for p in corners_points_translated))
 
@@ -203,12 +218,13 @@ async def handleFrame(frame):
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
     # Crop to interest area (rectangle, discarded pixels in it are black)
-    cropped = cropToInterestArea(gray)
+    #  cropped = cropToInterestArea(gray)
+    #  cropped = gray
 
     # Perspective transform
-    transformed = perspectiveTransform(cropped)
+    transformed = perspectiveTransform(gray)
 
-    #  return transformed
+    return transformed
 
     # Subtract the previous frame from the actual frame
     if OLD_FRAME is None:
@@ -228,14 +244,17 @@ async def handleFrame(frame):
     thresholded = cv2.normalize(thresholded, None, 0, 255, cv2.NORM_MINMAX)
     #  ret, thresholded = cv2.threshold(smoothened_1, 64, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN)
 
-    return thresholded
+    #  return thresholded
 
     (contours, _) = cv2.findContours(thresholded, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     print(len(contours))
     output = frame.copy()
     for contour in contours:
         x, y, w, h = cv2.boundingRect(contour)
-        cv2.rectangle(output, (x, y), (x + w, y + h), (0, 255, 0), 1)
+        points = [[x, y], [x + w, y + h]]
+        points_translated = [translate(np.linalg.inv(PERSPECTIVE_TRANSFORM_MATRIX), p[0], p[1]) for p in points]
+        points_translated = np.array(points_translated, dtype=np.int)
+        cv2.rectangle(output, points_translated[0], points_translated[1], (0, 255, 0), 1)
 
 
     return output
@@ -261,10 +280,10 @@ async def main():
     global h
     global FPS
 
-    translatePerspectivePointsToInterestArea()
+    #  translatePerspectivePointsToInterestArea()
 
     # TODO Get perspective transformation matrix
-    getPerspectiveTransformMatrix()
+    getTransformMatrix()
 
     video = cv2.VideoCapture(SRC)
 
