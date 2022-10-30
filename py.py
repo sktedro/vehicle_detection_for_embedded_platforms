@@ -1,16 +1,24 @@
 import cv2
 import asyncio
 import numpy as np
-import time
 import matplotlib.pyplot as plt
 from timeit import timeit
+from time import time
+
+
+####################
+##### SETTINGS #####
+####################
+
+
+log_time = True
+
+show_orig = True
 
 SRC = "../vid/2022-10-10_14-47-48_720p_15fps_3600s_compressed.mp4"
 FPS = 15
 
-OLD_FRAME = None
-
-PERSPECTIVE_TRANSFORM_MATRIX = None
+PREV_FRAMES_LEN = 2
 
 PERSPECTIVE_POINTS = np.array([
     [380, 650],
@@ -28,12 +36,50 @@ INTEREST_AREA = [
         [750, 250]]
 
 
+############################
+##### GLOBAL VARIABLES #####
+############################
+
+
+PREV_FRAMES = []
+
+INPUT_TRANSFORM_MATRIX = None
+
+
+##########################
+##### MISC FUNCTIONS ##### 
+##########################
+
+
+def tinit():
+    if not log_time:
+        return
+    global TIME
+    TIME = time()
+
+
+def tlog(msg):
+    if not log_time:
+        return
+    global TIME
+    t = time()
+    print("%.3fms" % (1000 * (t - TIME)), msg)
+    TIME = t
+
+
 def dist(p1, p2):
     return np.sqrt(sum(pow(abs(p1 - p2), 2)))
 
+
 def translate(m, x, y):
-    [x, y, t] = m.dot([x, y, 1])
+    [x, y, t] = m @ [x, y, 1]
     return [x / t, y / t]
+
+
+##########################
+##### MAIN FUNCTIONS #####
+##########################
+
 
 def getPerspectiveTransformPoints():
     P12 = (PERSPECTIVE_POINTS[0] + PERSPECTIVE_POINTS[1]) // 2
@@ -81,14 +127,11 @@ def getPerspectiveTransformPoints():
 
 
 def getTransformMatrix():
-    global PERSPECTIVE_TRANSFORM_MATRIX
+    global INPUT_TRANSFORM_MATRIX
 
     # Get perspective transform matrix
     points_1, points_2 = getPerspectiveTransformPoints()
-    #  points_1 = np.float32([translate(interest_area_matrix, *p) for p in points_1])
-    #  points_2 = np.float32([translate(interest_area_matrix, *p) for p in points_2])
     perspective_transform_matrix = cv2.getPerspectiveTransform(points_1, points_2)
-    #  print(perspective_transform_matrix)
 
     # Get matrix to move the image so the top left corner of interest area is
     # in the top left frame corner
@@ -99,34 +142,25 @@ def getTransformMatrix():
             [1, 0, -x_min],
             [0, 1, -y_min],
             [0, 0, 1]])
-    #  print(interest_area_matrix)
 
     # TODO Rotate the frame so top left and top right have the same y
-    #  x_max = max([p[0] for p in interest_area_translated])
-    #  vector_1 = [1, 0]
-    #  vector_2 = 
-    #  angle = 
-
     #  rotation_fix_matrix = 
 
     # Multiply in the opposite order!
     matrix = interest_area_matrix
-    matrix = matrix.dot(perspective_transform_matrix)
+    matrix = matrix @ perspective_transform_matrix
 
-    PERSPECTIVE_TRANSFORM_MATRIX = np.float32(matrix)
+    INPUT_TRANSFORM_MATRIX = np.float32(matrix)
 
 
-
-def perspectiveTransform(frame):
+def transformInput(frame):
 
     w = frame.shape[1]
     h = frame.shape[0]
 
-    matrix = PERSPECTIVE_TRANSFORM_MATRIX
+    matrix = INPUT_TRANSFORM_MATRIX
 
     # Get size of the future frame
-    #  corners_points = np.array([[0, 0], [0, h - 1], [w - 1, h - 1], [w - 1, 0]], np.float32);
-    #  corners_points_translated = [translate(matrix, *corners_points[i]) for i in range(4)]
     corners_points_translated = [translate(matrix, *p) for p in INTEREST_AREA]
 
     max_x = int(max(p[0] for p in corners_points_translated))
@@ -138,97 +172,114 @@ def perspectiveTransform(frame):
 
 
 
-def smoothen(frame, kernel_side_size, power):
-    frame = np.array(frame)
-
-    # Smoothen out noise with a median filter
-    kernel = np.ones((kernel_side_size, kernel_side_size), np.float32) / power
-    filtered = cv2.filter2D(frame, -1, kernel)
-
-    # TODO Threshold so dark pixels are deleted
-    ret, thresholded = cv2.threshold(filtered, 4, 255, cv2.THRESH_TOZERO)
-
-    # TODO Increase brightness of pixels that weren't filtered out
-    #  print(thresholded.shape)
-    #  hsv = cv2.cvtColor(thresholded, cv2.COLOR_BGR2HSV)
-    #  h, s, v = cv2.split(hsv)
-
-    #  multiplier = 255 / max(v)
-    #  print(v[0: 10])
-    #  v *= multiplier
-    #  print(v[0: 10])
-
-    #  final_hsv = cv2.merge((h, s, v))
-    #  output = cv2.cvtColor(final_hsv, cv2.COLOR_HSV2BGR)
-
-    #  timeit(lambda: max(255 / max(thresholded.flatten()), 1))
-    #  multiplier = 255 / max(thresholded.flatten())
-    #  output = thresholded * multiplier
-    output = cv2.normalize(thresholded, None, 0, 255, cv2.NORM_MINMAX)
-
-    return output
-
-
-
 async def handleFrame(frame):
-    global OLD_FRAME
+    global PREV_FRAMES
+    print("================================================================================")
 
     # To grayscale
+    tinit()
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    tlog("To grayscale")
 
-    # Perspective transform
-    transformed = perspectiveTransform(gray)
+    # Transform - perspective transform, move and crop to interest area
+    transformed = transformInput(gray)
+    tlog("Transform")
 
-    return transformed
-
-    # Subtract the previous frame from the actual frame
-    if OLD_FRAME is None:
-        OLD_FRAME = transformed
+    if len(PREV_FRAMES) < PREV_FRAMES_LEN:
+        # If there are not yet enough frames saved, do nothing (but save frame)
+        PREV_FRAMES.append(transformed)
         return transformed
-    diff = cv2.subtract(transformed, OLD_FRAME)
-    OLD_FRAME = transformed
 
-    diff = cv2.normalize(diff, None, 0, 255, cv2.NORM_MINMAX)
+    # transformed = cv2.Laplacian(transformed, cv2.CV_16S, ksize=9).astype(np.uint8)
+    # transformed = cv2.medianBlur(transformed, 5)
+    # tlog("Median blur")
 
+    diffs = []
+    for i in range(PREV_FRAMES_LEN):
+        if i != PREV_FRAMES_LEN - 1:
+            diffs.append(cv2.subtract(PREV_FRAMES[i], PREV_FRAMES[i + 1]))
+        else:
+            diffs.append(cv2.subtract(PREV_FRAMES[i], transformed))
 
-    #  a = cv2.fastNlMeansDenoising(diff, None, h=10, searchWindowSize=2)
-    #  diff = a
+    tlog("Diffs")
 
-    smoothened_1 = cv2.GaussianBlur(diff, (25, 25), 0)
-    ret, thresholded = cv2.threshold(smoothened_1, 32, 255, cv2.THRESH_TOZERO)
-    thresholded = cv2.normalize(thresholded, None, 0, 255, cv2.NORM_MINMAX)
-    #  ret, thresholded = cv2.threshold(smoothened_1, 64, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN)
+    # Pop the oldest frame and save this one
+    PREV_FRAMES.pop(0)
+    PREV_FRAMES.append(transformed)
 
-    #  return thresholded
+    #  for i in range(len(diffs)):
+        #  diffs[i] = cv2.normalize(diffs[i], None, 0, 255, cv2.NORM_MINMAX)
 
+    # TODO needed?
+    diffs_thresholded = []
+    for i in range(len(diffs)):
+        diffs_thresholded.append(cv2.threshold(diffs[i], 32, 255, cv2.THRESH_BINARY)[1])
+    tlog("Threshold")
+
+    frame_or = diffs_thresholded[0]
+    for i in range(len(diffs_thresholded) - 1):
+        frame_or = cv2.bitwise_or(frame_or, diffs_thresholded[i + 1])
+    tlog("or")
+
+    frame_and = diffs_thresholded[0]
+    for i in range(len(diffs_thresholded) - 1):
+        frame_and = cv2.bitwise_and(frame_and, diffs_thresholded[i + 1])
+    tlog("and")
+
+    contours, _ = cv2.findContours(frame_or, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+    # Erase small contours
+    for c in contours:
+        area = cv2.contourArea(c)
+        if area < 100:
+            cv2.fillPoly(frame_or, pts=[c], color=0)
+    tlog("contours")
+
+    # morph = cv2.morphologyEx(frame_or, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (49,49)))
+    morph = cv2.morphologyEx(frame_or, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (9,9)))
+    tlog("morphology")
+
+    # arr = []
+    # for x,y,w,h in contours:
+    #     arr.append((x,y))
+    #     arr.append((x+w,y+h))
+
+    # box = cv2.minAreaRect(np.asarray(arr))
+    # pts = cv2.boxPoints(box) # 4 outer corners
+    # print(pts)
+    
+    cv2.imshow("last_diff", diffs[-1])
+
+    return morph
+
+    return frame_and
+    return frame_or
+
+    #  return dilated
+
+    #  return frame_or.astype(np.uint16)
+    sobel = cv2.Sobel(frame_or.astype(np.uint16), ddepth=cv2.CV_8U, dx=1, dy=1, ksize=5)
+    tlog("Sobel")
+
+    kernel = np.ones((29, 29), np.uint8)
+    dilated = cv2.dilate(sobel, kernel, iterations=1)
+    tlog("Dilatation")
+
+    return dilated
+    #  return cv2.Canny(dilated, 0, 255)
+
+    return frame_and
+    return frame_or
     (contours, _) = cv2.findContours(thresholded, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     print(len(contours))
     output = frame.copy()
     for contour in contours:
         x, y, w, h = cv2.boundingRect(contour)
         points = [[x, y], [x + w, y + h]]
-        points_translated = [translate(np.linalg.inv(PERSPECTIVE_TRANSFORM_MATRIX), p[0], p[1]) for p in points]
+        points_translated = [translate(np.linalg.inv(INPUT_TRANSFORM_MATRIX), p[0], p[1]) for p in points]
         points_translated = np.array(points_translated, dtype=np.int)
         cv2.rectangle(output, points_translated[0], points_translated[1], (0, 255, 0), 1)
 
-
-    return output
-
-    smoothened_1 = smoothen(output, 3, 32)
-    return smoothened_1
-
-    #  smoothened_2 = smoothen(smoothened_1, 32, 128)
-    #  return smoothened_2
-
-    #  output = frame
-
-    # Detects cars of different sizes in the input image
-    #  cars = CAR_CASCADE.detectMultiScale(output, 1.3, 5)
-    # To draw a rectangle in each cars
-    #  for (x, y, w, h) in cars:
-        #  cv2.rectangle(output, (x, y), (x + w, y + h), (0, 0, 255), 2)
-
-    return output
 
 async def main():
     global w
@@ -246,17 +297,20 @@ async def main():
     w = int(video.get(3))
     h = int(video.get(4))
 
-    last_ts = time.time()
+    last_ts = time()
 
     while video.isOpened():
 
         ret, frame = video.read()
 
+        if show_orig:
+            cv2.imshow("orig", frame)
+
         output_frame = await handleFrame(frame)
         cv2.imshow("frame", output_frame)
 
         last_ts += 1 / FPS
-        await asyncio.sleep(1 / FPS - (time.time() - last_ts))
+        # await asyncio.sleep(1 / FPS - (time() - last_ts))
 
         if cv2.waitKey(2) & 0xFF == ord("="):
             FPS *= 2
