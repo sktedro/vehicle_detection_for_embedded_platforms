@@ -221,10 +221,10 @@ async def handleFrame(frame):
         frame_or = cv2.bitwise_or(frame_or, diffs_thresholded[i + 1])
     tlog("or")
 
-    frame_and = diffs_thresholded[0]
-    for i in range(len(diffs_thresholded) - 1):
-        frame_and = cv2.bitwise_and(frame_and, diffs_thresholded[i + 1])
-    tlog("and")
+    # frame_and = diffs_thresholded[0]
+    # for i in range(len(diffs_thresholded) - 1):
+    #     frame_and = cv2.bitwise_and(frame_and, diffs_thresholded[i + 1])
+    # tlog("and")
 
     contours, _ = cv2.findContours(frame_or, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
@@ -310,7 +310,7 @@ async def main():
         cv2.imshow("frame", output_frame)
 
         last_ts += 1 / FPS
-        # await asyncio.sleep(1 / FPS - (time() - last_ts))
+        await asyncio.sleep(1 / FPS - (time() - last_ts))
 
         if cv2.waitKey(2) & 0xFF == ord("="):
             FPS *= 2
