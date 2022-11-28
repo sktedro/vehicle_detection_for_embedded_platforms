@@ -3,20 +3,20 @@ from pickle import HIGHEST_PROTOCOL, DEFAULT_PROTOCOL
 
 # Paths: (absolute path recommended)
 datasets_path = "/home/tedro/Downloads/datasets/"
-# datasets_path = "/content/datasets/"
 
 gt_pickle_filename = "gt.pickle"
 
 dataset_pickle_filepath = os.path.join(datasets_path, "dataset.pickle")
-# pickle_file_protocol = HIGHEST_PROTOCOL
-pickle_file_protocol = 0
+train_pickle_filepath = os.path.join(datasets_path, "train.pickle")
+val_pickle_filepath = os.path.join(datasets_path, "val.pickle")
+test_pickle_filepath = os.path.join(datasets_path, "test.pickle")
+pickle_file_protocol = HIGHEST_PROTOCOL
+# pickle_file_protocol = 0
 
-# TODO remove images paths?
 datasets = {
     # paths are relative to the dataset_path
     "mio-tcd": {
         "path": "MIO-TCD/MIO-TCD-Localization/"
-        # "path": "MIO-TCD-Localization/"
     },
     "aau": {
         "path": "AAU/",

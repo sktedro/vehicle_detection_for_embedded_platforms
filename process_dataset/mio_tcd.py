@@ -4,7 +4,11 @@ import cv2
 import numpy as np
 import pickle
 
-import common
+# The script should be importable but also executable from the terminal...
+if __name__ == '__main__':
+    import common
+else:
+    from . import common
 
 
 mio_tcd_classes_map = {
@@ -83,11 +87,6 @@ def process_mio_tcd():
             cls = row[1]
             cls = mio_tcd_classes_map[cls]
 
-            # This needs to be placed here, unfortunately. Mmdetection displays
-            # an error when training if this is placed after the next if clause
-            if cls == -1: 
-                continue
-
             # Initialize the object in `data_dict` var if it doesn't exist yet
             if img_name not in data_dict.keys():
 
@@ -103,17 +102,19 @@ def process_mio_tcd():
                     }
                 }
             
-            # Bounding box
-            if len(row) == 6:
-                bbox = [int(val) for val in row[2:]]
-            elif len(row) == 7:
-                # Skip score field at 2nd index
-                bbox = [int(val) for val in row[3:]]
-            else:
-                raise Exception("Encountered a row with length != 6 and != 7")
+            # If class is -1, ignore this annotation
+            if cls != -1: 
+                # Bounding box
+                if len(row) == 6:
+                    bbox = [int(val) for val in row[2:]]
+                elif len(row) == 7:
+                    # Skip score field at 2nd index
+                    bbox = [int(val) for val in row[3:]]
+                else:
+                    raise Exception("Encountered a row with length != 6 and != 7")
 
-            data_dict[img_name]["ann"]["bboxes"].append(bbox)
-            data_dict[img_name]["ann"]["labels"].append(cls)
+                data_dict[img_name]["ann"]["bboxes"].append(bbox)
+                data_dict[img_name]["ann"]["labels"].append(cls)
 
     print("\nData loaded")
 

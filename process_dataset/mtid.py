@@ -5,7 +5,11 @@ import pickle
 import gc
 import shutil
 
-import common
+# The script should be importable but also executable from the terminal...
+if __name__ == '__main__':
+    import common
+else:
+    from . import common
 
 mtid_classes_map = {
     2: common.classes.index("bicycle"),
@@ -218,6 +222,11 @@ def process_mtid():
     data_list = []
     for key in list(data_dict.keys()):
         val = data_dict[key]
+
+        # Ignore images that contain no annotations - because of mmdetection..
+        # Actually it's only a problem with the middle format TODO
+        # if len(val["ann"]["labels"]) == 0:
+        #     continue
 
         # Convert lists of bboxes and labels to arrays
         # Should work if done the same way as labels, but to be sure..:

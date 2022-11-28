@@ -6,7 +6,11 @@ import shutil
 import gc
 from pprint import pprint
 
-import common
+# The script should be importable but also executable from the terminal...
+if __name__ == '__main__':
+    import common
+else:
+    from . import common
 
 # Classes persent in the dataset: 1, 2, 3, 4, 6, 8, or in text format:
 # person, bicycle, car, motorbike, bus, truck

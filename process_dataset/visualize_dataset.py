@@ -4,7 +4,11 @@ import pickle
 import os
 import shutil
 
-import process_dataset.common as common
+# The script should be importable but also executable from the terminal...
+if __name__ == '__main__':
+    import common
+else:
+    from . import common
 
 
 def visualize_dataset(dataset_name):
@@ -26,7 +30,7 @@ def visualize_dataset(dataset_name):
     print("Data loaded")
 
     with open(dataset_gt_filepath, "rb") as f:
-        data = pickle.loads(f.read())
+        data = pickle.load(f)
         for frame in data:
             old_filepath = os.path.join(dataset_path, frame["filename"])
             filename = os.path.basename(old_filepath)
