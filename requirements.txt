@@ -1,0 +1,6 @@
+seaborn
+torch
+torchvision
+openmim
+opencv-python
+numpy
