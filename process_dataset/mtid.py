@@ -4,6 +4,7 @@ import numpy as np
 import pickle
 import gc
 import shutil
+from tqdm import tqdm
 
 # The script should be importable but also executable from the terminal...
 if __name__ == '__main__':
@@ -130,7 +131,8 @@ def process_mtid():
             # Fetch all annotations first and save them
             # Note: not ignoring images here to keep the code simpler (ignoring
             # in next for loop)
-            for anno in data["annotations"]:
+            print(f"Processing annotations in {key}")
+            for anno in tqdm(data["annotations"]):
 
                 # Check if we're skipping this image because of the frame step
                 if anno["image_id"] % common.datasets["mtid"]["frame_step"] != 0:
@@ -161,7 +163,8 @@ def process_mtid():
 
             # Append info about the images while copying the images to combined/
             # Image: id, width, height, file_name
-            for image in data["images"]:
+            print(f"Processing images in {key}")
+            for image in tqdm(data["images"]):
 
                 # Check if we're skipping this image because of the frame step
                 if image["id"] % common.datasets["mtid"]["frame_step"] != 0:
@@ -215,12 +218,10 @@ def process_mtid():
     del data
     gc.collect()
 
-    print(f"Data loaded and combined to {combined_imgs_path}")
-
-
     # Convert data_dict to a list and all lists (bboxes and labels) to numpy arrays
     data_list = []
-    for key in list(data_dict.keys()):
+    print("Converting...")
+    for key in tqdm(list(data_dict.keys())):
         val = data_dict[key]
 
         # Ignore images that contain no annotations - because of mmdetection..
@@ -237,13 +238,11 @@ def process_mtid():
 
         data_list.append(val)
     
-    print("Converted to mmdetection's middle format")
-
     # Write the list to a file
     with open(gt_pickle_path, 'wb') as f:
         pickle.dump(data_list, f, protocol=common.pickle_file_protocol)
 
-    print("Done")
+    print(f"Saved to {gt_pickle_path}")
 
 if __name__ == "__main__":
     process_mtid()

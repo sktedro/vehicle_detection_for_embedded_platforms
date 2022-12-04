@@ -13,6 +13,8 @@ test_pickle_filepath = os.path.join(datasets_path, "test.pickle")
 pickle_file_protocol = HIGHEST_PROTOCOL
 # pickle_file_protocol = 0
 
+dataset_coco_filepath = os.path.join(datasets_path, "dataset_coco.json")
+
 datasets = {
     # paths are relative to the dataset_path
     "mio-tcd": {
@@ -41,6 +43,9 @@ datasets = {
             "infra": []
         },
         "frame_step": 3 # If set to 10, only each 10th frame will be taken
+    },
+    "visdrone_det": {
+        "path": "VisDrone2019-DET-test-dev/"
     }
 }
 
@@ -54,6 +59,7 @@ classes = [
     "truck",
     "unknown"
 ]
+
 classes_dict = {
     0: "pedestrian",
     1: "bicycle", 

@@ -3,6 +3,7 @@ import csv
 import cv2
 import numpy as np
 import pickle
+from tqdm import tqdm
 
 # The script should be importable but also executable from the terminal...
 if __name__ == '__main__':
@@ -69,16 +70,15 @@ def process_mio_tcd():
     gt_pickle_path = os.path.join(dataset_path, common.gt_pickle_filename)
     imgs_path = os.path.join(dataset_path, "train")
 
+    lines_total = sum([1 for line in open(gt_csv_path)])
+
     # Let's first fetch the data to a dictionary with filenames as keys
     data_dict = {}
+    print(f"Processing data from {gt_csv_path}")
     with open(gt_csv_path) as csv_f:
         reader = csv.reader(csv_f, delimiter=',')
 
-        counter = 0
-        for row in reader:
-            if counter % 1_000 == 0:
-                print(f"Processing line {counter}", end="\r")
-            counter += 1
+        for row in tqdm(reader, total=lines_total):
             
             # Image name
             img_name = row[0] + ".jpg"
@@ -116,10 +116,9 @@ def process_mio_tcd():
                 data_dict[img_name]["ann"]["bboxes"].append(bbox)
                 data_dict[img_name]["ann"]["labels"].append(cls)
 
-    print("\nData loaded")
-
     # Convert data_dict to a list and all lists (bboxes and labels) to numpy arrays
     data_list = []
+    print("Converting...")
     for key in list(data_dict.keys()):
         val = data_dict[key]
         val["filename"] = os.path.join("train", key)
@@ -133,13 +132,11 @@ def process_mio_tcd():
 
         data_list.append(val)
 
-    print("Converted to mmdetection's middle format")
-
     # Write the list to a file
     with open(gt_pickle_path, 'wb') as f:
         pickle.dump(data_list, f, protocol=common.pickle_file_protocol)
 
-    print("Done")
+    print(f"Saved to {gt_pickle_path}")
 
 if __name__ == "__main__":
     process_mio_tcd()

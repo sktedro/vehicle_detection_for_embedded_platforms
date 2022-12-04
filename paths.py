@@ -7,7 +7,7 @@ drive_traffic_cams_path = os.path.join(drive_dirpath, "traffic_cams")
 
 mmdetection_path = os.path.join(proj_path, "..", "mmdetection")
 
-working_dirpath = os.path.join(proj_path, "working_dir")
+working_dirpath = os.path.join(proj_path, "working_dir2")
 
 process_dataset_dirpath = os.path.join(proj_path, "process_dataset")
 

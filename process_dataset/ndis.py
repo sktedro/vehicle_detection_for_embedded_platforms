@@ -4,7 +4,7 @@ import pickle
 import json
 import shutil
 import gc
-from pprint import pprint
+from tqdm import tqdm
 
 # The script should be importable but also executable from the terminal...
 if __name__ == '__main__':
@@ -103,6 +103,7 @@ def process_ndis():
     # Read the data while copying all images to combined/ directory (and
     # ignoring images that should be ignored)
     data_dict = {}
+    print(f"Loading data and copying images to {combined_imgs_path}")
     for key in gt_json_path:
 
         try:
@@ -114,7 +115,8 @@ def process_ndis():
             data = json.loads(f.read())
 
             # Fetch all annotations first and save them
-            for anno in data["annotations"]:
+            print(f"Processing annotations in {key}")
+            for anno in tqdm(data["annotations"]):
                 new_img_id = anno["image_id"] + max_id + 1
                 if new_img_id in common.datasets["ndis"]["ignored_images"]:
                     continue
@@ -139,7 +141,8 @@ def process_ndis():
 
             # Append info about the images while copying the images to combined/
             # Image: id, width, height, file_name
-            for image in data["images"]:
+            print(f"Processing images in {key}")
+            for image in tqdm(data["images"]):
                 new_img_id = image["id"] + max_id + 1
                 if new_img_id in common.datasets["ndis"]["ignored_images"]:
                     continue
@@ -169,8 +172,6 @@ def process_ndis():
     del data
     gc.collect()
 
-    print(f"Data loaded and combined to {combined_imgs_path}")
-
     def setClass(img_id, bbox_index, cls):
         if type(bbox_index) in [list, tuple]:
             for i in range(len(bbox_index)):
@@ -191,6 +192,8 @@ def process_ndis():
     def delBbox(img_id, bbox_index):
         del data_dict[img_id]["ann"]["labels"][bbox_index]
         del data_dict[img_id]["ann"]["bboxes"][bbox_index]
+
+    print("Fixing annotations...")
 
     setClass(3, 2, "transporter")
     setClass(4, [5, 4], "transporter")
@@ -249,11 +252,10 @@ def process_ndis():
     setClass(136, [6, 1], "transporter")
     setClass(139, [42, 1], "transporter")
     
-    print("Applied manual per-image class fixups")
-
     # Convert data_dict to a list and all lists (bboxes and labels) to numpy arrays
     data_list = []
-    for key in list(data_dict.keys()):
+    print("Converting...")
+    for key in tqdm(list(data_dict.keys())):
         val = data_dict[key]
 
         # Convert lists of bboxes and labels to arrays
@@ -265,13 +267,11 @@ def process_ndis():
 
         data_list.append(val)
     
-    print("Converted to mmdetection's middle format")
-
     # Write the list to a file
     with open(gt_pickle_path, 'wb') as f:
         pickle.dump(data_list, f, protocol=common.pickle_file_protocol)
 
-    print("Done")
+    print(f"Saved to {gt_pickle_path}")
 
 if __name__ == "__main__":
     process_ndis()

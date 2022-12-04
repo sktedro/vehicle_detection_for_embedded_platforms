@@ -49,9 +49,12 @@ else:
 
 # Provide data split values for train, val, and testing data as percentage / 100
 data_distribution = {
-    "train": 0.6,
-    "val": 0.2,
-    "test": 0.2
+    # "train": 0.6,
+    # "val": 0.2,
+    # "test": 0.2
+    "train": 0.9,
+    "val": 0.0,
+    "test": 0.1
 }
 # Make sure it sums up to 1...
 assert sum(data_distribution[key] for key in data_distribution.keys()) == 1
@@ -129,7 +132,7 @@ def combineDatasets():
     with open(common.test_pickle_filepath, 'wb') as f:
         pickle.dump(dataset["test"], f, protocol=common.pickle_file_protocol)
 
-    print("All done")
+    print("All saved and done")
 
 
 if __name__ == "__main__":

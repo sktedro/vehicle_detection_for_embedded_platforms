@@ -5,6 +5,7 @@ import pickle
 import json
 import shutil
 import gc
+from tqdm import tqdm
 
 # The script should be importable but also executable from the terminal...
 if __name__ == '__main__':
@@ -94,13 +95,15 @@ def process_aau():
         shutil.copy(src, dst)
 
     # Let's first fetch the data to a dictionary with filenames as keys
+    print(f"Loading data from {gt_json_path}")
     with open(os.path.join(gt_json_path)) as f:
         data = json.loads(f.read())
 
     data_dict = {}
 
     # Fetch all annotations first
-    for anno in data["annotations"]:
+    print("Reading annotations")
+    for anno in tqdm(data["annotations"]):
 
         # Ignore annotations that have negative width or height
         if anno["bbox"][2] < 0 or anno["bbox"][3] < 0:
@@ -128,7 +131,8 @@ def process_aau():
 
     # Append info about the images
     # Image: id, width, height, file_name
-    for image in data["images"]:
+    print("Reading information about images")
+    for image in tqdm(data["images"]):
         img_id = image["id"]
 
         # In case there is an image with no annotations...:
@@ -148,8 +152,6 @@ def process_aau():
     del data
     gc.collect()
 
-    print("Data loaded")
-
     # Remove ignored folders
     for img_id in data_dict.copy():
         for ignore_str in common.datasets["aau"]["ignored_folders"]:
@@ -166,7 +168,8 @@ def process_aau():
 
     # Copy all images to a separate folder while applying detection masks (so
     # that the image only contains annotated vehicles) and update the paths
-    for img_id in data_dict:
+    print("Copying images and applying masks")
+    for img_id in tqdm(data_dict):
         old_img_filepath = os.path.join(dataset_path, data_dict[img_id]["filename"])
         new_img_rel_path = os.path.join(combined_imgs_rel_path, str(img_id).zfill(9) + ".jpg")
 
@@ -191,7 +194,8 @@ def process_aau():
 
     # Convert data_dict to a list and all lists (bboxes and labels) to numpy arrays
     data_list = []
-    for key in list(data_dict.keys()):
+    print("Converting...")
+    for key in tqdm(list(data_dict.keys())):
         val = data_dict[key]
 
         # Convert lists of bboxes and labels to arrays
@@ -203,13 +207,11 @@ def process_aau():
 
         data_list.append(val)
     
-    print("Converted to mmdetection's middle format")
-
     # Write the list to a file
     with open(gt_pickle_path, 'wb') as f:
         pickle.dump(data_list, f, protocol=common.pickle_file_protocol)
 
-    print("Done")
+    print(f"Saved to {gt_pickle_path}")
 
 if __name__ == "__main__":
     process_aau()

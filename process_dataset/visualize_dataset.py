@@ -31,7 +31,14 @@ def visualize_dataset(dataset_name):
 
     with open(dataset_gt_filepath, "rb") as f:
         data = pickle.load(f)
+
+        counter = 0
+        total = len(data)
         for frame in data:
+
+            print(f"Processing file {counter} of {total}", end="\r")
+            counter += 1
+
             old_filepath = os.path.join(dataset_path, frame["filename"])
             filename = os.path.basename(old_filepath)
             new_filepath = os.path.join(dst_dirpath, filename)
@@ -50,7 +57,7 @@ def visualize_dataset(dataset_name):
                 img = cv2.putText(img, text, (bbox[0], bbox[3]), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
             cv2.imwrite(new_filepath, img)
 
-    print("All done")
+    print("\nAll done")
 
 
 if __name__ == "__main__":
