@@ -24,10 +24,10 @@ visdrone_det_classes_map = {
     "4":  common.classes.index("passenger_car"),
     "5":  common.classes.index("transporter"),
     "6":  common.classes.index("truck"),
-    "7":  common.classes.index("unknown"),
-    "8":  common.classes.index("unknown"),
+    "7":  common.classes.index("unknown"), # Tricycle
+    "8":  common.classes.index("unknown"), # Awning-tricycle
     "9":  common.classes.index("bus"),
-    "10": common.classes.index("motorcycle"), # TODO "motor" is motorcycle?
+    "10": common.classes.index("motorcycle"), # "motor" is a motorcycle
     "11": -1 # Ignore "others"
 }
 
@@ -157,6 +157,10 @@ def process_visdrone_det():
         val["ann"]["labels"] = np.array(val["ann"]["labels"], dtype=np.int16)
 
         data_list.append(val)
+
+    print(f"Images: {len(data_list)}")
+    annotations = sum([len(img["ann"]["labels"]) for img in data_list])
+    print(f"Annotations: {annotations}")
 
     # Write the list to a file
     with open(gt_pickle_path, 'wb') as f:

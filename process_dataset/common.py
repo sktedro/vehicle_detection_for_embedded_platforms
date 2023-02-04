@@ -2,7 +2,8 @@ import os
 from pickle import HIGHEST_PROTOCOL, DEFAULT_PROTOCOL
 
 # Paths: (absolute path recommended)
-datasets_path = "/home/tedro/Downloads/datasets/"
+# datasets_path = "/home/tedro/Downloads/datasets/"
+datasets_path = "/Users/z004ktej/Downloads/datasets/"
 
 gt_pickle_filename = "gt.pickle"
 
@@ -46,7 +47,10 @@ datasets = {
     },
     "visdrone_det": {
         "path": "VisDrone2019-DET-test-dev/"
-    }
+    },
+    # "coco": {
+    #     "path": "coco/"
+    # },
 }
 
 classes = [

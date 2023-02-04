@@ -1,15 +1,46 @@
-NAME=doc
+# makefile for compilation of the thesis
+# (c) 2008 Michal Bidlo
+# E-mail: bidlom AT fit vutbr cz
+# Edited by: dytrych AT fit vutbr cz
+# Edited by: xskalo01 AT stud fit vutbr cz
+#===========================================
 
-ALLFILES=$(NAME).tex Makefile
+CO=doc
 
-all: pdf
+all: $(CO).pdf
 
-pdf:
-	pdflatex $(NAME)
-	bibtex $(NAME)
-	pdflatex $(NAME)
-	pdflatex $(NAME)
+pdf: $(CO).pdf
+
+$(CO).ps: $(CO).dvi
+	dvips $(CO)
+
+$(CO).pdf: clean
+	pdflatex $(CO)
+	-bibtex $(CO)
+	# makeglossaries $(CO)
+	# makeglossaries-lite $(CO)
+	pdflatex $(CO)
+	pdflatex $(CO)
+
+$(CO).dvi: $(CO).tex $(CO).bib
+	latex $(CO)
+	-bibtex $(CO)
+	latex $(CO)
+	latex $(CO)
 
 clean:
-	@ls | grep -v ".gitignore\|Makefile\|${NAME}.tex\|${NAME}.bib\|${NAME}.pdf\|src" | xargs rm -f
-	rm -f src/*eps-converted-to.pdf
+	rm -f *.dvi *.log $(CO).blg $(CO).bbl $(CO).toc *.aux $(CO).out $(CO).lof $(CO).ptc
+	rm -f $(CO).pdf
+	rm -f *~
+
+pack:
+	tar czvf $(CO).tar.gz *.tex *.bib *.bst ./template-fig/* ./bib-styles/* ./cls/* zadani.pdf $(CO).pdf Makefile Changelog
+
+# Pozor, vlna neresi vse (viz popis.txt) / Warning - vlna is not solving all problems (see description.txt)
+vlna:
+	vlna -l $(CO)-*.tex
+
+# Count of standard pages
+pages:
+	echo "scale=2; `detex -n $(CO)-[01]*.tex | sed s/"^ *"/""/ | sed s/"^	*"/""/ | wc -c`/1800;" | bc
+

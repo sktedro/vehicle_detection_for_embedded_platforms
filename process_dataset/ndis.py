@@ -266,6 +266,10 @@ def process_ndis():
         val["ann"]["labels"] = np.array(val["ann"]["labels"], dtype=np.int16)
 
         data_list.append(val)
+
+    print(f"Images: {len(data_list)}")
+    annotations = sum([len(img["ann"]["labels"]) for img in data_list])
+    print(f"Annotations: {annotations}")
     
     # Write the list to a file
     with open(gt_pickle_path, 'wb') as f:
