@@ -4,7 +4,7 @@ import os
 # Paths: (absolute path recommended)
 # datasets_path = "/home/tedro/Downloads/datasets/"
 datasets_path = "/Users/z004ktej/Downloads/datasets/"
-split_datasets_path = "/Users/z004ktej/Downloads/datasets/datasets_gt/"
+split_datasets_path = os.path.join(datasets_path, "datasets_gt/")
 
 assert os.path.exists(datasets_path)
 
@@ -50,7 +50,7 @@ datasets = {
         "path": "DETRAC/",
         "ignored_sequences": [ # List of sequence names to ignore when processing
             # Some sequences don't have comments simply because I was lazy to comment the problem
-            # They were ignored mainly if containing bicycles, motor
+            # They were ignored mainly if containing bicycles or motorcycles
             "20011", # Contains unmasked cyclists in left corner
             "20012", # Contains unmasked cyclists in left corner
             "20032", # Contains unmasked cyclists in left corner
