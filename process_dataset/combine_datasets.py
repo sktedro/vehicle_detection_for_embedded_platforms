@@ -33,7 +33,6 @@ Output format example:
 import os
 import pickle
 import random
-import numpy as np
 
 # The script should be importable but also executable from the terminal...
 if __name__ == '__main__':

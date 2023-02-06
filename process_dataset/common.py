@@ -2,8 +2,9 @@ from pickle import HIGHEST_PROTOCOL
 import os
 
 # Paths: (absolute path recommended)
-datasets_path = "/home/tedro/Downloads/datasets/"
-#  datasets_path = "/Users/z004ktej/Downloads/datasets/"
+# datasets_path = "/home/tedro/Downloads/datasets/"
+datasets_path = "/Users/z004ktej/Downloads/datasets/"
+split_datasets_path = "/Users/z004ktej/Downloads/datasets/datasets_gt/"
 
 assert os.path.exists(datasets_path)
 
