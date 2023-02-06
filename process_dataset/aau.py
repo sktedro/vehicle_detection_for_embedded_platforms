@@ -16,7 +16,7 @@ else:
 # Classes persent in the dataset: 1, 2, 3, 4, 6, 8, or in text format:
 # person, bicycle, car, motorbike, bus, truck
 aau_classes_map = {
-    1: common.classes.index("pedestrian"),    # person
+    1: -1,                                    # person
     2: common.classes.index("bicycle"),       # bicycle
     4: common.classes.index("motorcycle"),    # motorbike
     3: common.classes.index("passenger_car"), # car
@@ -120,14 +120,17 @@ def process_aau():
                 }
             }
 
-        # Append annotation (class (label) and bbox)
-        data_dict[img_id]["ann"]["labels"].append(aau_classes_map[anno["category_id"]])
+        cls = aau_classes_map[anno["category_id"]]
+        if cls != -1: 
 
-        # Convert bbox from [x1 y1 w h] to [x1 y1 x2 y2]
-        bbox = anno["bbox"]
-        bbox[2] = bbox[0] + bbox[2]
-        bbox[3] = bbox[1] + bbox[3]
-        data_dict[img_id]["ann"]["bboxes"].append(bbox)
+            # Append annotation (class (label) and bbox)
+            data_dict[img_id]["ann"]["labels"].append(cls)
+
+            # Convert bbox from [x1 y1 w h] to [x1 y1 x2 y2]
+            bbox = anno["bbox"]
+            bbox[2] = bbox[0] + bbox[2]
+            bbox[3] = bbox[1] + bbox[3]
+            data_dict[img_id]["ann"]["bboxes"].append(bbox)
 
     # Append info about the images
     # Image: id, width, height, file_name

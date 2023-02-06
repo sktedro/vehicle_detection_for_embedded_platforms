@@ -13,18 +13,17 @@ else:
 
 
 mio_tcd_classes_map = {
-    "pedestrian":            common.classes.index("pedestrian"),
+    "pedestrian":            -1, # Ignore
     "bicycle":               common.classes.index("bicycle"),
     "motorcycle":            common.classes.index("motorcycle"),
     "car":                   common.classes.index("passenger_car"),
-    # "non-motorized_vehicle": common.classes.index("trailer"),
-    "non-motorized_vehicle": -1, # Ignore trailers
+    "non-motorized_vehicle": common.classes.index("trailer"),
     "pickup_truck":          common.classes.index("transporter"),
     "work_van":              common.classes.index("transporter"),
     "bus":                   common.classes.index("bus"),
     "articulated_truck":     common.classes.index("truck"),
     "single_unit_truck":     common.classes.index("truck"),
-    "motorized_vehicle":     common.classes.index("unknown")
+    "motorized_vehicle":     common.classes.index("unknown") # Vehicles that cannot be classified (mostly bad video quality)
 }
 
 
@@ -70,7 +69,7 @@ def process_mio_tcd():
     gt_pickle_path = os.path.join(dataset_path, common.gt_pickle_filename)
     imgs_path = os.path.join(dataset_path, "train")
 
-    lines_total = sum([1 for line in open(gt_csv_path)])
+    lines_total = len(["" for _ in open(gt_csv_path)]) # Because len() doesn't work
 
     # Let's first fetch the data to a dictionary with filenames as keys
     data_dict = {}

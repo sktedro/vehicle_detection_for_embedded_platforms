@@ -1,10 +1,20 @@
 import fiftyone as fo
 import common
-from common import datasets_path
 from tqdm import tqdm
+
+"""
+Runs fiftyone. If a dataset was not yet created (or if param delete=False), it
+loads a dataset (reads paths from common.py), adds tags to the samples (dataset
+name) and then runs fiftyone.
+
+Remember to convert updated data to COCO format before rebuilding the dataset")
+"""
 
 
 def run_fiftyone(delete=False):
+
+    print("Remember to convert updated data to COCO format before rebuilding the dataset")
+
     dataset_name = "dataset"
 
     if dataset_name in fo.list_datasets():
@@ -20,7 +30,7 @@ def run_fiftyone(delete=False):
 
         print("Updating tags")
         for sample in tqdm(dataset):
-            ds_name = sample["filepath"].split(datasets_path)[1].split("/")[0]
+            ds_name = sample["filepath"].split(common.datasets_path)[1].split("/")[0]
             if ds_name not in sample.tags:
                 sample.tags.append(ds_name)
                 sample.save()

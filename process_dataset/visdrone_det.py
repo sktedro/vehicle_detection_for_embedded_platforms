@@ -17,9 +17,9 @@ Coordinates are in pixels
 
 
 visdrone_det_classes_map = {
-    "0":  -1, # Ignore "ignored regions"
-    "1":  common.classes.index("pedestrian"),
-    "2":  -1, # Ignore "people". Otherwise, person sitting on a motorcycle is annotated, too
+    "0":  -1, # "ignored region" - ignore
+    "1":  -1, # "pedestrian" - ignore
+    "2":  -1, # "people" - ignore
     "3":  common.classes.index("bicycle"),
     "4":  common.classes.index("passenger_car"),
     "5":  common.classes.index("transporter"),
@@ -28,7 +28,7 @@ visdrone_det_classes_map = {
     "8":  common.classes.index("unknown"), # Awning-tricycle
     "9":  common.classes.index("bus"),
     "10": common.classes.index("motorcycle"), # "motor" is a motorcycle
-    "11": -1 # Ignore "others"
+    "11": -1 # Ignore "others". I don't remember what the objects are, but probably non-vehicles TODO check
 }
 
 

@@ -12,6 +12,7 @@ else:
     from . import common
 
 
+# TODO OUTDATED (probably the whole file)
 coco_classes_map = { # TODO
     "person":      common.classes.index("pedestrian"),
     "bicycle":     -2, # If an image has this class, ignore whole image

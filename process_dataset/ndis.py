@@ -12,15 +12,13 @@ if __name__ == '__main__':
 else:
     from . import common
 
-# Classes persent in the dataset: 1, 2, 3, 4, 6, 8, or in text format:
-# person, bicycle, car, motorbike, bus, truck
+# Dataset only contains one class: car (3)
+# It also contains unannotated people, which we don't care about since we don't
+# detect them.
+# Also contains trailers, trucks and transporters. These are mapped manually by
+# setClass() calls in the code
 ndis_classes_map = {
-    1: common.classes.index("pedestrian"),    # person
-    2: common.classes.index("bicycle"),       # bicycle
-    4: common.classes.index("motorcycle"),    # motorbike
     3: common.classes.index("passenger_car"), # car
-    6: common.classes.index("bus"),           # bus
-    8: common.classes.index("truck")          # truck
 }
 
 
@@ -28,7 +26,7 @@ def process_ndis():
     """Converts ground truth data of the NDISPark dataset from JSON (COCO
     format) to mmdetection's middle format in a pickle file
 
-    NDIS (COCO) dataset format (only showing fields of interes):
+    NDIS (COCO) dataset format (only showing fields of interest):
     ```json
     {
         "images": [
@@ -195,11 +193,14 @@ def process_ndis():
 
     print("Fixing annotations...")
 
+    # delBbox() was used to delete bounding boxes of trailers. Now that I'm
+    # adding trailers back (since I realized I want to detect them), I commented
+    # out those calls (all delBbox() calls were because of trailers)
     setClass(3, 2, "transporter")
     setClass(4, [5, 4], "transporter")
     setClass(5, 2, "transporter")
     setClass(11, 5, "transporter")
-    delBbox(11, 0)
+    # delBbox(11, 0)
     setClass(12, 2, "truck")
     setClass(12, 3, "truck")
     setClass(15, 0, "transporter")
@@ -214,20 +215,20 @@ def process_ndis():
     setClass(42, 1, "transporter")
     setClass(46, 6, "transporter")
     setClass(50, 3, "transporter")
-    delBbox(53, 60)
+    # delBbox(53, 60)
     setClass(54, 0, "transporter")
     setClass(55, 53, "transporter")
     setClass(58, 4, "transporter")
     setClass(59, 46, "transporter")
-    delBbox(60, 1)
+    # delBbox(60, 1)
     setClass(62, 10, "transporter")
-    delBbox(64, 71)
+    # delBbox(64, 71)
     setClass(66, 0, "transporter")
     setClass(69, 4, "transporter")
     setClass(73, [36, 45, 10], "transporter")
     setClass(74, 4, "transporter")
     setClass(75, 35, "transporter")
-    delBbox(75, 64)
+    # delBbox(75, 64)
     setClass(77, 1, "transporter")
     setClass(73, 2, "transporter")
     setClass(83, 2, "transporter")

@@ -3,6 +3,7 @@ import cv2
 import pickle
 import os
 import shutil
+from tqdm import tqdm
 
 # The script should be importable but also executable from the terminal...
 if __name__ == '__main__':
@@ -27,17 +28,10 @@ def visualize_dataset(dataset_name):
 
     dataset_gt_filepath = os.path.join(dataset_path, common.gt_pickle_filename)
 
-    print("Data loaded")
-
     with open(dataset_gt_filepath, "rb") as f:
         data = pickle.load(f)
 
-        counter = 0
-        total = len(data)
-        for frame in data:
-
-            print(f"Processing file {counter} of {total}", end="\r")
-            counter += 1
+        for frame in tqdm(data):
 
             old_filepath = os.path.join(dataset_path, frame["filename"])
             filename = os.path.basename(old_filepath)
@@ -56,8 +50,6 @@ def visualize_dataset(dataset_name):
                 img = cv2.rectangle(img, bbox[:2], bbox[2:], color, 1)
                 img = cv2.putText(img, text, (bbox[0], bbox[3]), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
             cv2.imwrite(new_filepath, img)
-
-    print("\nAll done")
 
 
 if __name__ == "__main__":

@@ -52,8 +52,8 @@ data_distribution = {
     # "train": 0.6,
     # "val": 0.2,
     # "test": 0.2
-    "train": 0.9,
-    "val": 0.1,
+    "train": 0.95,
+    "val": 0.05,
     "test": 0
 }
 # Make sure it sums up to 1...
@@ -92,11 +92,6 @@ def combineDatasets():
             if random_data_distribution:
                 random.shuffle(data)
             
-            # TODO TODO remove
-            # if name == "mio-tcd":
-            #     print("Removing 3/4 of MIO-TCD dataset")
-            #     data = data[:len(data)//4]
-
             # Set dataset_name and update filename (relative filepath)
             # filename needs to be updated to be relative to the datasets folder
             for img in data:
