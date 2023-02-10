@@ -7,7 +7,7 @@ drive_traffic_cams_path = os.path.join(drive_dirpath, "traffic_cams")
 
 mmdetection_path = os.path.join(proj_path, "..", "mmdetection")
 
-working_dirpath = os.path.join(proj_path, "working_dir_long_all")
+working_dirpath = os.path.join(proj_path, "working_dir")
 
 process_dataset_dirpath = os.path.join(proj_path, "process_dataset")
 
@@ -35,6 +35,3 @@ if not os.path.exists(mmdetection_checkpoint_path):
 last_checkpoint_filepath = os.path.join(working_dirpath, "latest.pth")
 if not os.path.exists(last_checkpoint_filepath):
     last_checkpoint_filepath = None
-
-saved_model_filepath = os.path.join(working_dirpath, 'model.pickle')
-saved_config_filepath = os.path.join(working_dirpath, 'config.pickle')

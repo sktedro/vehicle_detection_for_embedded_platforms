@@ -4,3 +4,4 @@ venv/
 vid/
 __pycache__/
 .ipynb_checkpoints/
+.vscode/
