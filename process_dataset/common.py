@@ -156,10 +156,7 @@ datasets = {
             "63562", # Badly masked/annotated
             "63563", # Two-wheeler
         ]
-    }
-    # "coco": {
-    #     "path": "coco/"
-    # },
+    },
 }
 
 def save_processed(dataset_name, data):
