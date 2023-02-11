@@ -1,5 +1,4 @@
-import os
-import pickle
+import json
 
 # The script should be importable but also executable from the terminal...
 if __name__ == '__main__':
@@ -7,17 +6,13 @@ if __name__ == '__main__':
 else:
     from . import common
 
-
 def printClassCounts():
     classes_counts = [0] * len(common.classes)
-    images_count = 0
-    with open(common.dataset_pickle_filepath, "rb") as f:
-        data = pickle.load(f)
-        for key in ["train", "val", "test"]:
-            for img in data[key]:
-                images_count += 1
-                for label in img["ann"]["labels"]:
-                    classes_counts[label] += 1
+    with open(common.dataset_filepath) as f:
+        data = json.loads(f.read())
+        images_count = len(data["images"])
+        for anno in data["annotations"]:
+            classes_counts[anno["category_id"]] += 1
 
     print("Class instances in all images:")
 

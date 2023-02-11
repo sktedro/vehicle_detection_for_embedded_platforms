@@ -1,23 +1,43 @@
-from pickle import HIGHEST_PROTOCOL
 import os
+from json import dumps as json_dumps
 
 # Paths: (absolute path recommended)
-# datasets_path = "/home/tedro/Downloads/datasets/"
-datasets_path = "/Users/z004ktej/Downloads/datasets/"
-split_datasets_path = os.path.join(datasets_path, "datasets_gt/")
+datasets_dirpath = "/home/tedro/Downloads/datasets/"
+# datasets_path = "/Users/z004ktej/Downloads/datasets/"
 
-assert os.path.exists(datasets_path)
+# TODO remove
+split_datasets_path = os.path.join(datasets_dirpath, "datasets_gt/")
 
-gt_pickle_filename = "gt.pickle"
+assert os.path.exists(datasets_dirpath)
 
-dataset_pickle_filepath = os.path.join(datasets_path, "dataset.pickle")
-train_pickle_filepath = os.path.join(datasets_path, "train.pickle")
-val_pickle_filepath = os.path.join(datasets_path, "val.pickle")
-test_pickle_filepath = os.path.join(datasets_path, "test.pickle")
-pickle_file_protocol = HIGHEST_PROTOCOL
-# pickle_file_protocol = 0
+gt_filename = "gt_processed.json"
 
-dataset_coco_filepath = os.path.join(datasets_path, "dataset_coco.json")
+dataset_filepath = os.path.join(datasets_dirpath, "dataset.json")
+dataset_train_filepath = os.path.join(datasets_dirpath, "train.json")
+dataset_val_filepath = os.path.join(datasets_dirpath, "val.json")
+dataset_test_filepath = os.path.join(datasets_dirpath, "test.json")
+
+classes = [
+    "bicycle",
+    "motorcycle",
+    "passenger_car",
+    "transporter",
+    "bus",
+    "truck",
+    "trailer",
+    "unknown"
+]
+
+classes_dict = {
+    0: "bicycle",
+    1: "motorcycle",
+    2: "passenger_car",
+    3: "transporter",
+    4: "bus",
+    5: "truck",
+    6: "trailer",
+    7: "unknown"
+}
 
 datasets = {
     # paths are relative to the dataset_path
@@ -29,8 +49,7 @@ datasets = {
         "ignored_folders": ["Egensevej-1", "Egensevej-3", "Egensevej-5"] # Bad quality video
     },
     "ndis": {
-        "path": "ndis_park/",
-        "ignored_images": []
+        "path": "ndis_park/"
     },
     "mtid": {
         "path": "MTID/",
@@ -40,8 +59,7 @@ datasets = {
                 [1, 31], [659, 659], [1001, 1318], [3301, 3327]
             ],
             "infra": []
-        },
-        "frame_step": 1 # If set to 10, only each 10th frame will be taken
+        }
     },
     "visdrone_det": {
         "path": "VisDrone2019-DET-test-dev/"
@@ -147,24 +165,24 @@ datasets = {
     # },
 }
 
-classes = [
-    "bicycle", 
-    "motorcycle", 
-    "passenger_car",
-    "transporter",
-    "bus",
-    "truck",
-    "trailer",
-    "unknown"
-]
+def save_processed(dataset_name, data):
 
-classes_dict = {
-    0: "bicycle", 
-    1: "motorcycle", 
-    2: "passenger_car",
-    3: "transporter",
-    4: "bus",
-    5: "truck",
-    6: "trailer",
-    7: "unknown"
-}
+    # Save categories
+    if "categories" not in data.keys():
+        data["categories"] = []
+    for cls in list(classes_dict.keys()):
+        data["categories"].append({
+            "id": cls,
+            "name": classes_dict[cls]
+        })
+
+    print(f"Images: {len(data['images'])}")
+    print(f"Annotations: {len(data['annotations'])}")
+
+    # Write it to a file
+    dataset_path = os.path.join(datasets_dirpath, datasets[dataset_name]["path"])
+    gt_filepath = os.path.join(dataset_path, gt_filename)
+    with open(gt_filepath, 'w') as f:
+        f.write(json_dumps(data))
+
+    print(f"Saved to {gt_filepath}")

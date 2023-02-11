@@ -1,8 +1,6 @@
 import os
 import csv
 import cv2
-import numpy as np
-import pickle
 from tqdm import tqdm
 
 # The script should be importable but also executable from the terminal...
@@ -10,10 +8,6 @@ if __name__ == '__main__':
     import common
 else:
     from . import common
-
-"""Notes:
-Coordinates are in pixels
-"""
 
 
 visdrone_det_classes_map = {
@@ -58,42 +52,26 @@ def process_visdrone_det():
                  The score in the GROUNDTRUTH file indicates the fraction of objects being occluded (i.e., no occlusion = 0 
                  (occlusion ratio 0%), partial occlusion = 1 (occlusion ratio 1% ~ 50%), and heavy occlusion = 2 
                  (occlusion ratio 50% ~ 100%)).
-
-    mmdetection format:
-    ```json
-    [
-        {
-            'filename': 'a.jpg',
-            'width': 1280,
-            'height': 720,
-            'ann': {
-                'bboxes': <np.ndarray> (n, 4) in (x1, y1, x2, y2) order (values are in pixels),
-                'labels': <np.ndarray> (n, ),
-                'bboxes_ignore': <np.ndarray> (k, 4), (optional field)
-                'labels_ignore': <np.ndarray> (k, 4) (optional field)
-            }
-        },
-        ...
-    ]
-    ```
     """
 
     # Initialize paths
-    # dataset_path = common.datasets["mio-tcd"]["path"]
-    dataset_path = os.path.join(common.datasets_path, common.datasets["visdrone_det"]["path"])
-    gts_path = os.path.join(dataset_path, "annotations")
-    gt_pickle_path = os.path.join(dataset_path, common.gt_pickle_filename)
-    imgs_path = os.path.join(dataset_path, "images")
+    dataset_abs_dirpath = os.path.join(common.datasets_dirpath, common.datasets["visdrone_det"]["path"])
+    gts_abs_dirpath = os.path.join(dataset_abs_dirpath, "annotations")
+    imgs_abs_dirpath = os.path.join(dataset_abs_dirpath, "images")
 
-    gts_files_list = os.listdir(gts_path)
-    imgs_files_list = os.listdir(imgs_path)
+    gts_files_list = os.listdir(gts_abs_dirpath)
+    imgs_files_list = os.listdir(imgs_abs_dirpath)
 
-    # Let's first fetch the data to a dictionary with filenames as keys
-    data_dict = {}
+    img_id_counter = 0
+    anno_id_counter = 0
 
-    total = len(gts_files_list)
+    data = {
+        "images": [],
+        "annotations": []
+    }
+
     print("Loading and processing annotations")
-    for gt_file in tqdm(gts_files_list):
+    for gt_file in tqdm(gts_files_list): # One gt file per image
 
         img_filename = gt_file.split(".")[0] + ".jpg"
 
@@ -103,8 +81,18 @@ def process_visdrone_det():
             print(f"Could not find image \"{img_filename}\". Ignoring")
             continue
 
-        gt_filepath = os.path.join(gts_path, os.path.basename(gt_file))
-        with open(gt_filepath) as csv_f:
+        # Height and width of an image
+        height, width, _ = cv2.imread(os.path.join(imgs_abs_dirpath, img_filename)).shape
+
+        data["images"].append({
+            "id": img_id_counter,
+            "file_name": os.path.join("images", img_filename),
+            "width": width,
+            "height": height,
+        })
+
+        gt_abs_filepath = os.path.join(gts_abs_dirpath, os.path.basename(gt_file))
+        with open(gt_abs_filepath) as csv_f:
             reader = csv.reader(csv_f, delimiter=',')
 
             for row in reader:
@@ -114,59 +102,21 @@ def process_visdrone_det():
                 # Vehicle class (while mapping from MIO-TCD to ours representation)
                 cls = visdrone_det_classes_map[cls]
 
-                # Initialize the object in `data_dict` var if it doesn't exist yet
-                if img_filename not in data_dict.keys():
-
-                    # Height and width of an image
-                    height, width, _ = cv2.imread(os.path.join(imgs_path, img_filename)).shape
-
-                    data_dict[img_filename] = {
-                        "width": int(width),
-                        "height": int(height),
-                        "ann": {
-                            "bboxes": [],
-                            "labels": []
-                        }
-                    }
-                
                 # If class is -1, ignore this annotation
                 if cls != -1: 
 
-                    # Bounding box
-                    bbox_left = int(bbox_left)
-                    bbox_top = int(bbox_top)
-                    w = int(w)
-                    h = int(h)
-                    bbox = [bbox_left, bbox_top, bbox_left + w, bbox_top + h]
-                
-                    data_dict[img_filename]["ann"]["bboxes"].append(bbox)
-                    data_dict[img_filename]["ann"]["labels"].append(cls)
+                    data["annotations"].append({
+                        "id": anno_id_counter,
+                        "image_id": img_id_counter,
+                        "category_id": cls,
+                        "bbox": [int(bbox_left), int(bbox_top), int(w), int(h)]
+                    })
 
-    # Convert data_dict to a list and all lists (bboxes and labels) to numpy arrays
-    data_list = []
-    print("Converting...")
-    for key in tqdm(list(data_dict.keys())):
-        val = data_dict[key]
-        val["filename"] = os.path.join("images", key)
+                    anno_id_counter += 1
 
-        # Convert lists of bboxes and labels to arrays
-        # Should work if done the same way as labels, but to be sure..:
-        val["ann"]["bboxes"] = np.array(
-            [np.array(l) for l in val["ann"]["bboxes"]], 
-            dtype=np.int16)
-        val["ann"]["labels"] = np.array(val["ann"]["labels"], dtype=np.int16)
+        img_id_counter += 1
 
-        data_list.append(val)
-
-    print(f"Images: {len(data_list)}")
-    annotations = sum([len(img["ann"]["labels"]) for img in data_list])
-    print(f"Annotations: {annotations}")
-
-    # Write the list to a file
-    with open(gt_pickle_path, 'wb') as f:
-        pickle.dump(data_list, f, protocol=common.pickle_file_protocol)
-
-    print(f"Saved to {gt_pickle_path}")
+    common.save_processed("visdrone_det", data)
 
 if __name__ == "__main__":
     process_visdrone_det()

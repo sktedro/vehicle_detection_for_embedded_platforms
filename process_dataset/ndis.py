@@ -1,9 +1,5 @@
 import os
-import numpy as np
-import pickle
 import json
-import shutil
-import gc
 from tqdm import tqdm
 
 # The script should be importable but also executable from the terminal...
@@ -21,289 +17,189 @@ ndis_classes_map = {
     3: common.classes.index("passenger_car"), # car
 }
 
+# Dictionary containing image filenames as keys, and separate fixes as values.
+# Fixes are in an array and one fix can be [bbox_number, new_class] or
+# [[img_number1, img_number2], new_class]
+# When processing, classes of bboxes for the filenames are fixed using this.
+# Mind that img_numbers are not image IDs, although they should be! TODO update to img IDs
+class_fix = {
+    '60_1537560142.jpg': [[0, "transporter"]],
+    '60_1537641085.jpg': [[[36, 45, 10], "transporter"]],
+    '60_1537642922.jpg': [[[4, 21, 24, 40], "transporter"]],
+    '60_1537644714.jpg': [[[9, 12, 31], "transporter"]],
+    '60_1537646501.jpg': [[[13, 14, 29], "transporter"]],
+    '60_1537648298.jpg': [[3, "transporter"]],
+    '60_1537700458.jpg': [[53, "transporter"]],
+    '60_1537702242.jpg': [[45, "transporter"]],
+    '60_1537704079.jpg': [[46, "transporter"]],
+    '60_1537711240.jpg': [[59, "trailer"]],
+    '60_1537713062.jpg': [[71, "trailer"]],
+    '60_1537714829.jpg': [[69, "trailer"]],
+    '60_1537716629.jpg': [[65, "trailer"]],
+    '60_1537718423.jpg': [[60, "trailer"]],
+    '62_1537439604.jpg': [[2, "transporter"]],
+    '62_1537610613.jpg': [[1, "transporter"]],
+    '62_1537639330.jpg': [[[25, 29], "transporter"]],
+    '62_1537641142.jpg': [[[33, 34, 24, 3], "transporter"]],
+    '62_1537642957.jpg': [[[41, 28, 37, 42, 16], "transporter"]],
+    '62_1537644729.jpg': [[[16, 35, 39, 25, 32], "transporter"]],
+    '62_1537689729.jpg': [[0, "transporter"]],
+    '62_1537705928.jpg': [[36, "transporter"]],
+    '62_1537709554.jpg': [[1, "trailer"]],
+    '62_1537713107.jpg': [[1, "trailer"]],
+    '62_1537716658.jpg': [[1, "trailer"]],
+    '62_1537718436.jpg': [[1, "trailer"]],
+    '62_1537938236.jpg': [[0, "transporter"]],
+    '62_1537956182.jpg': [[3, "transporter"]],
+    '62_1537959778.jpg': [[[1, 26], "transporter"]],
+    '62_1537963395.jpg': [[1, "transporter"]],
+    '64_1531764036.jpg': [[0, "transporter"]],
+    '64_1537009217.jpg': [[0, "transporter"]],
+    '64_1537016417.jpg': [[1, "transporter"]],
+    '64_1537032622.jpg': [[7, "transporter"]],
+    '64_1537097416.jpg': [[15, "transporter"]],
+    '64_1537099216.jpg': [[16, "transporter"]],
+    '69_1531596734.jpg': [[11, "transporter"]],
+    '69_1537347613.jpg': [[11, "transporter"]],
+    '69_1537349415.jpg': [[15, "transporter"]],
+    '69_1537351214.jpg': [[[4, 5], "transporter"]],
+    '69_1537353014.jpg': [[[19, 18], "transporter"]],
+    '69_1537354811.jpg': [[[5, 4], "transporter"]],
+    '69_1537358412.jpg': [[[5, 6], "transporter"]],
+    '69_1537362013.jpg': [[2, "transporter"]],
+    '73_1537095614.jpg': [[8, "transporter"]],
+    '73_1537108212.jpg': [[[3, 14], "transporter"]],
+    '73_1537207256.jpg': [[1, "transporter"]],
+    '73_1537216265.jpg': [[6, "transporter"]],
+    '73_1537239784.jpg': [[4, "transporter"]],
+    '73_1537252228.jpg': [[1, "transporter"]],
+    '73_1537263016.jpg': [[[6, 8], "transporter"]],
+    '73_1537286417.jpg': [[4, "transporter"]],
+    '73_1537293677.jpg': [[6, "transporter"]],
+    '73_1537327869.jpg': [[5, "transporter"]],
+    '73_1537336816.jpg': [[2, "transporter"]],
+    '73_1537347619.jpg': [[[6, 17], "transporter"]],
+    '73_1537353020.jpg': [[42, "transporter"]],
+    '73_1537354816.jpg': [[[42, 1], "transporter"]],
+    '73_1537414287.jpg': [[6, "transporter"]],
+    '73_1537432229.jpg': [[10, "transporter"]],
+    '78_1531611010.jpg': [[4, "transporter"]],
+    '78_1531722605.jpg': [[5, "transporter"], [0, "trailer"]],
+    '78_1531809005.jpg': [[[2, 3], "truck"]],
+    '78_1531814405.jpg': [[3, "transporter"]],
+    '78_1531816205.jpg': [[7, "transporter"]],
+    '83_1531481408.jpg': [[[0, 6], "transporter"]],
+    '83_1531486807.jpg': [[4, "transporter"]],
+    '83_1531497607.jpg': [[0, "transporter"]],
+    '83_1531510212.jpg': [[6, "transporter"]],
+    '83_1531740623.jpg': [[[6, 1], "transporter"]],
+    '83_1531751412.jpg': [[4, "transporter"]],
+    '83_1531755011.jpg': [[2, "transporter"]],
+    '83_1531764013.jpg': [[[1, 3], "transporter"]],
+    '83_1531821617.jpg': [[2, "transporter"]],
+
+}
+
 
 def process_ndis():
-    """Converts ground truth data of the NDISPark dataset from JSON (COCO
-    format) to mmdetection's middle format in a pickle file
-
-    NDIS (COCO) dataset format (only showing fields of interest):
-    ```json
-    {
-        "images": [
-            {
-                "id": 0,
-                "width": 2400,
-                "height": 908,
-                "file_name": "64_1537102819.jpg"
-                }
-                ...
-            ],
-        "annotations": [
-            {
-                "image_id": 0,
-                "category_id": 3,
-                "bbox": [
-                    402, # Top left x
-                    185, # Top left y
-                    18, # Width
-                    21 # Height
-                    ]
-                },
-                ...
-            ]
-        "categories": [
-            {
-                "id": 1,
-                "name": "person"
-                },
-                ...
-            ]
-    ```
-
-    mmdetection format:
-    ```json
-    [
-        {
-            'filename': 'a.jpg',
-            'width': 1280,
-            'height': 720,
-            'ann': {
-                'bboxes': <np.ndarray> (n, 4) in (x1, y1, x2, y2) order (values are in pixels),
-                'labels': <np.ndarray> (n, ),
-                'bboxes_ignore': <np.ndarray> (k, 4), (optional field)
-                'labels_ignore': <np.ndarray> (k, 4) (optional field)
-            }
-        },
-        ...
-    ]
-    ```
+    """Processes ground truth data of the NDISPark dataset (in COCO format):
+    - Fixes image IDs - they are only unique in their subsets, so they are
+    updated to be unique per dataset
+    - Fix annotations (since the dataset only uses one class) per class_fix var
+    - Converts bboxes to integers
+    - Updates filepaths to be relative to the dataset dirpath, not subset
+    dirpath
+    - And of course, maps the dataset's class to our class...
     """
 
     # Initialize paths
-    dataset_path = os.path.join(common.datasets_path, common.datasets["ndis"]["path"])
-    gt_json_path = {
-        "train": os.path.join(dataset_path, "train/train_coco_annotations.json"),
-        "val": os.path.join(dataset_path, "validation/val_coco_annotations.json")
+    dataset_abs_dirpath = os.path.join(common.datasets_dirpath, common.datasets["ndis"]["path"])
+    gt_json_abs_filepaths = {
+        "train": os.path.join(dataset_abs_dirpath, "train/train_coco_annotations.json"),
+        "val": os.path.join(dataset_abs_dirpath, "validation/val_coco_annotations.json")
     }
-    imgs_path = {
-        "train": os.path.join(dataset_path, "train/imgs"),
-        "val": os.path.join(dataset_path, "validation/imgs")
+    imgs_rel_dirpaths = {
+        "train": "train/imgs",
+        "val": "validation/imgs"
     }
-    gt_pickle_path = os.path.join(dataset_path, common.gt_pickle_filename)
 
-    # Create a directory for combined images (delete it first if exists)
-    combined_imgs_rel_path = "imgs_combined"
-    combined_imgs_path = os.path.join(dataset_path, combined_imgs_rel_path)
-    if os.path.exists(combined_imgs_path):
-        shutil.rmtree(combined_imgs_path)
-    os.mkdir(combined_imgs_path)
+    data = {
+        "images": [],
+        "annotations": []
+    }
 
-    # Read the data while copying all images to combined/ directory (and
-    # ignoring images that should be ignored)
-    data_dict = {}
-    print(f"Loading data and copying images to {combined_imgs_path}")
-    for key in gt_json_path:
+    # Since we're combining the datasets, we need to assign new IDs
+    img_id_counter = 0
 
-        try:
-            max_id = max(list(data_dict.keys()))
-        except:
-            max_id = -1
+    for subset in gt_json_abs_filepaths:
+        
+        with open(gt_json_abs_filepaths[subset]) as f:
+            data_input = json.loads(f.read())
 
-        with open(gt_json_path[key]) as f:
-            data = json.loads(f.read())
+            # Save misc data
+            data["info"] = data_input["info"]
+            data["licenses"] = data_input["licenses"]
 
-            # Fetch all annotations first and save them
-            print(f"Processing annotations in {key}")
-            for anno in tqdm(data["annotations"]):
-                new_img_id = anno["image_id"] + max_id + 1
-                if new_img_id in common.datasets["ndis"]["ignored_images"]:
-                    continue
+            # Process the subset by cycling through images for each image,
+            # processing annotations.
+            # This is inefficient, but that's not a problem for dataset as small
+            # as this, and there's a reason it is done this way...
+            print(f"Processing subset {subset}")
+            for img in tqdm(data_input["images"]):
 
-                # If the image is not yet in data_dict, initialize it
-                if new_img_id not in data_dict.keys():
-                    data_dict[new_img_id] = {
-                        "ann": {
-                            "bboxes": [],
-                            "labels": []
-                        }
-                    }
+                # Update image ID to be unique across subsets
+                old_img_id = img["id"]
+                new_img_id = img_id_counter
+                img["id"] = new_img_id
 
-                # Append annotation (class (label) and bbox)
-                data_dict[new_img_id]["ann"]["labels"].append(ndis_classes_map[anno["category_id"]])
+                # Update the filepath to be relative to the dataset, not just the filename
+                old_img_file_name = img["file_name"]
+                new_img_filename = os.path.join(imgs_rel_dirpaths[subset], img["file_name"])
+                img["file_name"] = new_img_filename
 
-                # Convert bbox from [x1 y1 w h] to [x1 y1 x2 y2]
-                bbox = anno["bbox"]
-                bbox[2] = bbox[0] + bbox[2]
-                bbox[3] = bbox[1] + bbox[3]
-                data_dict[new_img_id]["ann"]["bboxes"].append(bbox)
+                # Save the image to data var
+                data["images"].append(img)
 
-            # Append info about the images while copying the images to combined/
-            # Image: id, width, height, file_name
-            print(f"Processing images in {key}")
-            for image in tqdm(data["images"]):
-                new_img_id = image["id"] + max_id + 1
-                if new_img_id in common.datasets["ndis"]["ignored_images"]:
-                    continue
+                # Get all annotations
+                annos = []
+                for anno in data_input["annotations"]:
+                    if anno["image_id"] == old_img_id:
+                        annos.append(anno)
 
-                # In case there is an image with no annotations...:
-                if new_img_id not in data_dict.keys():
-                    data_dict[new_img_id] = {
-                        "ann": {
-                            "bboxes": [],
-                            "labels": []
-                        }
-                    }
+                # Process annotations
+                for anno in annos:
 
-                data_dict[new_img_id]["width"] = image["width"]
-                data_dict[new_img_id]["height"] = image["height"]
+                    # Map classes of annotations
+                    anno["category_id"] = ndis_classes_map[anno["category_id"]]
 
-                # Update the filepath
-                new_img_rel_filepath = os.path.join(combined_imgs_rel_path, str(new_img_id).zfill(9) + ".jpg")
-                data_dict[new_img_id]["filename"] = new_img_rel_filepath
+                    # Convert bbox to ints
+                    for i in range(4):
+                        anno["bbox"][i] = int(anno["bbox"][i])
 
-                # Copy image to combined/
-                old_img_filepath = os.path.join(imgs_path[key], image["file_name"])
-                new_img_filepath = os.path.join(dataset_path, new_img_rel_filepath)
-                shutil.copy(old_img_filepath, new_img_filepath)
+                    # Update img ID
+                    anno["image_id"] = new_img_id
 
-    # We can free data from memory
-    del data
-    gc.collect()
+                # Fix annotations as specified in class_fix var
+                if old_img_file_name in class_fix.keys():
 
-    def setClass(img_id, bbox_index, cls):
-        if type(bbox_index) in [list, tuple]:
-            for i in range(len(bbox_index)):
-                setClass(img_id, bbox_index[i], cls)
-            return
+                    for [bbox_ids, new_cls] in class_fix[old_img_file_name]:
 
-        if type(cls) == int:
-            data_dict[img_id]["ann"]["labels"][bbox_index] = cls
-        else:
-            try:
-                cls = common.classes.index(cls)
-                data_dict[img_id]["ann"]["labels"][bbox_index] = cls
-            except ValueError:
-                print(f"Manual class fix failed at img_id {img_id}, bbox_index{bbox_index}")
+                        # If the bbox_ids is not an array, make it an array...
+                        if type(bbox_ids) == int:
+                            bbox_ids = [bbox_ids]
+
+                        # For each bbox ID, fix the annotation
+                        for bbox_id in bbox_ids:
+                            annos[bbox_id]["category_id"] = common.classes.index(new_cls)
+
+                # Save the annotations to data var without segmentation
+                for anno in annos:
+                    del anno["segmentation"]
+                    data["annotations"].append(anno)
+
+                img_id_counter += 1
     
-    # Be careful! This function operates with indices! Only call once per image
-    # and only after all setClass methods
-    def delBbox(img_id, bbox_index):
-        del data_dict[img_id]["ann"]["labels"][bbox_index]
-        del data_dict[img_id]["ann"]["bboxes"][bbox_index]
-
-    print("Fixing annotations...")
-
-    # delBbox() was used to delete bounding boxes of trailers. Now that I'm
-    # adding trailers back (since I realized I want to detect them), I commented
-    # out those calls (all delBbox() calls were because of trailers)
-    setClass(2, 15, "transporter")
-    setClass(3, 2, "transporter")
-    setClass(4, [5, 4], "transporter")
-    setClass(5, 2, "transporter")
-    setClass(8, 4, "transporter")
-    setClass(9, [13, 14, 29], "transporter")
-    setClass(11, 5, "transporter")
-    setClass(11, 0, "trailer")
-    # delBbox(11, 0)
-    setClass(12, 2, "truck")
-    setClass(12, 3, "truck")
-    setClass(14, 6, "transporter")
-    setClass(15, 0, "transporter")
-    setClass(16, 6, "transporter")
-    setClass(18, 59, "trailer")
-    setClass(25, 36, "transporter")
-    setClass(27, 11, "transporter")
-    setClass(28, 0, "transporter")
-    setClass(30, [0, 6], "transporter")
-    setClass(32, [16, 35, 39, 25, 32], "transporter")
-    setClass(35, [4, 5], "transporter")
-    setClass(36, 3, "transporter")
-    setClass(39, [19, 18], "transporter")
-    setClass(40, [25, 29], "transporter")
-    setClass(41, 2, "transporter")
-    setClass(42, 1, "transporter")
-    setClass(44, 8, "transporter")
-    setClass(46, 6, "transporter")
-    setClass(47, [6, 17], "transporter")
-    setClass(50, 3, "transporter")
-    # delBbox(53, 60)
-    setClass(53, 60, "trailer")
-    setClass(54, 0, "transporter")
-    setClass(55, 53, "transporter")
-    setClass(58, 4, "transporter")
-    setClass(59, 46, "transporter")
-    # delBbox(60, 1)
-    setClass(60, 1, "trailer")
-    setClass(62, 10, "transporter")
-    # delBbox(64, 71)
-    setClass(64, 71, "trailer")
-    setClass(66, 0, "transporter")
-    setClass(68, 1, "trailer")
-    setClass(69, 4, "transporter")
-    setClass(73, [36, 45, 10], "transporter")
-    setClass(74, 4, "transporter")
-    setClass(75, 35, "transporter")
-    # delBbox(75, 64)
-    setClass(75, 65, "trailer")
-    setClass(77, 1, "transporter")
-    setClass(73, 2, "transporter")
-    setClass(81, [4, 21, 24, 40], "transporter")
-    setClass(82, 7, "transporter")
-    setClass(83, 2, "transporter")
-    setClass(85, 1, "trailer")
-    setClass(87, 7, "transporter")
-    setClass(88, 16, "transporter")
-    setClass(89, 69, "trailer")
-    setClass(90, 2, "transporter")
-    setClass(93, [41, 28, 37, 42, 16], "transporter")
-    setClass(94, [1, 26], "transporter")
-    setClass(96, 1, "transporter")
-    setClass(98, [9, 12, 31], "transporter")
-    setClass(103, 15, "transporter")
-    setClass(106, 1, "transporter")
-    setClass(107, 42, "transporter")
-    setClass(108, 4, "transporter")
-    setClass(109, 5, "transporter")
-    setClass(115, 45, "transporter")
-    setClass(117, 3, "transporter")
-    setClass(118, 0, "transporter")
-    setClass(120, [6, 8], "transporter")
-    setClass(122, 1, "transporter")
-    setClass(123, 0, "transporter")
-    setClass(125, 11, "transporter")
-    setClass(127, 1, "trailer")
-    setClass(128, [3, 14], "transporter")
-    setClass(129, [33, 34, 24, 3], "transporter")
-    setClass(131, [1, 3], "transporter")
-    setClass(133, 6, "transporter")
-    setClass(136, [6, 1], "transporter")
-    setClass(139, [42, 1], "transporter")
-    setClass(140, [5, 6], "transporter")
-    
-    # Convert data_dict to a list and all lists (bboxes and labels) to numpy arrays
-    data_list = []
-    print("Converting...")
-    for key in tqdm(list(data_dict.keys())):
-        val = data_dict[key]
-
-        # Convert lists of bboxes and labels to arrays
-        # Should work if done the same way as labels, but to be sure..:
-        val["ann"]["bboxes"] = np.array(
-            [np.array(l, dtype=np.int16) for l in val["ann"]["bboxes"]], 
-            dtype=np.int16)
-        val["ann"]["labels"] = np.array(val["ann"]["labels"], dtype=np.int16)
-
-        data_list.append(val)
-
-    print(f"Images: {len(data_list)}")
-    annotations = sum([len(img["ann"]["labels"]) for img in data_list])
-    print(f"Annotations: {annotations}")
-    
-    # Write the list to a file
-    with open(gt_pickle_path, 'wb') as f:
-        pickle.dump(data_list, f, protocol=common.pickle_file_protocol)
-
-    print(f"Saved to {gt_pickle_path}")
+    common.save_processed("ndis", data)
 
 if __name__ == "__main__":
     process_ndis()

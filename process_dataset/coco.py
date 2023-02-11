@@ -50,7 +50,7 @@ def process_coco():
 
     # Initialize paths
     # dataset_path = common.datasets["mio-tcd"]["path"]
-    dataset_path = os.path.join(common.datasets_path, common.datasets["coco"]["path"])
+    dataset_path = os.path.join(common.datasets_dirpath, common.datasets["coco"]["path"])
     gt_pickle_path = os.path.join(dataset_path, common.gt_pickle_filename)
     annotations_paths = {
         "train": os.path.join(dataset_path, "annotations", "instances_train2017.json"),

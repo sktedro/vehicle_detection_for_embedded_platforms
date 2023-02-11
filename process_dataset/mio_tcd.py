@@ -1,8 +1,6 @@
 import os
 import csv
 import cv2
-import numpy as np
-import pickle
 from tqdm import tqdm
 
 # The script should be importable but also executable from the terminal...
@@ -29,7 +27,7 @@ mio_tcd_classes_map = {
 
 def process_mio_tcd():
     """Converts ground truth data of the MIO-TCD dataset's train subset from CSV
-    to mmdetection's middle format in a pickle file
+    to COCO format
 
     This can take several minutes
 
@@ -42,67 +40,50 @@ def process_mio_tcd():
     or, if the row has 7 values:
     `00000000, pickup_truck, 0.9, 213, 34, 255, 50` as 
     `a, label, score, x1, y1, x2, y2`
-
-    mmdetection format:
-    ```json
-    [
-        {
-            'filename': 'a.jpg',
-            'width': 1280,
-            'height': 720,
-            'ann': {
-                'bboxes': <np.ndarray> (n, 4) in (x1, y1, x2, y2) order (values are in pixels),
-                'labels': <np.ndarray> (n, ),
-                'bboxes_ignore': <np.ndarray> (k, 4), (optional field)
-                'labels_ignore': <np.ndarray> (k, 4) (optional field)
-            }
-        },
-        ...
-    ]
-    ```
     """
 
     # Initialize paths
     # dataset_path = common.datasets["mio-tcd"]["path"]
-    dataset_path = os.path.join(common.datasets_path, common.datasets["mio-tcd"]["path"])
-    gt_csv_path = os.path.join(dataset_path, "gt_train.csv")
-    gt_pickle_path = os.path.join(dataset_path, common.gt_pickle_filename)
-    imgs_path = os.path.join(dataset_path, "train")
+    dataset_abs_dirpath = os.path.join(common.datasets_dirpath, common.datasets["mio-tcd"]["path"])
+    gt_csv_abs_filepath = os.path.join(dataset_abs_dirpath, "gt_train.csv")
+    imgs_abs_dirpath = os.path.join(dataset_abs_dirpath, "train")
 
-    lines_total = len(["" for _ in open(gt_csv_path)]) # Because len() doesn't work
+    lines_total = len(["" for _ in open(gt_csv_abs_filepath)]) # Because len() doesn't work
 
-    # Let's first fetch the data to a dictionary with filenames as keys
-    data_dict = {}
-    print(f"Processing data from {gt_csv_path}")
-    with open(gt_csv_path) as csv_f:
+    data = {
+        "images": [],
+        "annotations": []
+    }
+    imgs_processed = []
+
+    anno_id_counter = 0
+
+    print(f"Processing {gt_csv_abs_filepath}")
+    with open(gt_csv_abs_filepath) as csv_f:
         reader = csv.reader(csv_f, delimiter=',')
 
         for row in tqdm(reader, total=lines_total):
             
-            # Image name
-            img_name = row[0] + ".jpg"
+            img_id_str = row[0]
+            img_filename = img_id_str + ".jpg"
+            cls = mio_tcd_classes_map[row[1]]
 
-            # Vehicle class (while mapping from MIO-TCD to ours representation)
-            cls = row[1]
-            cls = mio_tcd_classes_map[cls]
-
-            # Initialize the object in `data_dict` var if it doesn't exist yet
-            if img_name not in data_dict.keys():
+            # Add image info to data var if not already there
+            if img_filename not in imgs_processed:
+                imgs_processed.append(img_filename)
 
                 # Height and width of an image
-                height, width, _ = cv2.imread(os.path.join(imgs_path, img_name)).shape
+                height, width, _ = cv2.imread(os.path.join(imgs_abs_dirpath, img_filename)).shape
 
-                data_dict[img_name] = {
-                    "width": int(width),
-                    "height": int(height),
-                    "ann": {
-                        "bboxes": [],
-                        "labels": []
-                    }
-                }
+                data["images"].append({
+                    "id": int(img_id_str),
+                    "file_name": os.path.join("train", img_filename),
+                    "width": width,
+                    "height": height,
+                })
             
             # If class is -1, ignore this annotation
-            if cls != -1: 
+            if cls != -1:
                 # Bounding box
                 if len(row) == 6:
                     bbox = [int(val) for val in row[2:]]
@@ -112,34 +93,20 @@ def process_mio_tcd():
                 else:
                     raise Exception("Encountered a row with length != 6 and != 7")
 
-                data_dict[img_name]["ann"]["bboxes"].append(bbox)
-                data_dict[img_name]["ann"]["labels"].append(cls)
+                # Convert from x1,y1,x2,y2 -> x,y,w,h
+                bbox[2] = bbox[2] - bbox[0]
+                bbox[3] = bbox[3] - bbox[1]
+                
+                data["annotations"].append({
+                    "id": anno_id_counter,
+                    "image_id": int(img_id_str),
+                    "category_id": cls,
+                    "bbox": bbox
+                })
 
-    # Convert data_dict to a list and all lists (bboxes and labels) to numpy arrays
-    data_list = []
-    print("Converting...")
-    for key in list(data_dict.keys()):
-        val = data_dict[key]
-        val["filename"] = os.path.join("train", key)
+                anno_id_counter += 1
 
-        # Convert lists of bboxes and labels to arrays
-        # Should work if done the same way as labels, but to be sure..:
-        val["ann"]["bboxes"] = np.array(
-            [np.array(l) for l in val["ann"]["bboxes"]], 
-            dtype=np.int16)
-        val["ann"]["labels"] = np.array(val["ann"]["labels"], dtype=np.int16)
-
-        data_list.append(val)
-
-    print(f"Images: {len(data_list)}")
-    annotations = sum([len(img["ann"]["labels"]) for img in data_list])
-    print(f"Annotations: {annotations}")
-
-    # Write the list to a file
-    with open(gt_pickle_path, 'wb') as f:
-        pickle.dump(data_list, f, protocol=common.pickle_file_protocol)
-
-    print(f"Saved to {gt_pickle_path}")
+    common.save_processed("mio-tcd", data)
 
 if __name__ == "__main__":
     process_mio_tcd()

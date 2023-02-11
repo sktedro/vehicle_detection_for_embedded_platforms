@@ -1,38 +1,11 @@
 """
-Combine datasets to a single dataset in a pickle file
-
-Output format example:
-```py
-{
-    "train": [
-        {
-            # Note: no ID needed as the index can serve as an ID
-            dataset_name: "dataset_name",
-            filename: "dataset_name/images/0001.jpg",
-            width: 1280,
-            height: 720,
-            ann: {
-                bboxes: ndarray([x1, y1, x2, y2], ...),
-                labels: array(1, ...)
-            }
-            },
-           ...
-    ],
-    "val": [...],
-    "test": [...],
-    "datasets": [
-        {
-            "name": "dataset_name",
-            "rel_path": "dataset_name"
-            },
-        ..
-    ]
-```
+Combine datasets to a single dataset in COCO format
 """
 
 import os
-import pickle
+import json
 import random
+from tqdm import tqdm
 
 # The script should be importable but also executable from the terminal...
 if __name__ == '__main__':
@@ -48,9 +21,6 @@ else:
 
 # Provide data split values for train, val, and testing data as percentage / 100
 data_distribution = {
-    # "train": 0.6,
-    # "val": 0.2,
-    # "test": 0.2
     "train": 0.95,
     "val": 0.05,
     "test": 0
@@ -70,69 +40,99 @@ random.seed(42)
 ##### Combine the datasets #####
 ################################
 
-
 def combineDatasets():
-    dataset = {
-        "datasets": [],
-        "train": [],
-        "val": [],
-        "test": []
+
+    # Output - datasets split into train/val/test
+    data_split = {
+        "train": {"images": [], "annotations": [], "categories": []},
+        "val": {"images": [], "annotations": [], "categories": []},
+        "test": {"images": [], "annotations": [], "categories": []}
     }
 
-    for name in list(common.datasets.keys()):
-        print(f"Reading {name}")
-        pickle_filepath = os.path.join(common.datasets_path, common.datasets[name]["path"], "gt.pickle")
+    img_id_counter = 0
+    anno_id_counter = 0
+
+    # For each dataset, split it into train/val/test
+    print("Reading datasets")
+    for dataset_name in tqdm(list(common.datasets.keys())):
+
+        gt_filepath = os.path.join(common.datasets_dirpath, common.datasets[dataset_name]["path"], common.gt_filename)
         
+        img_id_map = {} # Mapping old image IDs to new ones
+
         # Open the dataset's pickle file and load and process data
-        with open(pickle_filepath, "rb") as f:
-            data = pickle.load(f)
+        with open(gt_filepath) as f:
+            data = json.loads(f.read())
 
             # Randomly reorder images if desired
             if random_data_distribution:
-                random.shuffle(data)
-            
-            # Set dataset_name and update filename (relative filepath)
-            # filename needs to be updated to be relative to the datasets folder
-            for img in data:
-                img["dataset_name"] = name
-                img["filename"] = os.path.join(common.datasets[name]["path"], img["filename"])
+                random.shuffle(data["images"])
 
-            # Ignore all images that have no annotation! Because mmdetection
-            # can't handle that. Maybe there's a way to fix that but right now
-            # I'm not debugging it...
-            for i in reversed(range(len(data))):
-                if len(data[i]["ann"]["labels"]) == 0:
-                    del data[i]
+            # Update images
+            for img in data["images"]:
+                old_img_id = img["id"]
+                new_img_id = img_id_counter
+                img_id_map[old_img_id] = new_img_id
+
+                img["id"] = new_img_id
+                img["file_name"] = os.path.join(common.datasets[dataset_name]["path"], img["file_name"])
+                img["dataset_name"] = dataset_name
+
+                img_id_counter += 1
+
+            # Update img IDs in annotations
+            for anno in data["annotations"]:
+                anno["image_id"] = img_id_map[anno["image_id"]]
+                anno["id"] = anno_id_counter
+
+                anno_id_counter += 1
 
             # Split data into train/val/test
-            data_len = len(data)
-            train_val_split_index = int(data_len * data_distribution["train"])
-            val_test_split_index = int(data_len * (data_distribution["train"] + data_distribution["val"]))
-            dataset["train"] += data[:train_val_split_index]
-            dataset["val"] +=   data[train_val_split_index:val_test_split_index]
-            dataset["test"] +=  data[val_test_split_index:]
+            train_val_split_index = int(len(data["images"]) * data_distribution["train"])
+            val_test_split_index = int(len(data["images"]) * (data_distribution["train"] + data_distribution["val"]))
 
-            dataset["datasets"].append({
-                "name": name,
-                "rel_dataset_path": common.datasets[name]["path"]
-            })
+            data_split["train"]["images"] += data["images"][:train_val_split_index]
+            data_split["val"]["images"]   += data["images"][train_val_split_index:val_test_split_index]
+            data_split["test"]["images"]  += data["images"][val_test_split_index:]
 
-    print(f"Read {len(dataset['train'])} training, {len(dataset['val'])} validation and {len(dataset['test'])} testing images")
+            # Add annotations and update their img IDs
+            for subset in ["train", "val", "test"]:
 
-    with open(common.dataset_pickle_filepath, 'wb') as f:
-        pickle.dump(dataset, f, protocol=common.pickle_file_protocol)
+                # Save image IDs per subset to img_ids_split
+                img_ids = set()
+                for img in data_split[subset]["images"]:
+                    img_ids.add(img["id"])
 
-    with open(common.train_pickle_filepath, 'wb') as f:
-        pickle.dump(dataset["train"], f, protocol=common.pickle_file_protocol)
+                # For each image, find all its annotations and add them to the
+                # same subset
+                for anno in data["annotations"]:
+                    if anno["image_id"] in img_ids:
+                        data_split[subset]["annotations"].append(anno)
+
+                data_split[subset]["categories"] = data["categories"]
+
+    # Combine train/val/test to a combined dataset
+    data_combined = {}
+    for key in ["images", "annotations", "categories"]:
+        data_combined[key] = data_split["train"][key] + data_split["val"][key] + data_split["test"][key]
+
+    for subset in ["train", "val", "test"]:
+        print(f"{subset}: \t{len(data_split[subset]['images'])} images \t{len(data_split[subset]['annotations'])} annotations")
+    print(f"Total: \t{len(data_combined['images'])} images \t{len(data_combined['annotations'])} annotations")
+
+    with open(common.dataset_filepath, "w") as f:
+        f.write(json.dumps(data_combined))
         
-    with open(common.val_pickle_filepath, 'wb') as f:
-        pickle.dump(dataset["val"], f, protocol=common.pickle_file_protocol)
+    with open(common.dataset_train_filepath, "w") as f:
+        f.write(json.dumps(data_split["train"]))
 
-    with open(common.test_pickle_filepath, 'wb') as f:
-        pickle.dump(dataset["test"], f, protocol=common.pickle_file_protocol)
+    with open(common.dataset_val_filepath, "w") as f:
+        f.write(json.dumps(data_split["val"]))
+
+    with open(common.dataset_test_filepath, "w") as f:
+        f.write(json.dumps(data_split["test"]))
 
     print("All saved and done")
-
 
 if __name__ == "__main__":
     combineDatasets()
