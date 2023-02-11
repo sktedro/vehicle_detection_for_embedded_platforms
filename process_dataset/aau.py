@@ -68,7 +68,7 @@ def process_aau():
         # Copy all images to a separate folder while applying detection masks (so
         # that the image only contains annotated vehicles) and update the paths
         old_img_rel_filepath = os.path.join(dataset_abs_dirpath, img["file_name"])
-        new_img_rel_filepath = os.path.join(combined_imgs_rel_dirpath, str(img["id"]).zfill(9) + ".jpg")
+        new_img_rel_filepath = os.path.join(common.datasets["aau"]["path"], combined_imgs_rel_dirpath, str(img["id"]).zfill(9) + ".jpg")
 
         footage_dirpath = os.path.dirname(old_img_rel_filepath) # .../Egensevej-1
         location_dirpath = os.path.dirname(footage_dirpath) # .../Evensevej
@@ -83,7 +83,7 @@ def process_aau():
         mask = cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY)
         new_frame = cv2.bitwise_and(frame, frame, mask=mask) # Apply mask
 
-        cv2.imwrite(os.path.join(dataset_abs_dirpath, new_img_rel_filepath), new_frame)
+        cv2.imwrite(os.path.join(common.datasets_dirpath, new_img_rel_filepath), new_frame)
 
         img["file_name"] = new_img_rel_filepath
 
@@ -105,13 +105,9 @@ def process_aau():
         if anno["bbox"][2] < 0 or anno["bbox"][3] < 0:
             data["annotations"].remove(anno)
 
-    print("Mapping classes and removing unwanted data")
+    print("Mapping classes")
     for anno in tqdm(data["annotations"]):
         anno["category_id"] = aau_classes_map[anno["category_id"]]
-        del anno["segmentation"]
-        del anno["iscrowd"]
-        del anno["area"]
-        del anno["original_grayscale_value"]
 
     # Convert data_dict to a list and all lists (bboxes and labels) to numpy arrays
     common.save_processed("aau", data)

@@ -103,7 +103,7 @@ def process_mtid():
                 img_id_map[old_img_id] = new_img_id
                 img_id_counter += 1
 
-                new_img_rel_filepath = os.path.join(combined_imgs_rel_dirpath, str(new_img_id).zfill(9) + ".jpg")
+                new_img_rel_filepath = os.path.join(common.datasets["mtid"]["path"], combined_imgs_rel_dirpath, str(new_img_id).zfill(9) + ".jpg")
 
                 data["images"].append({
                     "id": new_img_id,
@@ -115,7 +115,7 @@ def process_mtid():
                 # Copy image to combined/
                 old_filename = os.path.basename(image["file_name"])
                 old_img_abs_filepath = os.path.join(imgs_abs_dirpaths[subset], old_filename)
-                new_img_abs_filepath = os.path.join(dataset_abs_dirpath, new_img_rel_filepath)
+                new_img_abs_filepath = os.path.join(common.datasets_dirpath, new_img_rel_filepath)
                 shutil.copy(old_img_abs_filepath, new_img_abs_filepath)
 
             print(f"Reading annotations in {subset} subset")

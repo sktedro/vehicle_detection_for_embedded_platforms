@@ -77,7 +77,7 @@ def process_mio_tcd():
 
                 data["images"].append({
                     "id": int(img_id_str),
-                    "file_name": os.path.join("train", img_filename),
+                    "file_name": os.path.join(common.datasets["mio-tcd"]["path"], "train", img_filename),
                     "width": width,
                     "height": height,
                 })

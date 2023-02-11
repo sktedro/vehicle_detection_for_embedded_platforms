@@ -35,7 +35,7 @@ def visualize_dataset(dataset_name):
 
             img_id = img["id"]
 
-            old_abs_filepath = os.path.join(dataset_abs_dirpath, img["file_name"])
+            old_abs_filepath = os.path.join(common.datasets_dirpath, img["file_name"])
             filename = os.path.basename(old_abs_filepath)
             new_abs_filepath = os.path.join(dst_dirpath, filename)
 

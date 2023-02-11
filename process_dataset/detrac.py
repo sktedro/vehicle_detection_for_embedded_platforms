@@ -129,7 +129,7 @@ def process_detrac():
                 old_img_abs_filepath = os.path.join(abs_dirpaths["imgs"][subset], seq_name, old_img_filename)
 
                 new_img_filename = seq_name + "_" + str(img_id_counter).zfill(6) + ".jpg"
-                new_img_rel_filepath = os.path.join(imgs_combined_dirname, new_img_filename)
+                new_img_rel_filepath = os.path.join(common.datasets["detrac"]["path"], imgs_combined_dirname, new_img_filename)
 
                 # Mask the ignored regions and save to imgs_combined folder
                 frame = cv2.imread(old_img_abs_filepath)
@@ -139,7 +139,7 @@ def process_detrac():
                     end = (region[2], region[3])
                     frame = cv2.rectangle(frame, start, end, (0, 0, 0), -1)
                 # Save the image to imgs_combined folder
-                cv2.imwrite(os.path.join(dataset_abs_dirpath, new_img_rel_filepath), frame)
+                cv2.imwrite(os.path.join(common.datasets_dirpath, new_img_rel_filepath), frame)
 
                 # Append to data["images"]
                 if new_img_rel_filepath not in data.keys():

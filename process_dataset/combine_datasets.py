@@ -75,12 +75,11 @@ def combineDatasets():
                 img_id_map[old_img_id] = new_img_id
 
                 img["id"] = new_img_id
-                img["file_name"] = os.path.join(common.datasets[dataset_name]["path"], img["file_name"])
                 img["dataset_name"] = dataset_name
 
                 img_id_counter += 1
 
-            # Update img IDs in annotations
+            # Update annotations' IDs and img IDs
             for anno in data["annotations"]:
                 anno["image_id"] = img_id_map[anno["image_id"]]
                 anno["id"] = anno_id_counter
@@ -110,6 +109,12 @@ def combineDatasets():
                         data_split[subset]["annotations"].append(anno)
 
                 data_split[subset]["categories"] = data["categories"]
+
+    # Only keep "images", "annotations" and "categories" in the datasets
+    for subset in ["train", "val", "test"]:
+        for key in list(data_split[subset].keys()):
+            if key not in ["images", "annotations", "categories"]:
+                del data_split[subset][key]
 
     # Combine train/val/test to a combined dataset
     data_combined = {}

@@ -86,7 +86,7 @@ def process_visdrone_det():
 
         data["images"].append({
             "id": img_id_counter,
-            "file_name": os.path.join("images", img_filename),
+            "file_name": os.path.join(common.datasets["visdrone_det"]["path"], "images", img_filename),
             "width": width,
             "height": height,
         })

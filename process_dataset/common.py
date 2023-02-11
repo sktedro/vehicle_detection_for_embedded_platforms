@@ -1,12 +1,8 @@
 import os
-from json import dumps as json_dumps
 
 # Paths: (absolute path recommended)
 datasets_dirpath = "/home/tedro/Downloads/datasets/"
-# datasets_path = "/Users/z004ktej/Downloads/datasets/"
-
-# TODO remove
-split_datasets_path = os.path.join(datasets_dirpath, "datasets_gt/")
+# datasets_dirpath = "/Users/z004ktej/Downloads/datasets/"
 
 assert os.path.exists(datasets_dirpath)
 
@@ -40,7 +36,8 @@ classes_dict = {
 }
 
 datasets = {
-    # paths are relative to the dataset_path
+    # Paths are relative to the dataset_path
+    # TODO rename them to rel_dirpath or something
     "mio-tcd": {
         "path": "MIO-TCD/MIO-TCD-Localization/"
     },
@@ -166,6 +163,8 @@ datasets = {
 }
 
 def save_processed(dataset_name, data):
+    from tqdm import tqdm
+    from json import dumps as json_dumps
 
     # Save categories
     if "categories" not in data.keys():
@@ -175,6 +174,27 @@ def save_processed(dataset_name, data):
             "id": cls,
             "name": classes_dict[cls]
         })
+
+    # Add area for each annotation (because mmdetection requires it...)
+    # Although it should be the segmentation area, I don't have segmentations
+    # so this will have to do...
+    print("Calcluating areas")
+    for anno in tqdm(data["annotations"]):
+        anno["area"] = anno["bbox"][2] * anno["bbox"][3] # area = w * h
+
+    # Clear the data further
+    print("Cleaning up the data")
+    for img in tqdm(data["images"]):
+        for key in list(img.keys()):
+            if key not in ["id", "width", "height", "file_name", "license"]:
+                del img[key]
+    for anno in tqdm(data["annotations"]):
+        for key in list(anno.keys()):
+            if key not in ["id", "image_id", "category_id", "area", "bbox"]:
+                del anno[key]
+    for key in list(data.keys()):
+        if key not in ["images", "annotations", "categories", "info", "licenses"]:
+            del data[key]
 
     print(f"Images: {len(data['images'])}")
     print(f"Annotations: {len(data['annotations'])}")

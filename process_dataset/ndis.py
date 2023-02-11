@@ -119,8 +119,8 @@ def process_ndis():
         "val": os.path.join(dataset_abs_dirpath, "validation/val_coco_annotations.json")
     }
     imgs_rel_dirpaths = {
-        "train": "train/imgs",
-        "val": "validation/imgs"
+        "train": os.path.join(common.datasets["ndis"]["path"], "train/imgs"),
+        "val": os.path.join(common.datasets["ndis"]["path"], "validation/imgs")
     }
 
     data = {
@@ -130,6 +130,7 @@ def process_ndis():
 
     # Since we're combining the datasets, we need to assign new IDs
     img_id_counter = 0
+    anno_id_counter = 0
 
     for subset in gt_json_abs_filepaths:
         
@@ -152,7 +153,7 @@ def process_ndis():
                 new_img_id = img_id_counter
                 img["id"] = new_img_id
 
-                # Update the filepath to be relative to the dataset, not just the filename
+                # Update the filepath to be relative to the datasets dir, not just the filename
                 old_img_file_name = img["file_name"]
                 new_img_filename = os.path.join(imgs_rel_dirpaths[subset], img["file_name"])
                 img["file_name"] = new_img_filename
@@ -192,9 +193,13 @@ def process_ndis():
                         for bbox_id in bbox_ids:
                             annos[bbox_id]["category_id"] = common.classes.index(new_cls)
 
-                # Save the annotations to data var without segmentation
+                # Update annotations' IDs to be unique across subsets
                 for anno in annos:
-                    del anno["segmentation"]
+                    anno["id"] = anno_id_counter
+                    anno_id_counter += 1
+
+                # Save the annotations to data var
+                for anno in annos:
                     data["annotations"].append(anno)
 
                 img_id_counter += 1
