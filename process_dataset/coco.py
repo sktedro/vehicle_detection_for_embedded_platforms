@@ -14,12 +14,12 @@ else:
 
 # TODO OUTDATED (probably the whole file)
 coco_classes_map = { # TODO
-    "person":      common.classes.index("pedestrian"),
+    "person":      common.classes_ids["pedestrian"],
     "bicycle":     -2, # If an image has this class, ignore whole image
     "motorcycle":  -2, # If an image has this class, ignore whole image
-    "car":         common.classes.index("passenger_car"),
-    "bus":         common.classes.index("bus"),
-    "truck":       common.classes.index("truck"),
+    "car":         common.classes_ids["passenger_car"],
+    "bus":         common.classes_ids["bus"],
+    "truck":       common.classes_ids["truck"],
 }
 
 

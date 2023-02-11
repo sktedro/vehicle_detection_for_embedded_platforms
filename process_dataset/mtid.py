@@ -10,10 +10,10 @@ else:
     from . import common
 
 mtid_classes_map = {
-    2: common.classes.index("bicycle"),
-    3: common.classes.index("passenger_car"),
-    6: common.classes.index("bus"),
-    8: common.classes.index("truck"),
+    2: common.classes_ids["bicycle"],
+    3: common.classes_ids["passenger_car"],
+    6: common.classes_ids["bus"],
+    8: common.classes_ids["truck"]
 }
 
 def check_ignore(subset, img_id, img_rel_filepath=""):

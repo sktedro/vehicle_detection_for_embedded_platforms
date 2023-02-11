@@ -13,26 +13,26 @@ dataset_train_filepath = os.path.join(datasets_dirpath, "train.json")
 dataset_val_filepath = os.path.join(datasets_dirpath, "val.json")
 dataset_test_filepath = os.path.join(datasets_dirpath, "test.json")
 
-classes = [
-    "bicycle",
-    "motorcycle",
-    "passenger_car",
-    "transporter",
-    "bus",
-    "truck",
-    "trailer",
-    "unknown"
-]
+classes_ids = {
+    "bicycle":       1,
+    "motorcycle":    2,
+    "passenger_car": 3,
+    "transporter":   4,
+    "bus":           5,
+    "truck":         6,
+    "trailer":       7,
+    "unknown":       8
+}
 
-classes_dict = {
-    0: "bicycle",
-    1: "motorcycle",
-    2: "passenger_car",
-    3: "transporter",
-    4: "bus",
-    5: "truck",
-    6: "trailer",
-    7: "unknown"
+classes_names = {
+    1: "bicycle",
+    2: "motorcycle",
+    3: "passenger_car",
+    4: "transporter",
+    5: "bus",
+    6: "truck",
+    7: "trailer",
+    8: "unknown"
 }
 
 datasets = {
@@ -167,12 +167,12 @@ def save_processed(dataset_name, data):
     from json import dumps as json_dumps
 
     # Save categories
-    if "categories" not in data.keys():
-        data["categories"] = []
-    for cls in list(classes_dict.keys()):
+    data["categories"] = []
+    for cls_id in list(classes_names.keys()):
         data["categories"].append({
-            "id": cls,
-            "name": classes_dict[cls]
+            "supercategory": "vehicle",
+            "id": cls_id,
+            "name": classes_names[cls_id]
         })
 
     # Add area for each annotation (because mmdetection requires it...)
@@ -203,6 +203,6 @@ def save_processed(dataset_name, data):
     dataset_path = os.path.join(datasets_dirpath, datasets[dataset_name]["path"])
     gt_filepath = os.path.join(dataset_path, gt_filename)
     with open(gt_filepath, 'w') as f:
-        f.write(json_dumps(data))
+        f.write(json_dumps(data, indent=2))
 
     print(f"Saved to {gt_filepath}")

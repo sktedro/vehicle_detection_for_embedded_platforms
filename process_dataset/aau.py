@@ -13,12 +13,12 @@ else:
 # Classes persent in the dataset: 1, 2, 3, 4, 6, 8, or in text format:
 # person, bicycle, car, motorbike, bus, truck
 aau_classes_map = {
-    1: -1,                                    # person
-    2: common.classes.index("bicycle"),       # bicycle
-    4: common.classes.index("motorcycle"),    # motorbike
-    3: common.classes.index("passenger_car"), # car
-    6: common.classes.index("bus"),           # bus
-    8: common.classes.index("truck")          # truck
+    1: -1,                                  # person
+    2: common.classes_ids["bicycle"],       # bicycle
+    4: common.classes_ids["motorcycle"],    # motorbike
+    3: common.classes_ids["passenger_car"], # car
+    6: common.classes_ids["bus"],           # bus
+    8: common.classes_ids["truck"]          # truck
 }
 
 

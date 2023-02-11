@@ -47,11 +47,11 @@ def visualize_dataset(dataset_name):
                     bbox[2] += bbox[0]
                     bbox[3] += + bbox[1]
                     cls = anno["category_id"]
-                    if cls == common.classes.index("passenger_car"):
+                    if cls == common.classes_ids["passenger_car"]:
                         color = (0, 255, 0)
                     else:
                         color = (0, 0, 255)
-                    text = f"{common.classes_dict[cls]} (bbox {anno['id']})"
+                    text = f"{common.classes_names[cls]} (bbox {anno['id']})"
                     img = cv2.rectangle(img, bbox[:2], bbox[2:], color, 1)
                     img = cv2.putText(img, text, (bbox[0], bbox[3]), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
 

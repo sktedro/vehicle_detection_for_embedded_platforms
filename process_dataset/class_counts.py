@@ -7,19 +7,19 @@ else:
     from . import common
 
 def printClassCounts():
-    classes_counts = [0] * len(common.classes)
+    classes_counts = [0] * len(common.classes_ids)
     with open(common.dataset_filepath) as f:
         data = json.loads(f.read())
         images_count = len(data["images"])
         for anno in data["annotations"]:
-            classes_counts[anno["category_id"]] += 1
+            classes_counts[anno["category_id"] - 1] += 1
 
     print("Class instances in all images:")
 
     print("==================================================")
 
-    for i in range(len(classes_counts)):
-        print(f"{common.classes_dict[i]} ({i}):".ljust(40) + str(classes_counts[i]).rjust(10))
+    for i in range(len(classes_counts)): # Class id starts at 1
+        print(f"{common.classes_names[i + 1]} ({i + 1}):".ljust(40) + str(classes_counts[i]).rjust(10))
 
     print("==================================================")
 

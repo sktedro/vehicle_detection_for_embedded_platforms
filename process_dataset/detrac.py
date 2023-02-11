@@ -12,10 +12,10 @@ else:
 
 
 detrac_classes_map = {
-    "car":    common.classes.index("passenger_car"),
-    "bus":    common.classes.index("bus"),
-    "van":    common.classes.index("transporter"),
-    "others": common.classes.index("truck")
+    "car":    common.classes_ids["passenger_car"],
+    "bus":    common.classes_ids["bus"],
+    "van":    common.classes_ids["transporter"],
+    "others": common.classes_ids["truck"]
 }
 
 def boxToBbox(box_elem):

@@ -14,14 +14,14 @@ visdrone_det_classes_map = {
     "0":  -1, # "ignored region" - ignore
     "1":  -1, # "pedestrian" - ignore
     "2":  -1, # "people" - ignore
-    "3":  common.classes.index("bicycle"),
-    "4":  common.classes.index("passenger_car"),
-    "5":  common.classes.index("transporter"),
-    "6":  common.classes.index("truck"),
-    "7":  common.classes.index("unknown"), # Tricycle
-    "8":  common.classes.index("unknown"), # Awning-tricycle
-    "9":  common.classes.index("bus"),
-    "10": common.classes.index("motorcycle"), # "motor" is a motorcycle
+    "3":  common.classes_ids["bicycle"],
+    "4":  common.classes_ids["passenger_car"],
+    "5":  common.classes_ids["transporter"],
+    "6":  common.classes_ids["truck"],
+    "7":  common.classes_ids["unknown"], # Tricycle
+    "8":  common.classes_ids["unknown"], # Awning-tricycle
+    "9":  common.classes_ids["bus"],
+    "10": common.classes_ids["motorcycle"], # "motor" is a motorcycle
     "11": -1 # Ignore "others". I don't remember what the objects are, but probably non-vehicles TODO check
 }
 

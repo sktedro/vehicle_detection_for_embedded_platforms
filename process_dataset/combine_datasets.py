@@ -126,16 +126,16 @@ def combineDatasets():
     print(f"Total: \t{len(data_combined['images'])} images \t{len(data_combined['annotations'])} annotations")
 
     with open(common.dataset_filepath, "w") as f:
-        f.write(json.dumps(data_combined))
+        f.write(json.dumps(data_combined, indent=2))
         
     with open(common.dataset_train_filepath, "w") as f:
-        f.write(json.dumps(data_split["train"]))
+        f.write(json.dumps(data_split["train"], indent=2))
 
     with open(common.dataset_val_filepath, "w") as f:
-        f.write(json.dumps(data_split["val"]))
+        f.write(json.dumps(data_split["val"], indent=2))
 
     with open(common.dataset_test_filepath, "w") as f:
-        f.write(json.dumps(data_split["test"]))
+        f.write(json.dumps(data_split["test"], indent=2))
 
     print("All saved and done")
 

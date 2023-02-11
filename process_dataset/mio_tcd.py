@@ -12,16 +12,16 @@ else:
 
 mio_tcd_classes_map = {
     "pedestrian":            -1, # Ignore
-    "bicycle":               common.classes.index("bicycle"),
-    "motorcycle":            common.classes.index("motorcycle"),
-    "car":                   common.classes.index("passenger_car"),
-    "non-motorized_vehicle": common.classes.index("trailer"),
-    "pickup_truck":          common.classes.index("transporter"),
-    "work_van":              common.classes.index("transporter"),
-    "bus":                   common.classes.index("bus"),
-    "articulated_truck":     common.classes.index("truck"),
-    "single_unit_truck":     common.classes.index("truck"),
-    "motorized_vehicle":     common.classes.index("unknown") # Vehicles that cannot be classified (mostly bad video quality)
+    "bicycle":               common.classes_ids["bicycle"],
+    "motorcycle":            common.classes_ids["motorcycle"],
+    "car":                   common.classes_ids["passenger_car"],
+    "non-motorized_vehicle": common.classes_ids["trailer"],
+    "pickup_truck":          common.classes_ids["transporter"],
+    "work_van":              common.classes_ids["transporter"],
+    "bus":                   common.classes_ids["bus"],
+    "articulated_truck":     common.classes_ids["truck"],
+    "single_unit_truck":     common.classes_ids["truck"],
+    "motorized_vehicle":     common.classes_ids["unknown"] # Vehicles that cannot be classified (mostly bad video quality)
 }
 
 
