@@ -44,8 +44,8 @@ def visualize_dataset(dataset_name):
             for anno in data["annotations"]:
                 if anno["image_id"] == img_id:
                     bbox = anno["bbox"]
-                    bbox[2] += bbox[0]
-                    bbox[3] += + bbox[1]
+                    bbox[2] += bbox[0] # width -> x2
+                    bbox[3] += bbox[1] # height -> y2
                     cls = anno["category_id"]
                     if cls == common.classes_ids["car"]:
                         color = (0, 255, 0)
