@@ -16,7 +16,7 @@ dataset_test_filepath = os.path.join(datasets_dirpath, "test.json")
 classes_ids = {
     "bicycle":       1,
     "motorcycle":    2,
-    "car": 3, # Passenger car, but the class name cannot contain an underscore
+    "car":           3,
     "transporter":   4,
     "bus":           5,
     "truck":         6,
@@ -27,7 +27,7 @@ classes_ids = {
 classes_names = {
     1: "bicycle",
     2: "motorcycle",
-    3: "car", # Passenger car, but the class name cannot contain an underscore
+    3: "car",
     4: "transporter",
     5: "bus",
     6: "truck",
