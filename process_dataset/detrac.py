@@ -12,7 +12,7 @@ else:
 
 
 detrac_classes_map = {
-    "car":    common.classes_ids["passenger_car"],
+    "car":    common.classes_ids["car"],
     "bus":    common.classes_ids["bus"],
     "van":    common.classes_ids["transporter"],
     "others": common.classes_ids["truck"]

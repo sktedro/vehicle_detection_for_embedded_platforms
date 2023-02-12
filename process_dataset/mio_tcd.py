@@ -14,7 +14,7 @@ mio_tcd_classes_map = {
     "pedestrian":            -1, # Ignore
     "bicycle":               common.classes_ids["bicycle"],
     "motorcycle":            common.classes_ids["motorcycle"],
-    "car":                   common.classes_ids["passenger_car"],
+    "car":                   common.classes_ids["car"],
     "non-motorized_vehicle": common.classes_ids["trailer"],
     "pickup_truck":          common.classes_ids["transporter"],
     "work_van":              common.classes_ids["transporter"],

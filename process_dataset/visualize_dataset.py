@@ -47,7 +47,7 @@ def visualize_dataset(dataset_name):
                     bbox[2] += bbox[0]
                     bbox[3] += + bbox[1]
                     cls = anno["category_id"]
-                    if cls == common.classes_ids["passenger_car"]:
+                    if cls == common.classes_ids["car"]:
                         color = (0, 255, 0)
                     else:
                         color = (0, 0, 255)

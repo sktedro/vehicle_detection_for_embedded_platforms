@@ -14,7 +14,7 @@ else:
 # Also contains trailers, trucks and transporters. These are mapped manually by
 # setClass() calls in the code
 ndis_classes_map = {
-    3: common.classes_ids["passenger_car"], # car
+    3: common.classes_ids["car"], # passenger car
 }
 
 # Dictionary containing image filenames as keys, and separate fixes as values.

@@ -11,7 +11,7 @@ else:
 
 mtid_classes_map = {
     2: common.classes_ids["bicycle"],
-    3: common.classes_ids["passenger_car"],
+    3: common.classes_ids["car"],
     6: common.classes_ids["bus"],
     8: common.classes_ids["truck"]
 }

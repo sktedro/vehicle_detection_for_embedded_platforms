@@ -31,7 +31,15 @@ model_checkpoint_filepath = os.path.join(mmdetection_path, "checkpoints", model_
 if not os.path.exists(mmdetection_checkpoint_path):
     os.mkdir(mmdetection_checkpoint_path)
 
+# mmdet v2.0
+# last_checkpoint_filepath = os.path.join(working_dirpath, "latest.pth")
+# if not os.path.exists(last_checkpoint_filepath):
+#     last_checkpoint_filepath = None
 
-last_checkpoint_filepath = os.path.join(working_dirpath, "latest.pth")
-if not os.path.exists(last_checkpoint_filepath):
+last_checkpoint_link = os.path.join(working_dirpath, "last_checkpoint")
+if os.path.exists(last_checkpoint_link):
+    with open(last_checkpoint_link) as f:
+        last_checkpoint_filepath = f.read()
+else:
     last_checkpoint_filepath = None
+    

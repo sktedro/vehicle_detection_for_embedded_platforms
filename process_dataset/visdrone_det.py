@@ -15,7 +15,7 @@ visdrone_det_classes_map = {
     "1":  -1, # "pedestrian" - ignore
     "2":  -1, # "people" - ignore
     "3":  common.classes_ids["bicycle"],
-    "4":  common.classes_ids["passenger_car"],
+    "4":  common.classes_ids["car"],
     "5":  common.classes_ids["transporter"],
     "6":  common.classes_ids["truck"],
     "7":  common.classes_ids["unknown"], # Tricycle
