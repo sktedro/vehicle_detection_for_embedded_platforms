@@ -5,7 +5,7 @@ proj_path = os.getcwd().replace("\\", "/") # Convert backslashes to forward slas
 # Parent folder of mmlabs repositories
 mm_parent_dirpath = os.path.join(proj_path, "..")
 
-working_dirpath = os.path.join(proj_path, "working_dir")
+working_dirpath = os.path.join(proj_path, "working_dir_yolov8")
 
 # model_config_filename = "yolov8_m_syncbn_fast_8xb16-500e_coco_custom.py"
 model_config_filename = "yolov8_s_syncbn_fast_8xb16-500e_coco_custom.py"
