@@ -2,10 +2,10 @@ import os
 from copy import deepcopy
 
 import sys, os
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', "process_dataset"))
+sys.path.append(os.path.join(os.getcwd(), '..'))
+sys.path.append(os.path.join(os.getcwd(), '..', "process_dataset"))
 import paths
-import process_dataset.common as common
+import dataset.common as common
 
 
 default_scope = 'mmyolo'
@@ -17,6 +17,7 @@ if paths.last_checkpoint_filepath:
     resume = True
 else:
     load_from = paths.model_checkpoint_filepath
+    resume = False
 
 base_lr = 0.00125 # 0.00125 per gpu
 lr_factor = 0.01
