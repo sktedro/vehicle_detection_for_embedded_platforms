@@ -1,9 +1,10 @@
 **.pyc
 **.swp
-venv/
-vid/
-__pycache__/
-.ipynb_checkpoints/
-.vscode/
-working_dir*/
-work_dir*/
+venv
+vid
+__pycache__
+.ipynb_checkpoints
+.vscode
+working_dir*
+work_dir*
+checkpoints

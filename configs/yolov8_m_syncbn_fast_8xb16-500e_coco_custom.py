@@ -43,13 +43,13 @@ test_batch_size_per_gpu = 1
 test_num_workers = 2
 
 img_scale = (640, 360) # height, width
-num_classes = 8
 metainfo = dict(
     classes = tuple(common.classes_ids.keys())
 )
+num_classes = len(metainfo["classes"])
 
 work_dir = paths.working_dirpath
-data_root = common.datasets_dirpath
+data_root = paths.datasets_dirpath
 
 file_client_args = dict(backend='disk')
 
@@ -109,7 +109,7 @@ for dataset_name in list(common.datasets.keys()):
         times = train_datasets_repeats[dataset_name],
         dataset = dict(
             type = "YOLOv5CocoDataset",
-            ann_file = os.path.join(common.datasets_dirpath, common.datasets[dataset_name]["path"], common.gt_filename),
+            ann_file = os.path.join(paths.datasets_dirpath, common.datasets[dataset_name]["path"], common.gt_filename),
             data_prefix = dict(img=data_root),
             data_root = data_root,
             filter_cfg = dict(filter_empty_gt=False, min_size=32),

@@ -1,17 +1,14 @@
-import os
+import sys, os
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+import paths
 
-# Paths: (absolute path recommended)
-# datasets_dirpath = "/home/tedro/Downloads/datasets/"
-datasets_dirpath = "/Users/z004ktej/Downloads/datasets/"
-
-assert os.path.exists(datasets_dirpath)
 
 gt_filename = "gt_processed.json"
 
-dataset_filepath = os.path.join(datasets_dirpath, "dataset.json")
-dataset_train_filepath = os.path.join(datasets_dirpath, "train.json")
-dataset_val_filepath = os.path.join(datasets_dirpath, "val.json")
-dataset_test_filepath = os.path.join(datasets_dirpath, "test.json")
+dataset_filepath = os.path.join(paths.datasets_dirpath, "dataset.json")
+dataset_train_filepath = os.path.join(paths.datasets_dirpath, "train.json")
+dataset_val_filepath = os.path.join(paths.datasets_dirpath, "val.json")
+dataset_test_filepath = os.path.join(paths.datasets_dirpath, "test.json")
 
 classes_ids = {
     "bicycle":       1,
@@ -197,7 +194,7 @@ def save_processed(dataset_name, data):
     print(f"Annotations: {len(data['annotations'])}")
 
     # Write it to a file
-    dataset_path = os.path.join(datasets_dirpath, datasets[dataset_name]["path"])
+    dataset_path = os.path.join(paths.datasets_dirpath, datasets[dataset_name]["path"])
     gt_filepath = os.path.join(dataset_path, gt_filename)
     with open(gt_filepath, 'w') as f:
         f.write(json_dumps(data, indent=2))
