@@ -1,7 +1,12 @@
 import os
 from copy import deepcopy
+
+import sys, os
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', "process_dataset"))
 import paths
 import process_dataset.common as common
+
 
 default_scope = 'mmyolo'
 deepen_factor = 0.67
@@ -97,7 +102,7 @@ train_datasets_repeats = {
 train_dataset = dict(
     type = "ConcatDataset",
     datasets = []
-),
+)
 for dataset_name in list(common.datasets.keys()):
     ds = dict(
         type = "RepeatDataset",
@@ -116,7 +121,7 @@ for dataset_name in list(common.datasets.keys()):
     assert ds["dataset"]["pipeline"][4]["type"] == "YOLOv5RandomAffine"
     ds["dataset"]["pipeline"][4]["scaling_ratio_range"] = train_datasets_scaling_ratios[dataset_name]
 
-    train_dataset.datasets.append(ds)
+    train_dataset["datasets"].append(ds)
 
 train_dataloader = dict(
     batch_size = train_batch_size_per_gpu,
