@@ -19,12 +19,14 @@ else:
     load_from = paths.model_checkpoint_filepath
     resume = False
 
-base_lr = 0.00125 # 0.00125 per gpu
-lr_factor = 0.01
+num_gpus = 1
+
 max_epochs = 100 # 500 # TODO
 warmup_epochs = 1 # 3 # TODO
 save_epoch_intervals = 1
 max_keep_ckpts = 100
+
+pre_trained_model_batch_size_per_gpu = 16 # 16 for YOLOv8
 
 # Batch size (default 8)
 # train_batch_size_per_gpu = 11 # YOLOv8-m, P52. 12 -> Cuda out of memory
@@ -44,8 +46,14 @@ val_num_workers = 2
 test_batch_size_per_gpu = 1
 test_num_workers = 2
 
+# Learning rate  = 0.00125 per gpu, linear to batch size (https://stackoverflow.com/questions/53033556/how-should-the-learning-rate-change-as-the-batch-size-change)
+# per gpu, because mmengine anyways says when training: LR is set based on batch size of [batch_size*num_gpus] and the current batch size is [batch_size]. Scaling the original LR by [1/num_gpus].
+base_lr = 0.00125 * num_gpus * (train_batch_size_per_gpu / pre_trained_model_batch_size_per_gpu)
+lr_factor = 0.01
+
 #  img_scale = (640, 640) # height, width; default
 img_scale = (384, 640) # height, width; need to be multiples of 32
+
 metainfo = dict(
     classes = tuple(common.classes_ids.keys())
 )
@@ -53,10 +61,11 @@ num_classes = len(metainfo["classes"])
 
 work_dir = paths.working_dirpath
 data_root = paths.datasets_dirpath
-
 file_client_args = dict(backend='disk')
 
-# TODO + some other augs from yolov8?
+min_gt_bbox_wh = (8, 8) # Default YOLO is 0*0, but I imagine 8*8 being better
+pad_val = 114
+
 train_pipeline = [
     dict(type='LoadImageFromFile',
         file_client_args=dict(backend='disk')),
@@ -67,32 +76,40 @@ train_pipeline = [
     dict(type='mmdet.Pad',
         pad_to_square=False,
         size=(img_scale[1], img_scale[0]),
-        pad_val=dict(img=(114.0, 114.0, 114.0))),
+        pad_val=dict(img=(pad_val, pad_val, pad_val))),
     dict(type='YOLOv5RandomAffine',
         # min_bbox_size=8, # No need. Done in FilterAnnotations
-        scaling_ratio_range=(0, 0), # Needs to be adjusted per dataset later below
-        max_rotate_degree=10,
+        scaling_ratio_range=None, # Needs to be adjusted per dataset later below
+        max_rotate_degree=5,
         max_shear_degree=5),
+    dict(type='mmdet.CutOut',
+        n_holes=None, # Closed interval
+        cutout_shape=None, # Patch size in px
+        fill_in=(pad_val, pad_val, pad_val)),
+    dict(type='mmdet.Albu', # As in YOLOv8 default config
+        transforms=[
+            dict(type='Blur', p=0.01),
+            dict(type='MedianBlur', p=0.01),
+            dict(type='ToGray', p=0.01),
+            dict(type='CLAHE', p=0.01)],
+        bbox_params=dict(
+            type='BboxParams',
+            format='pascal_voc',
+            label_fields=['gt_bboxes_labels', 'gt_ignore_flags']),
+        keymap={
+            'img': 'image',
+            'gt_bboxes': 'bboxes'
+        }),
     dict(type='YOLOv5HSVRandomAug'),
     dict(type='mmdet.RandomFlip',
          prob=0.5),
     dict(type="mmdet.PhotoMetricDistortion"),
     dict(type='mmdet.FilterAnnotations',
-        # min_gt_bbox_wh=(8, 8), # Should be okay, I think 16x16 causes small objects (even 64x64) to be undetected
-        min_gt_bbox_wh=(1, 1), # But YOLOX originally just uses 1x1, so let's try
+        min_gt_bbox_wh=min_gt_bbox_wh,
         keep_empty=False),
     dict(type='mmdet.PackDetInputs',
         meta_keys=('img_id', 'img_path', 'ori_shape', 'img_shape', 'flip', 'flip_direction')),
 ]
-
-train_datasets_scaling_ratios = {
-    "mio-tcd"     : (0.7, 1.1),
-    "aau"         : (0.8, 1.1),
-    "ndis"        : (0.9, 3),
-    "mtid"        : (0.9, 2),
-    "visdrone_det": (1.5, 3),
-    "detrac"      : (0.8, 1.2)
-}
 
 train_datasets_repeats = {
     "mio-tcd"     : 1,
@@ -100,9 +117,38 @@ train_datasets_repeats = {
     "ndis"        : 25,
     "mtid"        : 6, # It's a video, so already a lot repeats, but it's a great dataset
     "visdrone_det": 4, # Good dataset, but not very important in this project
-    "detrac"      : 2
+    "detrac"      : 2,
 }
 
+train_datasets_scaling_ratios = {
+    "mio-tcd"     : (0.9, 1.1),
+    "aau"         : (0.9, 1.1),
+    "ndis"        : (0.9, 2.5),
+    "mtid"        : (0.9, 2),
+    "visdrone_det": (1.5, 3),
+    "detrac"      : (0.8, 1.2),
+}
+
+# Individual cutout: [Number of holes (closed interval), (patch size in pixels)]
+train_dataset_cutout_vals = {
+    "mio-tcd"     : [ 4, (32, 32)],
+    "aau"         : [ 8, (12, 12)],
+    "ndis"        : [12, (24, 24)],
+    "mtid"        : [12, (12, 12)],
+    "visdrone_det": [20, ( 8,  8)],
+    "detrac"      : [ 6, (24, 24)],
+}
+
+# ConcatDataset -> RepeatDataset -> YOLOv5CocoDataset
+# TODO Use class balanced dataset? (I was getting an exception when used)
+# "The dataset needs to instantiate self.get_cat_ids() to support ClassBalancedDataset."
+# So if I have ConcatDataset in ClassBalancedDataset, the ConcatDataset must have get_cat_ids()
+# dataset = dict(
+#     type = 'ClassBalancedDataset',
+#     # oversample_thr = 1e-3, # Default
+#     oversample_thr = 0.1, # Seems good
+#     dataset = ...Concatdataset...
+# ),
 train_dataset = dict(
     type = "ConcatDataset",
     datasets = []
@@ -125,11 +171,15 @@ for dataset_name in list(common.datasets.keys()):
     assert ds["dataset"]["pipeline"][4]["type"] == "YOLOv5RandomAffine"
     ds["dataset"]["pipeline"][4]["scaling_ratio_range"] = train_datasets_scaling_ratios[dataset_name]
 
+    # Set CutOut number of holes and cutout shape (size) individually
+    assert ds["dataset"]["pipeline"][5]["type"] == "mmdet.CutOut"
+    ds["dataset"]["pipeline"][5]["n_holes"] = train_dataset_cutout_vals[dataset_name][0]
+    ds["dataset"]["pipeline"][5]["cutout_shape"] = train_dataset_cutout_vals[dataset_name][1]
+
     train_dataset["datasets"].append(ds)
 
 train_dataloader = dict(
     batch_size = train_batch_size_per_gpu,
-
     num_workers = train_num_workers,
 
     persistent_workers = True,
@@ -137,29 +187,21 @@ train_dataloader = dict(
     sampler=dict(type="DefaultSampler", shuffle=True),
     collate_fn=dict(type='yolov5_collate'),
 
-    # TODO restore this and use class balanced dataset (was getting an exception when used)
-    # "The dataset needs to instantiate self.get_cat_ids() to support ClassBalancedDataset."
-    # So if I have ConcatDataset in ClassBalancedDataset, the ConcatDataset must have get_cat_ids()
-    # dataset = dict(
-    #     type = 'ClassBalancedDataset',
-    #     # oversample_thr = 1e-3, # Default
-    #     oversample_thr = 0.1, # Seems good
-    #     dataset = train_dataset
-    # ),
-
-    # This works (omitting class balanced dataset)
     dataset = train_dataset
 )
 
-test_pipeline = [
+test_val_pipeline = [
     dict(type='LoadImageFromFile', file_client_args=file_client_args),
     dict(type='YOLOv5KeepRatioResize', scale=img_scale),
     dict(
         type='LetterResize',
         scale=img_scale,
         allow_scale_up=False,
-        pad_val=dict(img=114)),
+        pad_val=dict(img=pad_val)),
     dict(type='LoadAnnotations', with_bbox=True, _scope_='mmdet'),
+    dict(type='mmdet.FilterAnnotations',
+        min_gt_bbox_wh=min_gt_bbox_wh,
+        keep_empty=False),
     dict(
         type='mmdet.PackDetInputs',
         meta_keys=('img_id', 'img_path', 'ori_shape', 'img_shape',
@@ -178,7 +220,7 @@ val_dataloader = dict(
         ann_file = os.path.basename(common.dataset_val_filepath),
         data_prefix = dict(img=""),
         test_mode = True,
-        pipeline = test_pipeline,
+        pipeline = test_val_pipeline,
     )
 )
 
@@ -194,7 +236,7 @@ test_dataloader = dict(
         ann_file = os.path.basename(common.dataset_test_filepath),
         data_prefix = dict(img=""),
         test_mode = True,
-        pipeline = test_pipeline
+        pipeline = test_val_pipeline
     )
 )
 
@@ -221,11 +263,18 @@ optim_wrapper = dict(
         batch_size_per_gpu=train_batch_size_per_gpu),
     constructor='YOLOv5OptimizerConstructor')
 
+# This doesn't seem to be necessary. The batch_size_per_gpu key in
+# optim_wrapper.optimizer should do the trick (at least with MMYOLO)
+#  auto_scale_lr = dict(
+    #  enable=True,
+    #  base_batch_size=train_batch_size_per_gpu,
+#  )
+
 default_hooks = dict(
     timer = dict(type='IterTimerHook'),
     logger = dict(
         type='LoggerHook',
-        interval=50),
+        interval=50), # TODO
     param_scheduler=dict(
         type = 'YOLOv5ParamSchedulerHook',
         scheduler_type = 'linear',
