@@ -21,7 +21,8 @@ else:
 
 base_lr = 0.00125 # 0.00125 per gpu
 lr_factor = 0.01
-max_epochs = 500
+max_epochs = 100 # 500 # TODO
+warmup_epochs = 1 # 3 # TODO
 save_epoch_intervals = 1
 max_keep_ckpts = 100
 
@@ -43,7 +44,8 @@ val_num_workers = 2
 test_batch_size_per_gpu = 1
 test_num_workers = 2
 
-img_scale = (640, 360) # height, width
+#  img_scale = (640, 640) # height, width; default
+img_scale = (384, 640) # height, width; need to be multiples of 32
 metainfo = dict(
     classes = tuple(common.classes_ids.keys())
 )
@@ -63,7 +65,8 @@ train_pipeline = [
         scale=img_scale,
         keep_ratio=True),
     dict(type='mmdet.Pad',
-        pad_to_square=True,
+        pad_to_square=False,
+        size=(img_scale[1], img_scale[0]),
         pad_val=dict(img=(114.0, 114.0, 114.0))),
     dict(type='YOLOv5RandomAffine',
         # min_bbox_size=8, # No need. Done in FilterAnnotations
@@ -228,7 +231,7 @@ default_hooks = dict(
         scheduler_type = 'linear',
         lr_factor = lr_factor,
         max_epochs = max_epochs,
-        warmup_epochs = 3),
+        warmup_epochs = warmup_epochs),
     checkpoint=dict(
         type = 'CheckpointHook',
         interval = save_epoch_intervals,
@@ -298,7 +301,7 @@ model = dict(
             reg_max=16,
             norm_cfg=dict(type='BN', momentum=0.03, eps=0.001),
             act_cfg=dict(type='SiLU', inplace=True),
-            featmap_strides=[8, 16, 32]),
+            featmap_strides=strides),
         prior_generator=dict(
             type='mmdet.MlvlPointGenerator', offset=0.5, strides=strides),
         bbox_coder=dict(type='DistancePointBBoxCoder'),
