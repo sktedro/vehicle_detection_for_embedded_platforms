@@ -4,14 +4,15 @@ import os
 proj_path = os.getcwd().replace("\\", "/") # Convert backslashes to forward slashes because windows sucks
 
 # Paths: (absolute path recommended)
-datasets_dirpath = "/home/tedro/Downloads/datasets/"
+# datasets_dirpath = "/home/tedro/Downloads/datasets/"
 # datasets_dirpath = "/Users/z004ktej/Downloads/datasets/"
+datasets_dirpath = "/home/xskalo01/datasets/"
 
 
 dist_train_script_filepath = os.path.join("..", "mmyolo", "tools", "dist_train.sh")
 
 
-working_dirpath = os.path.join(proj_path, "working_dir_yolov8")
+working_dirpath = os.path.join(proj_path, "working_dir_yolov8_dist")
 # working_dirpath = os.path.join(proj_path, "working_dir_yolov8_n")
 
 model_config_filename = "yolov8_m_syncbn_fast_8xb16-500e_coco_custom.py"
