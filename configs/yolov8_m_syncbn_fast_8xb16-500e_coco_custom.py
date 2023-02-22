@@ -19,10 +19,11 @@ else:
     load_from = paths.model_checkpoint_filepath
     resume = False
 
-num_gpus = 1
+num_gpus = 4
 
-max_epochs = 100 # 500 # TODO
-warmup_epochs = 1 # 3 # TODO
+max_epochs = 50 # 500 # TODO
+warmup_epochs = 3
+val_interval = 5 # 10 # TODO
 save_epoch_intervals = 1
 max_keep_ckpts = 100
 
@@ -31,7 +32,7 @@ pre_trained_model_batch_size_per_gpu = 16 # 16 for YOLOv8
 # Batch size (default 8)
 # train_batch_size_per_gpu = 11 # YOLOv8-m, P52. 12 -> Cuda out of memory
 # train_batch_size_per_gpu = 24 # YOLOv8-n, P52. 27 -> Cuda out of memory
-train_batch_size_per_gpu = 26 # YOLOv8-m, Sophie. 30 -> Cuda out of memory
+train_batch_size_per_gpu = 48 # YOLOv8-m, Sophie. 30 too much, 26 okay. For some reason, that changed and now 52 is too much, 48 okay
 
 # Workers per gpu (default 4)
 # Tested 8, 12 and 16 on P52 and higher numbers actually made the training (ETA) longer
@@ -41,10 +42,10 @@ train_batch_size_per_gpu = 26 # YOLOv8-m, Sophie. 30 -> Cuda out of memory
 train_num_workers = 16 # On Sophie (internal GPU), more workers is better
 
 val_batch_size_per_gpu = 1
-val_num_workers = 2
+val_num_workers = 16
 
 test_batch_size_per_gpu = 1
-test_num_workers = 2
+test_num_workers = 16
 
 # Learning rate  = 0.00125 per gpu, linear to batch size (https://stackoverflow.com/questions/53033556/how-should-the-learning-rate-change-as-the-batch-size-change)
 # per gpu, because mmengine anyways says when training: LR is set based on batch size of [batch_size*num_gpus] and the current batch size is [batch_size]. Scaling the original LR by [1/num_gpus].
@@ -71,11 +72,11 @@ train_pipeline = [
         file_client_args=dict(backend='disk')),
     dict(type='LoadAnnotations', with_bbox=True),
     dict(type='mmdet.Resize',
-        scale=img_scale,
+        scale=img_scale, # height * width
         keep_ratio=True),
     dict(type='mmdet.Pad',
         pad_to_square=False,
-        size=(img_scale[1], img_scale[0]),
+        size=(img_scale[1], img_scale[0]), # width * height...
         pad_val=dict(img=(pad_val, pad_val, pad_val))),
     dict(type='YOLOv5RandomAffine',
         # min_bbox_size=8, # No need. Done in FilterAnnotations
@@ -159,7 +160,7 @@ for dataset_name in list(common.datasets.keys()):
         times = train_datasets_repeats[dataset_name],
         dataset = dict(
             type = "YOLOv5CocoDataset",
-            ann_file = os.path.join(paths.datasets_dirpath, common.datasets[dataset_name]["path"], common.gt_filename),
+            ann_file = os.path.join(paths.datasets_dirpath, common.datasets[dataset_name]["path"], common.gt_filenames["train"]),
             data_prefix = dict(img=data_root),
             data_root = data_root,
             filter_cfg = dict(filter_empty_gt=False, min_size=32),
@@ -177,6 +178,7 @@ for dataset_name in list(common.datasets.keys()):
     ds["dataset"]["pipeline"][5]["cutout_shape"] = train_dataset_cutout_vals[dataset_name][1]
 
     train_dataset["datasets"].append(ds)
+    del ds # Delete it so it's not in the final config
 
 train_dataloader = dict(
     batch_size = train_batch_size_per_gpu,
@@ -189,13 +191,14 @@ train_dataloader = dict(
 
     dataset = train_dataset
 )
+del train_dataset # Delete it so it's not in the final config
 
 test_val_pipeline = [
     dict(type='LoadImageFromFile', file_client_args=file_client_args),
-    dict(type='YOLOv5KeepRatioResize', scale=img_scale),
+    dict(type='YOLOv5KeepRatioResize', scale=img_scale), # height * width
     dict(
         type='LetterResize',
-        scale=img_scale,
+        scale=img_scale, # height * width
         allow_scale_up=False,
         pad_val=dict(img=pad_val)),
     dict(type='LoadAnnotations', with_bbox=True, _scope_='mmdet'),
@@ -274,7 +277,7 @@ default_hooks = dict(
     timer = dict(type='IterTimerHook'),
     logger = dict(
         type='LoggerHook',
-        interval=50), # TODO
+        interval=50),
     param_scheduler=dict(
         type = 'YOLOv5ParamSchedulerHook',
         scheduler_type = 'linear',
@@ -292,7 +295,7 @@ default_hooks = dict(
 train_cfg = dict(
     type='EpochBasedTrainLoop',
     max_epochs=max_epochs,
-    val_interval=save_epoch_intervals,
+    val_interval=val_interval,
     dynamic_intervals=[(max_epochs - 10, 1)])
 val_cfg = dict(type='ValLoop')
 test_cfg = dict(type='TestLoop')
