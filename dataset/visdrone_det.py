@@ -55,7 +55,7 @@ def process_visdrone_det():
     """
 
     # Initialize paths
-    dataset_abs_dirpath = os.path.join(common.datasets_dirpath, common.datasets["visdrone_det"]["path"])
+    dataset_abs_dirpath = os.path.join(common.paths.datasets_dirpath, common.datasets["visdrone_det"]["path"])
     gts_abs_dirpath = os.path.join(dataset_abs_dirpath, "annotations")
     imgs_abs_dirpath = os.path.join(dataset_abs_dirpath, "images")
 

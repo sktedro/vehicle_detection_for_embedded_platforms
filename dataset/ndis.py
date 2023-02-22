@@ -113,7 +113,7 @@ def process_ndis():
     """
 
     # Initialize paths
-    dataset_abs_dirpath = os.path.join(common.datasets_dirpath, common.datasets["ndis"]["path"])
+    dataset_abs_dirpath = os.path.join(common.paths.datasets_dirpath, common.datasets["ndis"]["path"])
     gt_json_abs_filepaths = {
         "train": os.path.join(dataset_abs_dirpath, "train/train_coco_annotations.json"),
         "val": os.path.join(dataset_abs_dirpath, "validation/val_coco_annotations.json")

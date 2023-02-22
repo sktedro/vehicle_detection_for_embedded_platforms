@@ -1,7 +1,3 @@
-"""
-Combine datasets to a single dataset in COCO format
-"""
-
 import os
 import json
 import random
@@ -14,130 +10,91 @@ else:
     from . import common as common
 
 
-####################
-##### Settings #####
-####################
-
-
-# Provide data split values for train, val, and testing data as percentage / 100
-data_distribution = {
-    "train": 0.8,
-    "val": 0.1,
-    "test": 0.1
-}
-# Make sure it sums up to 1...
-assert sum(data_distribution[key] for key in data_distribution.keys()) == 1
-
-# Select if you want your splits to be continuous vs random
-# Eg. of continuous: train will contain 0.jpg, 1.jpg, 2.jpg, ...
-random_data_distribution = True
-
-# Set random seed
-random.seed(42)
-
-
-################################
-##### Combine the datasets #####
-################################
-
+"""
+Combine all subsets of all datasets to 4 json files: combined, train, val and
+test
+"""
 def combineDatasets():
 
-    # Output - datasets split into train/val/test
-    data_split = {
+    # Output
+    data_combined = {
+        "combined": {"images": [], "annotations": [], "categories": []},
         "train": {"images": [], "annotations": [], "categories": []},
         "val": {"images": [], "annotations": [], "categories": []},
-        "test": {"images": [], "annotations": [], "categories": []}
+        "test": {"images": [], "annotations": [], "categories": []},
     }
+
+    # All subsets of all datasets
+    data_split = {"train": {}, "val": {}, "test": {}}
+
+    print("Reading data")
+    for dataset_name in tqdm(list(common.datasets.keys())):
+        for subset in ["train", "val", "test"]:
+            gt_filepath = os.path.join(
+                    common.paths.datasets_dirpath, 
+                    common.datasets[dataset_name]["path"], 
+                    common.gt_filenames[subset])
+            with open(gt_filepath) as f:
+                data_split[subset][dataset_name] = json.loads(f.read())
 
     img_id_counter = 0
     anno_id_counter = 0
+    img_id_map = {} # Mapping old image IDs to new ones
 
-    # For each dataset, split it into train/val/test
-    print("Reading datasets")
-    for dataset_name in tqdm(list(common.datasets.keys())):
+    input_subsets = ["train", "val", "test"]
+    input_dataset_names = list(data_split[subset].keys())
 
-        gt_filepath = os.path.join(common.datasets_dirpath, common.datasets[dataset_name]["path"], common.gt_filename)
-        
-        img_id_map = {} # Mapping old image IDs to new ones
+    print("Combining...")
+    progress_bar = tqdm(total=len(input_subsets) * len(input_dataset_names))
+    for subset in input_subsets:
+        for dataset_name in input_dataset_names:
+            progress_bar.update(1)
+            progress_bar.refresh()
 
-        # Open the dataset's pickle file and load and process data
-        with open(gt_filepath) as f:
-            data = json.loads(f.read())
+            # Update image ID for each img and save it
+            for img in data_split[subset][dataset_name]["images"].copy():
 
-            # Randomly reorder images if desired
-            if random_data_distribution:
-                random.shuffle(data["images"])
+                # Update image ID and save it to the img ID map
+                img_id_map[img["id"]] = img_id_counter
+                img["id"] = img_id_counter
 
-            # Update images
-            for img in data["images"]:
-                old_img_id = img["id"]
-                new_img_id = img_id_counter
-                img_id_map[old_img_id] = new_img_id
+                # Save the image
+                data_combined[subset]["images"].append(img)
+                data_combined["combined"]["images"].append(img)
 
-                img["id"] = new_img_id
-                img["dataset_name"] = dataset_name
-
+                data_split[subset][dataset_name]["images"].remove(img) # Delete processed to optimize
                 img_id_counter += 1
 
-            # Update annotations' IDs and img IDs
-            for anno in data["annotations"]:
+            # Get all annotations in this image, update image ID and
+            # annotation ID and save it
+            for anno in data_split[subset][dataset_name]["annotations"].copy():
+
+                # Update image ID and anno ID
                 anno["image_id"] = img_id_map[anno["image_id"]]
                 anno["id"] = anno_id_counter
 
+                # Save the anno
+                data_combined[subset]["annotations"].append(anno)
+                data_combined["combined"]["annotations"].append(anno)
+
+                data_split[subset][dataset_name]["annotations"].remove(anno) # Delete processed to optimize
                 anno_id_counter += 1
 
-            # Split data into train/val/test
-            train_val_split_index = int(len(data["images"]) * data_distribution["train"])
-            val_test_split_index = int(len(data["images"]) * (data_distribution["train"] + data_distribution["val"]))
+            if data_combined[subset]["categories"] == []:
+                data_combined[subset]["categories"] = data_split[subset][dataset_name]["categories"]
 
-            data_split["train"]["images"] += data["images"][:train_val_split_index]
-            data_split["val"]["images"]   += data["images"][train_val_split_index:val_test_split_index]
-            data_split["test"]["images"]  += data["images"][val_test_split_index:]
+    del progress_bar
 
-            # Add annotations and update their img IDs
-            for subset in ["train", "val", "test"]:
+    # Print amount of images and annotations and save the file
+    print("Saving...")
+    for subset in ["train", "val", "test", "combined"]:
+        print(f"{subset.ljust(8)} {len(data_combined[subset]['images'])} images \t{len(data_combined[subset]['annotations'])} annotations")
 
-                # Save image IDs per subset to img_ids_split
-                img_ids = set()
-                for img in data_split[subset]["images"]:
-                    img_ids.add(img["id"])
-
-                # For each image, find all its annotations and add them to the
-                # same subset
-                for anno in data["annotations"]:
-                    if anno["image_id"] in img_ids:
-                        data_split[subset]["annotations"].append(anno)
-
-                data_split[subset]["categories"] = data["categories"]
-
-    # Only keep "images", "annotations" and "categories" in the datasets
-    for subset in ["train", "val", "test"]:
-        for key in list(data_split[subset].keys()):
-            if key not in ["images", "annotations", "categories"]:
-                del data_split[subset][key]
-
-    # Combine train/val/test to a combined dataset
-    data_combined = {}
-    for key in ["images", "annotations", "categories"]:
-        data_combined[key] = data_split["train"][key] + data_split["val"][key] + data_split["test"][key]
-
-    for subset in ["train", "val", "test"]:
-        print(f"{subset}: \t{len(data_split[subset]['images'])} images \t{len(data_split[subset]['annotations'])} annotations")
-    print(f"Total: \t{len(data_combined['images'])} images \t{len(data_combined['annotations'])} annotations")
-
-    with open(common.dataset_filepath, "w") as f:
-        f.write(json.dumps(data_combined, indent=2))
-        
-    with open(common.dataset_train_filepath, "w") as f:
-        f.write(json.dumps(data_split["train"], indent=2))
-
-    with open(common.dataset_val_filepath, "w") as f:
-        f.write(json.dumps(data_split["val"], indent=2))
-
-    with open(common.dataset_test_filepath, "w") as f:
-        f.write(json.dumps(data_split["test"], indent=2))
-
-    print("All saved and done")
+        filepath = os.path.join(
+                common.paths.datasets_dirpath, 
+                common.gt_combined_filenames[subset])
+        with open(filepath, "w") as f:
+            f.write(json.dumps(data_combined[subset], indent=2))
 
 if __name__ == "__main__":
     combineDatasets()

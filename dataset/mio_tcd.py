@@ -44,7 +44,7 @@ def process_mio_tcd():
 
     # Initialize paths
     # dataset_path = common.datasets["mio-tcd"]["path"]
-    dataset_abs_dirpath = os.path.join(common.datasets_dirpath, common.datasets["mio-tcd"]["path"])
+    dataset_abs_dirpath = os.path.join(common.paths.datasets_dirpath, common.datasets["mio-tcd"]["path"])
     gt_csv_abs_filepath = os.path.join(dataset_abs_dirpath, "gt_train.csv")
     imgs_abs_dirpath = os.path.join(dataset_abs_dirpath, "train")
 

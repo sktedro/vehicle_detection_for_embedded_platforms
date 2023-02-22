@@ -29,7 +29,7 @@ def process_aau():
     """
 
     # Initialize paths
-    dataset_abs_dirpath = os.path.join(common.datasets_dirpath, common.datasets["aau"]["path"])
+    dataset_abs_dirpath = os.path.join(common.paths.datasets_dirpath, common.datasets["aau"]["path"])
     gt_json_abs_filepath = os.path.join(dataset_abs_dirpath, "aauRainSnow-rgb.json")
 
     # For some reason, Egensevej-5 mask has the wrong filename - fix that:
@@ -83,7 +83,7 @@ def process_aau():
         mask = cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY)
         new_frame = cv2.bitwise_and(frame, frame, mask=mask) # Apply mask
 
-        cv2.imwrite(os.path.join(common.datasets_dirpath, new_img_rel_filepath), new_frame)
+        cv2.imwrite(os.path.join(common.paths.datasets_dirpath, new_img_rel_filepath), new_frame)
 
         img["file_name"] = new_img_rel_filepath
 

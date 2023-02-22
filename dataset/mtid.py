@@ -40,7 +40,7 @@ def process_mtid():
     """
 
     # Initialize paths
-    dataset_abs_dirpath = os.path.join(common.datasets_dirpath, common.datasets["mtid"]["path"])
+    dataset_abs_dirpath = os.path.join(common.paths.datasets_dirpath, common.datasets["mtid"]["path"])
     gt_json_abs_filepaths = {
         "drone": os.path.join(dataset_abs_dirpath, "drone-mscoco.json"),
         "infra": os.path.join(dataset_abs_dirpath, "infrastructure-mscoco.json")
@@ -115,7 +115,7 @@ def process_mtid():
                 # Copy image to combined/
                 old_filename = os.path.basename(image["file_name"])
                 old_img_abs_filepath = os.path.join(imgs_abs_dirpaths[subset], old_filename)
-                new_img_abs_filepath = os.path.join(common.datasets_dirpath, new_img_rel_filepath)
+                new_img_abs_filepath = os.path.join(common.paths.datasets_dirpath, new_img_rel_filepath)
                 shutil.copy(old_img_abs_filepath, new_img_abs_filepath)
 
             print(f"Reading annotations in {subset} subset")

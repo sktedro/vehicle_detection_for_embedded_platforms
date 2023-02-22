@@ -19,12 +19,12 @@ def visualize_dataset(dataset_name):
     if dataset_name not in common.datasets.keys():
         print(f"Dataset with name {dataset_name} not found in common.datasets")
         return
-    dst_dirpath = os.path.join(common.datasets_dirpath, "visualized_" + dataset_name)
+    dst_dirpath = os.path.join(common.paths.datasets_dirpath, "visualized_" + dataset_name)
     if os.path.exists(dst_dirpath):
         shutil.rmtree(dst_dirpath)
     os.mkdir(dst_dirpath)
         
-    dataset_abs_dirpath = os.path.join(common.datasets_dirpath, common.datasets[dataset_name]["path"])
+    dataset_abs_dirpath = os.path.join(common.paths.datasets_dirpath, common.datasets[dataset_name]["path"])
 
     dataset_gt_filepath = os.path.join(dataset_abs_dirpath, common.gt_filename)
 
@@ -35,7 +35,7 @@ def visualize_dataset(dataset_name):
 
             img_id = img["id"]
 
-            old_abs_filepath = os.path.join(common.datasets_dirpath, img["file_name"])
+            old_abs_filepath = os.path.join(common.paths.datasets_dirpath, img["file_name"])
             filename = os.path.basename(old_abs_filepath)
             new_abs_filepath = os.path.join(dst_dirpath, filename)
 

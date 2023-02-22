@@ -25,14 +25,14 @@ def fiftyone_create():
     print("Creating dataset")
     dataset = fo.Dataset.from_dir(
         name=dataset_name,
-        data_path=common.datasets_dirpath,
+        data_path=common.paths.datasets_dirpath,
         labels_path=common.dataset_filepath,
         dataset_type=fo.types.COCODetectionDataset
     )
 
     print("Updating tags")
     for sample in tqdm(dataset):
-        ds_name = sample["filepath"].split(common.datasets_dirpath)[1].split("/")[0]
+        ds_name = sample["filepath"].split(common.paths.datasets_dirpath)[1].split("/")[0]
         sample.tags.append(ds_name)
         sample.save()
 

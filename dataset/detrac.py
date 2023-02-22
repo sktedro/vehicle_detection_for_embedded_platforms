@@ -54,7 +54,7 @@ def process_detrac():
     """
 
     # Initialize paths
-    dataset_abs_dirpath = os.path.join(common.datasets_dirpath, common.datasets["detrac"]["path"])
+    dataset_abs_dirpath = os.path.join(common.paths.datasets_dirpath, common.datasets["detrac"]["path"])
     abs_dirpaths = {
         "gt": {
             "train": os.path.join(dataset_abs_dirpath, "DETRAC-Train-Annotations-XML/"),
@@ -139,7 +139,7 @@ def process_detrac():
                     end = (region[2], region[3])
                     frame = cv2.rectangle(frame, start, end, (0, 0, 0), -1)
                 # Save the image to imgs_combined folder
-                cv2.imwrite(os.path.join(common.datasets_dirpath, new_img_rel_filepath), frame)
+                cv2.imwrite(os.path.join(common.paths.datasets_dirpath, new_img_rel_filepath), frame)
 
                 # Append to data["images"]
                 if new_img_rel_filepath not in data.keys():
