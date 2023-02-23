@@ -22,8 +22,8 @@ else:
 num_gpus = 4
 
 max_epochs = 50 # 500 # TODO
-warmup_epochs = 3
-val_interval = 5 # 10 # TODO
+warmup_epochs = 1 # 3 # TODO
+val_interval = 1 # 10 # TODO
 save_epoch_intervals = 1
 max_keep_ckpts = 100
 
@@ -32,28 +32,31 @@ pre_trained_model_batch_size_per_gpu = 16 # 16 for YOLOv8
 # Batch size (default 8)
 # train_batch_size_per_gpu = 11 # YOLOv8-m, P52. 12 -> Cuda out of memory
 # train_batch_size_per_gpu = 24 # YOLOv8-n, P52. 27 -> Cuda out of memory
-train_batch_size_per_gpu = 48 # YOLOv8-m, Sophie. 30 too much, 26 okay. For some reason, that changed and now 52 is too much, 48 okay
+# train_batch_size_per_gpu = 48 # YOLOv8-m, Sophie with 640x384. 52 -> Cuda out of memory
+train_batch_size_per_gpu = 26 # YOLOv8-m, Sophie with 640x640. 30 -> Cuda out of memory
 
 # Workers per gpu (default 4)
 # Tested 8, 12 and 16 on P52 and higher numbers actually made the training (ETA) longer
 # With 12, ETA was about 10% longer than at default. Using 2, speed is slightly improved (~2%)
 # train_num_workers = 6 # Doesn't seem to be better than 1. It even seems to be a bit slower (slightly lower CPU and GPU usage) - at least for YOLOv8-m
 # train_num_workers = 1
-train_num_workers = 16 # On Sophie (internal GPU), more workers is better
+train_num_workers = 4 # On Sophie (internal GPU), more workers is better
 
 val_batch_size_per_gpu = 1
-val_num_workers = 16
+val_num_workers = 4
 
 test_batch_size_per_gpu = 1
-test_num_workers = 16
+test_num_workers = 4
 
 # Learning rate  = 0.00125 per gpu, linear to batch size (https://stackoverflow.com/questions/53033556/how-should-the-learning-rate-change-as-the-batch-size-change)
-# per gpu, because mmengine anyways says when training: LR is set based on batch size of [batch_size*num_gpus] and the current batch size is [batch_size]. Scaling the original LR by [1/num_gpus].
-base_lr = 0.00125 * num_gpus * (train_batch_size_per_gpu / pre_trained_model_batch_size_per_gpu)
+# Per gpu, because mmengine anyways says when training: LR is set based on batch size of [batch_size*num_gpus] and the current batch size is [batch_size]. Scaling the original LR by [1/num_gpus].
+# base_lr = 0.00125 * num_gpus * (train_batch_size_per_gpu / pre_trained_model_batch_size_per_gpu)
+base_lr = 0.00125 # Tried different LRs on 4 GPUs, 48 batch size, and 0.002 was worse and 0.0005 was worse.. So scaling doesn't seem to be needed... TODO try on single gpu with lower batch size?
 lr_factor = 0.01
 
 #  img_scale = (640, 640) # height, width; default
-img_scale = (384, 640) # height, width; need to be multiples of 32
+#  img_scale = (384, 640) # height, width; need to be multiples of 32
+img_scale = (640, 640) # TODO remove (and adjust batch size, too)
 
 metainfo = dict(
     classes = tuple(common.classes_ids.keys())
@@ -64,7 +67,7 @@ work_dir = paths.working_dirpath
 data_root = paths.datasets_dirpath
 file_client_args = dict(backend='disk')
 
-min_gt_bbox_wh = (8, 8) # Default YOLO is 0*0, but I imagine 8*8 being better
+min_gt_bbox_wh = (8, 8) # Default YOLO is 1*1, but I imagine 8*8 being better
 pad_val = 114
 
 train_pipeline = [
@@ -164,9 +167,7 @@ for dataset_name in list(common.datasets.keys()):
             data_prefix = dict(img=data_root),
             data_root = data_root,
             filter_cfg = dict(filter_empty_gt=False, min_size=32),
-            pipeline = deepcopy(train_pipeline),
-        )
-    )
+            pipeline = deepcopy(train_pipeline)))
 
     # Set RandomAffine scaling range individually for each dataset
     assert ds["dataset"]["pipeline"][4]["type"] == "YOLOv5RandomAffine"
@@ -179,6 +180,7 @@ for dataset_name in list(common.datasets.keys()):
 
     train_dataset["datasets"].append(ds)
     del ds # Delete it so it's not in the final config
+del dataset_name # Delete it so it's not in the final config
 
 train_dataloader = dict(
     batch_size = train_batch_size_per_gpu,
@@ -193,7 +195,7 @@ train_dataloader = dict(
 )
 del train_dataset # Delete it so it's not in the final config
 
-test_val_pipeline = [
+val_pipeline = [
     dict(type='LoadImageFromFile', file_client_args=file_client_args),
     dict(type='YOLOv5KeepRatioResize', scale=img_scale), # height * width
     dict(
@@ -202,14 +204,12 @@ test_val_pipeline = [
         allow_scale_up=False,
         pad_val=dict(img=pad_val)),
     dict(type='LoadAnnotations', with_bbox=True, _scope_='mmdet'),
-    dict(type='mmdet.FilterAnnotations',
-        min_gt_bbox_wh=min_gt_bbox_wh,
-        keep_empty=False),
     dict(
         type='mmdet.PackDetInputs',
         meta_keys=('img_id', 'img_path', 'ori_shape', 'img_shape',
                    'scale_factor', 'pad_param'))
 ]
+test_pipeline = val_pipeline
 
 val_dataloader = dict(
     batch_size = val_batch_size_per_gpu,
@@ -223,7 +223,7 @@ val_dataloader = dict(
         ann_file = os.path.basename(common.dataset_val_filepath),
         data_prefix = dict(img=""),
         test_mode = True,
-        pipeline = test_val_pipeline,
+        pipeline = val_pipeline,
     )
 )
 
@@ -239,7 +239,7 @@ test_dataloader = dict(
         ann_file = os.path.basename(common.dataset_test_filepath),
         data_prefix = dict(img=""),
         test_mode = True,
-        pipeline = test_val_pipeline
+        pipeline = test_pipeline
     )
 )
 
@@ -248,6 +248,7 @@ val_evaluator = dict(
     proposal_nums=(100, 1, 10),
     ann_file=common.dataset_val_filepath,
     metric='bbox')
+
 test_evaluator = dict(
     type='mmdet.CocoMetric',
     proposal_nums=(100, 1, 10),
