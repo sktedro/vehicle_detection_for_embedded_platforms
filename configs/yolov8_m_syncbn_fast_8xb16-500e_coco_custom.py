@@ -70,10 +70,6 @@ file_client_args = dict(backend='disk')
 min_gt_bbox_wh = (8, 8) # Default YOLO is 1*1, but I imagine 8*8 being better
 pad_val = 114
 
-batch_chapes_cfg = None # TODO remove test 88
-param_scheduler = None # TODO remove test 88
-seed = 1676669551 # TODO remove test 88
-
 train_pipeline = [
     dict(type='LoadImageFromFile',
         file_client_args=dict(backend='disk')),
@@ -82,34 +78,32 @@ train_pipeline = [
         scale=img_scale, # height * width
         keep_ratio=True),
     dict(type='mmdet.Pad',
-        # pad_to_square=False, # TODO uncomment test 88
-        pad_to_square=True, # TODO remove test 88
-        # size=(img_scale[1], img_scale[0]), # width * height... # TODO uncomment test 88
+        pad_to_square=False,
+        size=(img_scale[1], img_scale[0]), # width * height...
         pad_val=dict(img=(pad_val, pad_val, pad_val))),
     dict(type='YOLOv5RandomAffine',
         # min_bbox_size=8, # No need. Done in FilterAnnotations
         scaling_ratio_range=None, # Needs to be adjusted per dataset later below
-        # max_rotate_degree=5, # TODO uncomment test 88
-        max_rotate_degree=10, # TODO remove test 88
+        max_rotate_degree=5,
         max_shear_degree=5),
-    # dict(type='mmdet.CutOut', # TODO uncomment test 88
-    #     n_holes=None, # Closed interval
-    #     cutout_shape=None, # Patch size in px
-    #     fill_in=(pad_val, pad_val, pad_val)),
-    # dict(type='mmdet.Albu', # As in YOLOv8 default config
-    #     transforms=[
-    #         dict(type='Blur', p=0.01),
-    #         dict(type='MedianBlur', p=0.01),
-    #         dict(type='ToGray', p=0.01),
-    #         dict(type='CLAHE', p=0.01)],
-    #     bbox_params=dict(
-    #         type='BboxParams',
-    #         format='pascal_voc',
-    #         label_fields=['gt_bboxes_labels', 'gt_ignore_flags']),
-    #     keymap={
-    #         'img': 'image',
-    #         'gt_bboxes': 'bboxes'
-    #     }),
+    dict(type='mmdet.CutOut',
+        n_holes=None, # Closed interval
+        cutout_shape=None, # Patch size in px
+        fill_in=(pad_val, pad_val, pad_val)),
+    dict(type='mmdet.Albu', # As in YOLOv8 default config
+        transforms=[
+            dict(type='Blur', p=0.01),
+            dict(type='MedianBlur', p=0.01),
+            dict(type='ToGray', p=0.01),
+            dict(type='CLAHE', p=0.01)],
+        bbox_params=dict(
+            type='BboxParams',
+            format='pascal_voc',
+            label_fields=['gt_bboxes_labels', 'gt_ignore_flags']),
+        keymap={
+            'img': 'image',
+            'gt_bboxes': 'bboxes'
+        }),
     dict(type='YOLOv5HSVRandomAug'),
     dict(type='mmdet.RandomFlip',
         prob=0.5),
@@ -130,19 +124,10 @@ train_datasets_repeats = {
     "detrac"      : 2,
 }
 
-# train_datasets_scaling_ratios = {
-#     "mio-tcd"     : (0.9, 1.1),
-#     "aau"         : (0.9, 1.1),
-#     "ndis"        : (0.9, 2.5),
-#     "mtid"        : (0.9, 2),
-#     "visdrone_det": (1.5, 3),
-#     "detrac"      : (0.8, 1.2),
-# }
-# TODO remove following and use previous test 88
 train_datasets_scaling_ratios = {
-    "mio-tcd"     : (0.7, 1.1),
-    "aau"         : (0.8, 1.1),
-    "ndis"        : (0.9, 3),
+    "mio-tcd"     : (0.9, 1.1),
+    "aau"         : (0.9, 1.1),
+    "ndis"        : (0.9, 2.5),
     "mtid"        : (0.9, 2),
     "visdrone_det": (1.5, 3),
     "detrac"      : (0.8, 1.2),
@@ -189,10 +174,9 @@ for dataset_name in list(common.datasets.keys()):
     ds["dataset"]["pipeline"][4]["scaling_ratio_range"] = train_datasets_scaling_ratios[dataset_name]
 
     # Set CutOut number of holes and cutout shape (size) individually
-    # TODO uncomment following test 88
-    # assert ds["dataset"]["pipeline"][5]["type"] == "mmdet.CutOut"
-    # ds["dataset"]["pipeline"][5]["n_holes"] = train_dataset_cutout_vals[dataset_name][0]
-    # ds["dataset"]["pipeline"][5]["cutout_shape"] = train_dataset_cutout_vals[dataset_name][1]
+    assert ds["dataset"]["pipeline"][5]["type"] == "mmdet.CutOut"
+    ds["dataset"]["pipeline"][5]["n_holes"] = train_dataset_cutout_vals[dataset_name][0]
+    ds["dataset"]["pipeline"][5]["cutout_shape"] = train_dataset_cutout_vals[dataset_name][1]
 
     train_dataset["datasets"].append(ds)
     del ds # Delete it so it's not in the final config
@@ -203,7 +187,7 @@ train_dataloader = dict(
     num_workers = train_num_workers,
 
     persistent_workers = True,
-    # pin_memory=True, # TODO remove test 88
+    pin_memory=True,
     sampler=dict(type="DefaultSampler", shuffle=True),
     collate_fn=dict(type='yolov5_collate'),
 
