@@ -54,7 +54,7 @@ def process_mio_tcd():
         "images": [],
         "annotations": []
     }
-    imgs_processed = []
+    imgs_processed = {}
 
     anno_id_counter = 0
 
@@ -70,7 +70,7 @@ def process_mio_tcd():
 
             # Add image info to data var if not already there
             if img_filename not in imgs_processed:
-                imgs_processed.append(img_filename)
+                imgs_processed[img_filename] = None
 
                 # Height and width of an image
                 height, width, _ = cv2.imread(os.path.join(imgs_abs_dirpath, img_filename)).shape

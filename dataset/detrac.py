@@ -176,7 +176,7 @@ def process_detrac():
                         anno_id_counter += 1
                 
                 img_id_counter += 1
-    
+
     common.save_processed("detrac", data)
 
 
