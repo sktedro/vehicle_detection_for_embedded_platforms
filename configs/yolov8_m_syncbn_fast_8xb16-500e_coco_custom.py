@@ -21,9 +21,9 @@ else:
 
 num_gpus = 4
 
-max_epochs = 50 # 500 # TODO
-warmup_epochs = 1 # 3 # TODO
-val_interval = 1 # 10 # TODO
+max_epochs = 300 # 500 # TODO
+warmup_epochs = 3 # 3 # TODO
+val_interval = 5 # 10 # TODO
 save_epoch_intervals = 1
 max_keep_ckpts = 100
 
@@ -32,8 +32,8 @@ pre_trained_model_batch_size_per_gpu = 16 # 16 for YOLOv8
 # Batch size (default 8)
 # train_batch_size_per_gpu = 11 # YOLOv8-m, P52. 12 -> Cuda out of memory
 # train_batch_size_per_gpu = 24 # YOLOv8-n, P52. 27 -> Cuda out of memory
-# train_batch_size_per_gpu = 48 # YOLOv8-m, Sophie with 640x384. 52 -> Cuda out of memory
-train_batch_size_per_gpu = 26 # YOLOv8-m, Sophie with 640x640. 30 -> Cuda out of memory
+train_batch_size_per_gpu = 48 # YOLOv8-m, Sophie with 640x384. 52 -> Cuda out of memory
+# train_batch_size_per_gpu = 26 # YOLOv8-m, Sophie with 640x640. 30 -> Cuda out of memory
 
 # Workers per gpu (default 4)
 # Tested 8, 12 and 16 on P52 and higher numbers actually made the training (ETA) longer
@@ -54,9 +54,9 @@ test_num_workers = 4
 base_lr = 0.00125 # Tried different LRs on 4 GPUs, 48 batch size, and 0.002 was worse and 0.0005 was worse.. So scaling doesn't seem to be needed... TODO try on single gpu with lower batch size?
 lr_factor = 0.01
 
-#  img_scale = (640, 640) # height, width; default
-#  img_scale = (384, 640) # height, width; need to be multiples of 32
-img_scale = (640, 640) # TODO remove (and adjust batch size, too)
+# When changing the image scale, don't forget to change batch size
+# img_scale = (640, 640) # height, width; default
+img_scale = (384, 640) # height, width; need to be multiples of 32
 
 metainfo = dict(
     classes = tuple(common.classes_ids.keys())
@@ -72,14 +72,14 @@ pad_val = 114
 
 train_pipeline = [
     dict(type='LoadImageFromFile',
-        file_client_args=dict(backend='disk')),
+        file_client_args=file_client_args),
     dict(type='LoadAnnotations', with_bbox=True),
     dict(type='mmdet.Resize',
-        scale=img_scale, # height * width
+        scale=img_scale, # h*w I guess. Shouldn't matter at all here
         keep_ratio=True),
     dict(type='mmdet.Pad',
         pad_to_square=False,
-        size=(img_scale[1], img_scale[0]), # width * height...
+        size=img_scale[::-1], # width * height...
         pad_val=dict(img=(pad_val, pad_val, pad_val))),
     dict(type='YOLOv5RandomAffine',
         # min_bbox_size=8, # No need. Done in FilterAnnotations
@@ -196,16 +196,18 @@ train_dataloader = dict(
 del train_dataset # Delete it so it's not in the final config
 
 val_pipeline = [
-    dict(type='LoadImageFromFile', file_client_args=file_client_args),
-    dict(type='YOLOv5KeepRatioResize', scale=img_scale), # height * width
-    dict(
-        type='LetterResize',
-        scale=img_scale, # height * width
+    dict(type='LoadImageFromFile',
+        file_client_args=file_client_args),
+    dict(type='LoadAnnotations',
+        with_bbox=True,
+        _scope_='mmdet'),
+    dict(type='YOLOv5KeepRatioResize',
+        scale=img_scale[1]), # width (or probably the bigger dimension) instead of img_scale to work properly. Figured out entirely by testing...
+    dict(type='LetterResize',
+        scale=img_scale[::-1], # This takes w*h, believe me... (or maybe it doesn't matter)
         allow_scale_up=False,
         pad_val=dict(img=pad_val)),
-    dict(type='LoadAnnotations', with_bbox=True, _scope_='mmdet'),
-    dict(
-        type='mmdet.PackDetInputs',
+    dict(type='mmdet.PackDetInputs',
         meta_keys=('img_id', 'img_path', 'ori_shape', 'img_shape',
                    'scale_factor', 'pad_param'))
 ]
