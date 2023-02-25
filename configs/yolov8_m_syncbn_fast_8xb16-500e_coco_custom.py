@@ -1,12 +1,15 @@
 import os
+import sys
 from copy import deepcopy
 
-import sys, os
-sys.path.append(os.path.join(os.getcwd(), '..'))
-sys.path.append(os.path.join(os.getcwd(), '..', "process_dataset"))
+# No way to find out the path of this file since mmdetection does shady things
+# with it, so we need an absolute filepath of the repository
+repo_path = "/home/xskalo01/bp/proj/"
+sys.path.append(repo_path)
 import paths
 import dataset.common as common
 
+custom_imports = dict(imports=["custom_modules"], allow_failed_imports=False)
 
 default_scope = 'mmyolo'
 deepen_factor = 0.67
@@ -23,7 +26,7 @@ num_gpus = 4
 
 max_epochs = 300 # 500 # TODO
 warmup_epochs = 3 # 3 # TODO
-val_interval = 5 # 10 # TODO
+val_interval = 1 # 10 # TODO
 save_epoch_intervals = 1
 max_keep_ckpts = 100
 
@@ -86,10 +89,10 @@ train_pipeline = [
         scaling_ratio_range=None, # Needs to be adjusted per dataset later below
         max_rotate_degree=5,
         max_shear_degree=5),
-    dict(type='mmdet.CutOut',
-        n_holes=None, # Closed interval
-        cutout_shape=None, # Patch size in px
-        fill_in=(pad_val, pad_val, pad_val)),
+    dict(type="mmdet.CustomCutOut", # With random colored fill, no overflow
+        prob=0.05,
+        cutout_area=(0.05, 0.4),
+        random_pixels=True),
     dict(type='mmdet.Albu', # As in YOLOv8 default config
         transforms=[
             dict(type='Blur', p=0.01),
@@ -133,16 +136,6 @@ train_datasets_scaling_ratios = {
     "detrac"      : (0.8, 1.2),
 }
 
-# Individual cutout: [Number of holes (closed interval), (patch size in pixels)]
-train_dataset_cutout_vals = {
-    "mio-tcd"     : [ 4, (32, 32)],
-    "aau"         : [ 8, (12, 12)],
-    "ndis"        : [12, (24, 24)],
-    "mtid"        : [12, (12, 12)],
-    "visdrone_det": [20, ( 8,  8)],
-    "detrac"      : [ 6, (24, 24)],
-}
-
 # ConcatDataset -> RepeatDataset -> YOLOv5CocoDataset
 # TODO Use class balanced dataset? (I was getting an exception when used)
 # "The dataset needs to instantiate self.get_cat_ids() to support ClassBalancedDataset."
@@ -173,11 +166,6 @@ for dataset_name in list(common.datasets.keys()):
     assert ds["dataset"]["pipeline"][4]["type"] == "YOLOv5RandomAffine"
     ds["dataset"]["pipeline"][4]["scaling_ratio_range"] = train_datasets_scaling_ratios[dataset_name]
 
-    # Set CutOut number of holes and cutout shape (size) individually
-    assert ds["dataset"]["pipeline"][5]["type"] == "mmdet.CutOut"
-    ds["dataset"]["pipeline"][5]["n_holes"] = train_dataset_cutout_vals[dataset_name][0]
-    ds["dataset"]["pipeline"][5]["cutout_shape"] = train_dataset_cutout_vals[dataset_name][1]
-
     train_dataset["datasets"].append(ds)
     del ds # Delete it so it's not in the final config
 del dataset_name # Delete it so it's not in the final config
@@ -195,14 +183,14 @@ train_dataloader = dict(
 )
 del train_dataset # Delete it so it's not in the final config
 
+# LoadAnnotations before resizing! Contrary to the official YOLOv8 MM config
+# Also, YOLOv5KeepRatioResize does nothing. LetterResize is enough
 val_pipeline = [
     dict(type='LoadImageFromFile',
         file_client_args=file_client_args),
     dict(type='LoadAnnotations',
         with_bbox=True,
         _scope_='mmdet'),
-    dict(type='YOLOv5KeepRatioResize',
-        scale=img_scale[1]), # width (or probably the bigger dimension) instead of img_scale to work properly. Figured out entirely by testing...
     dict(type='LetterResize',
         scale=img_scale[::-1], # This takes w*h, believe me... (or maybe it doesn't matter)
         allow_scale_up=False,
@@ -312,7 +300,9 @@ visualizer = dict(
         dict(type='LocalVisBackend'),
         dict(type='TensorboardVisBackend')
     ],
-    name='visualizer')
+    name='visualizer',
+    line_width=2,
+    alpha=0.9)
 
 env_cfg = dict(
     cudnn_benchmark=True,
