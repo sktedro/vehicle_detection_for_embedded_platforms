@@ -11,8 +11,8 @@ assert os.path.exists(paths.last_checkpoint_filepath)
 
 
 cmd = ["/home/xskalo01/.localpython/bin/python3", "/home/xskalo01/bp/mmdeploy/tools/test.py"]
-cmd += [paths.deploy_config_filepath] # Deploy config filepath
-cmd += [paths.model_config_filepath] # Model config filepath
+cmd += [paths.deploy_config_filepath] # Deploy config
+cmd += [paths.model_config_filepath] # Model config
 cmd += ["--model", os.path.join(paths.working_dirpath, paths.deploy_onnx_filename)]
 cmd += ["--work-dir", paths.working_dirpath]
 cmd += ["--show-dir", os.path.join(paths.working_dirpath, "deployed_test/")]

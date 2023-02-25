@@ -1,21 +1,54 @@
 import subprocess
+import os
 from mmengine.config import Config
 
 import paths
 
 
-# Get default config
-cfg = Config.fromfile(paths.model_config_filepath)
+def main():
 
-# Run subprocess
-cmd = [paths.dist_train_script_filepath, paths.model_config_filepath, str(cfg.num_gpus)]
-cmd += ["--work-dir", paths.working_dirpath]
+    # Get default config
+    cfg = Config.fromfile(paths.model_config_filepath)
 
-opts = ["--cfg-options"]
-# TODO allow --options from argv of this script?
+    cmd = [os.path.join(paths.mmyolo_dirpath, "tools", "dist_train.sh")]
+    cmd += [paths.model_config_filepath]
+    cmd += [str(cfg.num_gpus)]
+    cmd += ["--work-dir", paths.working_dirpath]
 
-if len(opts) == 1:
-    opts = []
+    # TODO allow --options from argv of this script?
+    # opts = ["--cfg-options"]
+    # if len(opts) > 1:
+    #     cmd += opts
 
-print(cmd)
-ret = subprocess.call(cmd + opts)
+    print(cmd)
+    subprocess.call(cmd)
+
+    # This did not work, for some reason, though it should just be a nicer way to do
+    # the same thing
+    """
+    from torch.distributed import run
+
+    # Other params
+    args = ["--nnodes", "1"]
+    args += ["--node_rank", "1"]
+    args += ["--master_addr", "127.0.0.1"]
+    args += ["--master_port", "29500"]
+    args += ["--nproc_per_node", str(cfg.num_gpus)]
+
+    args += ["--no_python"]
+    # args += ["--standalone"]
+
+    # Config and train script
+    args += [paths.model_config_filepath]
+    args += [os.path.join(paths.mmyolo_dirpath, "tools", "train.py")]
+    args += ["--work-dir", paths.working_dirpath]
+    # args += ["--launcher", "pytorch"]
+    # opts = ["--cfg-options"] # TODO allow options from argv of this script?
+    # if len(opts) != 1:
+    #     args += opts
+
+    run.main(args)
+    """
+
+if __name__ == "__main__":
+    main()
