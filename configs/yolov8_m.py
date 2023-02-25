@@ -24,10 +24,10 @@ else:
 
 num_gpus = 4
 
-max_epochs = 300 # 500 # TODO
-warmup_epochs = 3 # 3 # TODO
-val_interval = 1 # 10 # TODO
-save_epoch_intervals = 1
+max_epochs = 300 # 300 # originally 500
+warmup_epochs = 3 # 3 # originally 3
+val_interval = 5 # 5 # default 10
+save_epoch_intervals = val_interval
 max_keep_ckpts = 100
 
 pre_trained_model_batch_size_per_gpu = 16 # 16 for YOLOv8
@@ -35,7 +35,7 @@ pre_trained_model_batch_size_per_gpu = 16 # 16 for YOLOv8
 # Batch size (default 8)
 # train_batch_size_per_gpu = 11 # YOLOv8-m, P52. 12 -> Cuda out of memory
 # train_batch_size_per_gpu = 24 # YOLOv8-n, P52. 27 -> Cuda out of memory
-train_batch_size_per_gpu = 48 # YOLOv8-m, Sophie with 640x384. 52 -> Cuda out of memory
+train_batch_size_per_gpu = 46 # YOLOv8-m, Sophie with 640x384. 48 -> Cuda out of memory after tens of epochs
 # train_batch_size_per_gpu = 26 # YOLOv8-m, Sophie with 640x640. 30 -> Cuda out of memory
 
 # Workers per gpu (default 4)
@@ -43,22 +43,21 @@ train_batch_size_per_gpu = 48 # YOLOv8-m, Sophie with 640x384. 52 -> Cuda out of
 # With 12, ETA was about 10% longer than at default. Using 2, speed is slightly improved (~2%)
 # train_num_workers = 6 # Doesn't seem to be better than 1. It even seems to be a bit slower (slightly lower CPU and GPU usage) - at least for YOLOv8-m
 # train_num_workers = 1
-train_num_workers = 4 # On Sophie (internal GPU), more workers is better
+train_num_workers = 8 # On Sophie (internal GPU), more workers is better
 
 val_batch_size_per_gpu = 1
-val_num_workers = 4
+val_num_workers = 16
 
 test_batch_size_per_gpu = 1
-test_num_workers = 4
+test_num_workers = 16
 
 # Learning rate  = 0.00125 per gpu, linear to batch size (https://stackoverflow.com/questions/53033556/how-should-the-learning-rate-change-as-the-batch-size-change)
 # Per gpu, because mmengine anyways says when training: LR is set based on batch size of [batch_size*num_gpus] and the current batch size is [batch_size]. Scaling the original LR by [1/num_gpus].
 # base_lr = 0.00125 * num_gpus * (train_batch_size_per_gpu / pre_trained_model_batch_size_per_gpu)
-base_lr = 0.00125 # Tried different LRs on 4 GPUs, 48 batch size, and 0.002 was worse and 0.0005 was worse.. So scaling doesn't seem to be needed... TODO try on single gpu with lower batch size?
+base_lr = 0.00125 # Tried different LRs on 4 GPUs, 48 batch size, and 0.002 was worse and 0.0005 was worse, so scaling doesn't seem to be needed...
+
 lr_factor = 0.01
 
-# When changing the image scale, don't forget to change batch size
-# img_scale = (640, 640) # height, width; default
 img_scale = (384, 640) # height, width; need to be multiples of 32
 
 metainfo = dict(
@@ -87,12 +86,18 @@ train_pipeline = [
     dict(type='YOLOv5RandomAffine',
         # min_bbox_size=8, # No need. Done in FilterAnnotations
         scaling_ratio_range=None, # Needs to be adjusted per dataset later below
+        max_translate_ratio=0.05,
         max_rotate_degree=5,
-        max_shear_degree=5),
+        max_shear_degree=3,
+        border_val=(pad_val, pad_val, pad_val)),
     dict(type="mmdet.CustomCutOut", # With random colored fill, no overflow
         prob=0.05,
-        cutout_area=(0.05, 0.4),
+        cutout_area=(0.05, 0.35),
         random_pixels=True),
+    dict(type='mmdet.CutOut',
+        n_holes=None, # Closed interval
+        cutout_shape=None, # Patch size in px
+        fill_in=(pad_val, pad_val, pad_val)),
     dict(type='mmdet.Albu', # As in YOLOv8 default config
         transforms=[
             dict(type='Blur', p=0.01),
@@ -118,6 +123,21 @@ train_pipeline = [
         meta_keys=('img_id', 'img_path', 'ori_shape', 'img_shape', 'flip', 'flip_direction')),
 ]
 
+# Stage 2: no cutout and different affine transforms
+train_pipeline_stage2 = deepcopy(train_pipeline)
+assert train_pipeline_stage2[4]["type"] == "YOLOv5RandomAffine", "Assertion 844"
+train_pipeline_stage2[4] = dict(
+        type='YOLOv5RandomAffine',
+        max_rotate_degree=0,
+        max_shear_degree=0,
+        scaling_ratio_range=(0.9, 1.2),
+        max_aspect_ratio=100,
+        border_val=(pad_val, pad_val, pad_val))
+assert train_pipeline_stage2[5]["type"] == "mmdet.CustomCutOut", "Assertion 122"
+del train_pipeline_stage2[5]
+assert train_pipeline_stage2[5]["type"] == "mmdet.CutOut", "Assertion 324"
+del train_pipeline_stage2[5]
+
 train_datasets_repeats = {
     "mio-tcd"     : 1,
     "aau"         : 3, # There are some misannotations so don't make it too frequent
@@ -128,24 +148,24 @@ train_datasets_repeats = {
 }
 
 train_datasets_scaling_ratios = {
-    "mio-tcd"     : (0.9, 1.1),
+    "mio-tcd"     : (1, 1.1),
     "aau"         : (0.9, 1.1),
-    "ndis"        : (0.9, 2.5),
+    "ndis"        : (0.9, 1.5),
     "mtid"        : (0.9, 2),
-    "visdrone_det": (1.5, 3),
-    "detrac"      : (0.8, 1.2),
+    "visdrone_det": (1.5, 2.5),
+    "detrac"      : (0.9, 1.1),
 }
 
-# ConcatDataset -> RepeatDataset -> YOLOv5CocoDataset
-# TODO Use class balanced dataset? (I was getting an exception when used)
-# "The dataset needs to instantiate self.get_cat_ids() to support ClassBalancedDataset."
-# So if I have ConcatDataset in ClassBalancedDataset, the ConcatDataset must have get_cat_ids()
-# dataset = dict(
-#     type = 'ClassBalancedDataset',
-#     # oversample_thr = 1e-3, # Default
-#     oversample_thr = 0.1, # Seems good
-#     dataset = ...Concatdataset...
-# ),
+# Individual cutout: [Number of holes (closed interval), (patch size in pixels)]
+train_dataset_cutout_vals = {
+    "mio-tcd"     : [ 4, (26, 26)],
+    "aau"         : [ 8, (10, 10)],
+    "ndis"        : [12, (20, 20)],
+    "mtid"        : [12, (10, 10)],
+    "visdrone_det": [20, ( 8,  8)],
+    "detrac"      : [ 6, (22, 22)],
+}
+
 train_dataset = dict(
     type = "ConcatDataset",
     datasets = []
@@ -163,8 +183,13 @@ for dataset_name in list(common.datasets.keys()):
             pipeline = deepcopy(train_pipeline)))
 
     # Set RandomAffine scaling range individually for each dataset
-    assert ds["dataset"]["pipeline"][4]["type"] == "YOLOv5RandomAffine"
+    assert ds["dataset"]["pipeline"][4]["type"] == "YOLOv5RandomAffine", "Assertion 94"
     ds["dataset"]["pipeline"][4]["scaling_ratio_range"] = train_datasets_scaling_ratios[dataset_name]
+
+    # Set CutOut number of holes and cutout shape (size) individually 
+    assert ds["dataset"]["pipeline"][6]["type"] == "mmdet.CutOut", "Assertion 81"
+    ds["dataset"]["pipeline"][6]["n_holes"] = train_dataset_cutout_vals[dataset_name][0]
+    ds["dataset"]["pipeline"][6]["cutout_shape"] = train_dataset_cutout_vals[dataset_name][1]
 
     train_dataset["datasets"].append(ds)
     del ds # Delete it so it's not in the final config
@@ -282,6 +307,20 @@ default_hooks = dict(
         max_keep_ckpts=max_keep_ckpts),
     sampler_seed = dict(type='DistSamplerSeedHook'),
     visualization = dict(type='mmdet.DetVisualizationHook'))
+
+custom_hooks = [
+    dict(
+        type='EMAHook',
+        ema_type='ExpMomentumEMA',
+        momentum=0.0001,
+        update_buffers=True,
+        strict_load=False,
+        priority=49),
+    dict(
+        type='mmdet.PipelineSwitchHook',
+        switch_epoch=max_epochs - min(10, round(max_epochs / 10)), # when training for less than 100 epochs, have less stage2 epochs
+        switch_pipeline=train_pipeline_stage2)
+]
 
 train_cfg = dict(
     type='EpochBasedTrainLoop',
