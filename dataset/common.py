@@ -5,9 +5,9 @@ import paths
 
 # Provide data split values for train, val and testing data as percentage / 100
 data_distribution = {
-    "train": 0.8,
-    "val": 0.1,
-    "test": 0.1
+    "train": 0.9,
+    "val": 0.05,
+    "test": 0.05
 }
 # Select if you want your splits to be continuous vs random
 # Eg. of continuous: train will contain 0.jpg, 1.jpg, 2.jpg, ...
