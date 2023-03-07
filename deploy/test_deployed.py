@@ -16,10 +16,8 @@ test = importlib.util.module_from_spec(spec)
 sys.modules["test.py"] = test
 spec.loader.exec_module(test)
 
-
 assert os.path.exists(paths.deploy_config_filepath)
 assert os.path.exists(paths.model_config_filepath)
-
 
 class dotdict(dict):
     """dot.notation access to dictionary attributes"""

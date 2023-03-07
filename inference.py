@@ -96,7 +96,14 @@ if __name__ == "__main__":
         for i in tqdm(range(args.number)):
 
             # Get the frame, convert to rgb and run inference
-            frame = video[i * args.step]
+            # frame = video[i * args.step] # This doesn't work well :/
+            frame = video.read()
+            for _ in range(args.step - 1): # This fixes it
+                video.read()
+
+            if frame is None:
+                break
+
             frame = mmcv.imconvert(frame, "bgr", "rgb")
             result = inference_detector(model, frame)
 
@@ -127,7 +134,7 @@ if __name__ == "__main__":
         mmcv.frames2video(
             out_img_dirpath,
             out_vid_filepath,
-            fps=video.fps // args.step,
+            fps=int(video.fps // args.step),
             fourcc="mp4v")
         print("Video saved to", out_vid_filepath)
 

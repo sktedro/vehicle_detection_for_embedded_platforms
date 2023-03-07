@@ -69,7 +69,7 @@ num_classes = len(metainfo["classes"])
 work_dir = paths.working_dirpath
 file_client_args = dict(backend='disk')
 
-min_gt_bbox_wh = (8, 8) # Default YOLO is 1*1, but I imagine 8*8 being better
+min_gt_bbox_wh = (8, 8) # Default YOLOv8 is 1*1, but I imagine 8*8 being better
 pad_val = 114
 
 train_pipeline = [
@@ -90,7 +90,7 @@ train_pipeline = [
         max_rotate_degree=5,
         max_shear_degree=3,
         border_val=(pad_val, pad_val, pad_val)),
-    dict(type="mmdet.CustomCutOut", # With random colored fill, no overflow
+    dict(type="mmdet.CustomCutOut",
         prob=0.05,
         cutout_area=(0.05, 0.35),
         random_pixels=True),
@@ -118,7 +118,7 @@ train_pipeline = [
     dict(type="mmdet.PhotoMetricDistortion"),
     dict(type='mmdet.FilterAnnotations',
         min_gt_bbox_wh=min_gt_bbox_wh,
-        keep_empty=False),
+        keep_empty=True), # Give it some negative images
     dict(type='mmdet.PackDetInputs',
         meta_keys=('img_id', 'img_path', 'ori_shape', 'img_shape', 'flip', 'flip_direction')),
 ]
@@ -225,6 +225,9 @@ val_pipeline = [
         scale=img_scale[::-1], # This takes w*h, believe me... (or maybe it doesn't matter)
         allow_scale_up=False,
         pad_val=dict(img=pad_val)),
+    # dict(type='mmdet.FilterAnnotations', # Can't be here - wouldn't be able to deploy
+    #     min_gt_bbox_wh=min_gt_bbox_wh,
+    #     keep_empty=False),
     dict(type='mmdet.PackDetInputs',
         meta_keys=('img_id', 'img_path', 'ori_shape', 'img_shape',
                    'scale_factor', 'pad_param'))

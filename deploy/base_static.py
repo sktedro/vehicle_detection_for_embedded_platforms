@@ -7,6 +7,7 @@ onnx_config = dict(
     input_names=['input'],
     output_names=['dets', 'labels'],
     input_shape=None,
+    # input_shape=(640, 384),
     optimize=True)
 codebase_config = dict(
     type='mmyolo',

@@ -14,6 +14,7 @@ datasets_dirpath = "/home/tedro/Downloads/datasets/"
 
 mmyolo_dirpath = os.path.join(proj_path, "..", "mmyolo")
 mmdeploy_dirpath = os.path.join(proj_path, "..", "mmdeploy")
+mmrazor_dirpath = os.path.join(proj_path, "..", "mmrazor")
 
 working_dirpath = os.path.join(proj_path, "working_dir_yolov8_dist_384_conf5")
 
@@ -31,6 +32,10 @@ model_checkpoint_filename = "yolov8_m_syncbn_fast_8xb16-500e_coco_20230115_19220
 # model_checkpoint_filename = "yolov8_n_syncbn_fast_8xb16-500e_coco_20230114_131804-88c11cdb.pth"
 model_checkpoint_filepath = os.path.join(proj_path, "checkpoints", model_checkpoint_filename)
 
+
+##### DISTILL #####
+
+distill_config_filepath = os.path.join(proj_path, "distill", "conf.py")
 
 ##### DEPLOY #####
 
