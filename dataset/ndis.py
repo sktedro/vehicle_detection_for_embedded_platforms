@@ -1,3 +1,13 @@
+"""
+Processes ground truth data of the NDISPark dataset (in COCO format):
+- Fixes image IDs - they are only unique in their subsets, so they are
+updated to be unique per dataset
+- Fix annotations (since the dataset only uses one class) per class_fix var
+- Converts bboxes to integers
+- Updates filepaths to be relative to the dataset dirpath, not subset
+dirpath
+- And of course, maps the dataset's class to our class...
+"""
 import os
 import json
 from tqdm import tqdm
@@ -11,116 +21,103 @@ else:
 # Dataset only contains one class: car (3)
 # It also contains unannotated people, which we don't care about since we don't
 # detect them.
-# Also contains trailers, trucks and transporters. These are mapped manually by
-# setClass() calls in the code
+# Also contains trailers, trucks and transporters. These are mapped manually 
+# using class_fix var below
 ndis_classes_map = {
     3: common.classes_ids["car"], # passenger car
 }
 
 # Dictionary containing image filenames as keys, and separate fixes as values.
-# Fixes are in an array and one fix can be [bbox_number, new_class] or
-# [[img_number1, img_number2], new_class]
-# When processing, classes of bboxes for the filenames are fixed using this.
-# Mind that img_numbers are not image IDs, although they should be! TODO update to img IDs
+# Fixes are in an array and one fix can be [annotation_id, new_class] or
+# [[annotation_id_1, annotation_id_2], new_class]
+# When processing, classes of objects are fixed using this.
 class_fix = {
-    '60_1537560142.jpg': [[0, "transporter"]],
-    '60_1537641085.jpg': [[[36, 45, 10], "transporter"]],
-    '60_1537642922.jpg': [[[4, 21, 24, 40], "transporter"]],
-    '60_1537644714.jpg': [[[9, 12, 31], "transporter"]],
-    '60_1537646501.jpg': [[[13, 14, 29], "transporter"]],
-    '60_1537648298.jpg': [[3, "transporter"]],
-    '60_1537700458.jpg': [[53, "transporter"]],
-    '60_1537702242.jpg': [[45, "transporter"]],
-    '60_1537704079.jpg': [[46, "transporter"]],
-    '60_1537711240.jpg': [[59, "trailer"]],
-    '60_1537713062.jpg': [[71, "trailer"]],
-    '60_1537714829.jpg': [[69, "trailer"]],
-    '60_1537716629.jpg': [[65, "trailer"]],
-    '60_1537718423.jpg': [[60, "trailer"]],
-    '62_1537439604.jpg': [[2, "transporter"]],
-    '62_1537610613.jpg': [[1, "transporter"]],
-    '62_1537639330.jpg': [[[25, 29], "transporter"]],
-    '62_1537641142.jpg': [[[33, 34, 24, 3], "transporter"]],
-    '62_1537642957.jpg': [[[41, 28, 37, 42, 16], "transporter"]],
-    '62_1537644729.jpg': [[[16, 35, 39, 25, 32], "transporter"]],
-    '62_1537689729.jpg': [[0, "transporter"]],
-    '62_1537705928.jpg': [[36, "transporter"]],
-    '62_1537709554.jpg': [[1, "trailer"]],
-    '62_1537713107.jpg': [[1, "trailer"]],
-    '62_1537716658.jpg': [[1, "trailer"]],
-    '62_1537718436.jpg': [[1, "trailer"]],
-    '62_1537938236.jpg': [[0, "transporter"]],
-    '62_1537956182.jpg': [[3, "transporter"]],
-    '62_1537959778.jpg': [[[1, 26], "transporter"]],
-    '62_1537963395.jpg': [[1, "transporter"]],
-    '64_1531764036.jpg': [[0, "transporter"]],
-    '64_1537009217.jpg': [[0, "transporter"]],
-    '64_1537016417.jpg': [[1, "transporter"]],
-    '64_1537032622.jpg': [[7, "transporter"]],
-    '64_1537097416.jpg': [[15, "transporter"]],
-    '64_1537099216.jpg': [[16, "transporter"]],
-    '69_1531596734.jpg': [[11, "transporter"]],
-    '69_1537347613.jpg': [[11, "transporter"]],
-    '69_1537349415.jpg': [[15, "transporter"]],
-    '69_1537351214.jpg': [[[4, 5], "transporter"]],
-    '69_1537353014.jpg': [[[19, 18], "transporter"]],
-    '69_1537354811.jpg': [[[5, 4], "transporter"]],
-    '69_1537358412.jpg': [[[5, 6], "transporter"]],
-    '69_1537362013.jpg': [[2, "transporter"]],
-    '73_1537095614.jpg': [[8, "transporter"]],
-    '73_1537108212.jpg': [[[3, 14], "transporter"]],
-    '73_1537207256.jpg': [[1, "transporter"]],
-    '73_1537216265.jpg': [[6, "transporter"]],
-    '73_1537239784.jpg': [[4, "transporter"]],
-    '73_1537252228.jpg': [[1, "transporter"]],
-    '73_1537263016.jpg': [[[6, 8], "transporter"]],
-    '73_1537286417.jpg': [[4, "transporter"]],
-    '73_1537293677.jpg': [[6, "transporter"]],
-    '73_1537327869.jpg': [[5, "transporter"]],
-    '73_1537336816.jpg': [[2, "transporter"]],
-    '73_1537347619.jpg': [[[6, 17], "transporter"]],
-    '73_1537353020.jpg': [[42, "transporter"]],
-    '73_1537354816.jpg': [[[42, 1], "transporter"]],
-    '73_1537414287.jpg': [[6, "transporter"]],
-    '73_1537432229.jpg': [[10, "transporter"]],
-    '78_1531611010.jpg': [[4, "transporter"]],
-    '78_1531722605.jpg': [[5, "transporter"], [0, "trailer"]],
-    '78_1531809005.jpg': [[[2, 3], "truck"]],
-    '78_1531814405.jpg': [[3, "transporter"]],
-    '78_1531816205.jpg': [[7, "transporter"]],
-    '83_1531481408.jpg': [[[0, 6], "transporter"]],
-    '83_1531486807.jpg': [[4, "transporter"]],
-    '83_1531497607.jpg': [[0, "transporter"]],
-    '83_1531510212.jpg': [[6, "transporter"]],
-    '83_1531740623.jpg': [[[6, 1], "transporter"]],
-    '83_1531751412.jpg': [[4, "transporter"]],
-    '83_1531755011.jpg': [[2, "transporter"]],
-    '83_1531764013.jpg': [[[1, 3], "transporter"]],
-    '83_1531821617.jpg': [[2, "transporter"]],
-
-}
-
+    '60_1537560142.jpg': [[372, 'transporter']],
+    '60_1537641085.jpg': [[[1793, 1802, 1767], 'transporter']],
+    '60_1537642922.jpg': [[[1907, 1924, 1927, 1943], 'transporter']],
+    '60_1537644714.jpg': [[[2361, 2364, 2383], 'transporter']],
+    '60_1537646501.jpg': [[[277, 278, 293], 'transporter']],
+    '60_1537648298.jpg': [[182, 'transporter']],
+    '60_1537700458.jpg': [[1353, 'transporter']],
+    '60_1537702242.jpg': [[91, 'transporter']],
+    '60_1537704079.jpg': [[1456, 'transporter']],
+    '60_1537711240.jpg': [[497, 'trailer']],
+    '60_1537713062.jpg': [[1631, 'trailer']],
+    '60_1537714829.jpg': [[2234, 'trailer']],
+    '60_1537716629.jpg': [[1874, 'trailer']],
+    '60_1537718423.jpg': [[1293, 'trailer']],
+    '62_1537439604.jpg': [[2003, 'transporter']],
+    '62_1537610613.jpg': [[1887, 'transporter']],
+    '62_1537639330.jpg': [[[936, 940], 'transporter']],
+    '62_1537641142.jpg': [[[498, 499, 489, 468], 'transporter']],
+    '62_1537642957.jpg': [[[2292, 2279, 2288, 2293, 2267], 'transporter']],
+    '62_1537644729.jpg': [[[745, 764, 768, 754, 761], 'transporter']],
+    '62_1537689729.jpg': [[1635, 'transporter']],
+    '62_1537705928.jpg': [[579, 'transporter']],
+    '62_1537709554.jpg': [[2036, 'trailer']],
+    '62_1537713107.jpg': [[373, 'trailer']],
+    '62_1537716658.jpg': [[1654, 'trailer']],
+    '62_1537718436.jpg': [[1482, 'trailer']],
+    '62_1537938236.jpg': [[626, 'transporter']],
+    '62_1537956182.jpg': [[1127, 'transporter']],
+    '62_1537959778.jpg': [[[2299, 2324], 'transporter']],
+    '62_1537963395.jpg': [[2327, 'transporter']],
+    '64_1531764036.jpg': [[207, 'transporter']],
+    '64_1537009217.jpg': [[326, 'transporter']],
+    '64_1537016417.jpg': [[311, 'transporter']],
+    '64_1537032622.jpg': [[1959, 'transporter']],
+    '64_1537097416.jpg': [[84, 'transporter']],
+    '64_1537099216.jpg': [[2117, 'transporter']],
+    '69_1531596734.jpg': [[625, 'transporter']],
+    '69_1537347613.jpg': [[363, 'transporter']],
+    '69_1537349415.jpg': [[2482, 'transporter']],
+    '69_1537351214.jpg': [[[823, 824], 'transporter']],
+    '69_1537353014.jpg': [[[898, 897], 'transporter']],
+    '69_1537354811.jpg': [[[146, 145], 'transporter']],
+    '69_1537358412.jpg': [[[705, 706], 'transporter']],
+    '69_1537362013.jpg': [[171, 'transporter']],
+    '73_1537095614.jpg': [[1024, 'transporter']],
+    '73_1537108212.jpg': [[[441, 452], 'transporter']],
+    '73_1537207256.jpg': [[2503, 'transporter']],
+    '73_1537216265.jpg': [[381, 'transporter']],
+    '73_1537239784.jpg': [[1807, 'transporter']],
+    '73_1537252228.jpg': [[952, 'transporter']],
+    '73_1537263016.jpg': [[[288, 290], 'transporter']],
+    '73_1537286417.jpg': [[254, 'transporter']],
+    '73_1537293677.jpg': [[1066, 'transporter']],
+    '73_1537327869.jpg': [[2570, 'transporter']],
+    '73_1537336816.jpg': [[946, 'transporter']],
+    '73_1537347619.jpg': [[[1077, 1088], 'transporter']],
+    '73_1537353020.jpg': [[2555, 'transporter']],
+    '73_1537354816.jpg': [[[699, 658], 'transporter']],
+    '73_1537414287.jpg': [[536, 'transporter']],
+    '73_1537432229.jpg': [[1557, 'transporter']],
+    '78_1531611010.jpg': [[1404, 'transporter']],
+    '78_1531722605.jpg': [[312, 'transporter'], [307, 'trailer']],
+    '78_1531809005.jpg': [[[316, 317], 'truck']],
+    '78_1531814405.jpg': [[853, 'transporter']],
+    '78_1531816205.jpg': [[2098, 'transporter']],
+    '83_1531481408.jpg': [[[660, 666], 'transporter']],
+    '83_1531486807.jpg': [[2560, 'transporter']],
+    '83_1531497607.jpg': [[1294, 'transporter']],
+    '83_1531510212.jpg': [[367, 'transporter']],
+    '83_1531740623.jpg': [[[646, 641], 'transporter']],
+    '83_1531751412.jpg': [[1719, 'transporter']],
+    '83_1531755011.jpg': [[2239, 'transporter']],
+    '83_1531764013.jpg': [[[516, 518], 'transporter']],
+    '83_1531821617.jpg': [[135, 'transporter']]
+    }
 
 def process_ndis():
-    """Processes ground truth data of the NDISPark dataset (in COCO format):
-    - Fixes image IDs - they are only unique in their subsets, so they are
-    updated to be unique per dataset
-    - Fix annotations (since the dataset only uses one class) per class_fix var
-    - Converts bboxes to integers
-    - Updates filepaths to be relative to the dataset dirpath, not subset
-    dirpath
-    - And of course, maps the dataset's class to our class...
-    """
-
     # Initialize paths
     dataset_abs_dirpath = os.path.join(common.paths.datasets_dirpath, common.datasets["ndis"]["path"])
     gt_json_abs_filepaths = {
-        "train": os.path.join(dataset_abs_dirpath, "train/train_coco_annotations.json"),
-        "val": os.path.join(dataset_abs_dirpath, "validation/val_coco_annotations.json")
+        "train": os.path.join(dataset_abs_dirpath, "train", "train_coco_annotations.json"),
+        "val": os.path.join(dataset_abs_dirpath, "validation", "val_coco_annotations.json")
     }
     imgs_rel_dirpaths = {
-        "train": os.path.join(common.datasets["ndis"]["path"], "train/imgs"),
-        "val": os.path.join(common.datasets["ndis"]["path"], "validation/imgs")
+        "train": os.path.join("train", "imgs"),
+        "val": os.path.join("validation", "imgs")
     }
 
     data = {
@@ -154,9 +151,9 @@ def process_ndis():
                 img["id"] = new_img_id
 
                 # Update the filepath to be relative to the datasets dir, not just the filename
-                old_img_file_name = img["file_name"]
-                new_img_filename = os.path.join(imgs_rel_dirpaths[subset], img["file_name"])
-                img["file_name"] = new_img_filename
+                old_img_filepath = img["file_name"]
+                new_img_filepath = os.path.join(imgs_rel_dirpaths[subset], img["file_name"])
+                img["file_name"] = new_img_filepath
 
                 # Save the image to data var
                 data["images"].append(img)
@@ -181,17 +178,19 @@ def process_ndis():
                     anno["image_id"] = new_img_id
 
                 # Fix annotations as specified in class_fix var
-                if old_img_file_name in class_fix.keys():
+                if old_img_filepath in class_fix.keys():
 
-                    for [bbox_ids, new_cls] in class_fix[old_img_file_name]:
+                    for [anno_ids, new_cls] in class_fix[old_img_filepath]:
 
-                        # If the bbox_ids is not an array, make it an array...
-                        if type(bbox_ids) == int:
-                            bbox_ids = [bbox_ids]
+                        # If the anno_ids is not an array, make it an array...
+                        if type(anno_ids) == int:
+                            anno_ids = [anno_ids]
 
-                        # For each bbox ID, fix the annotation
-                        for bbox_id in bbox_ids:
-                            annos[bbox_id]["category_id"] = common.classes_ids[new_cls]
+                        # For each annotation ID, fix the annotation
+                        for anno_id in anno_ids:
+                            for anno in annos:
+                                if anno["id"] == anno_id:
+                                    anno["category_id"] = common.classes_ids[new_cls]
 
                 # Update annotations' IDs to be unique across subsets
                 for anno in annos:

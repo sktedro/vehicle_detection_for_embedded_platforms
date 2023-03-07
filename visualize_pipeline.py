@@ -1,5 +1,12 @@
-# Copyright (c) OpenMMLab. All rights reserved.
-# Most of this file was taken from mmyolo/tools/analysis_tools/browse_dataset.py
+"""
+This is a fixed script that visualizes the model's pipeline. It can visualize
+train, test and val pipelines with three modes: original, transformed or the
+whole pipeline (saves an image file containing one image for each transformation
+in a row)
+
+Copyright (c) OpenMMLab. All rights reserved.
+Most of this file was taken from mmyolo/tools/analysis_tools/browse_dataset.py
+"""
 
 import argparse
 import os.path as osp

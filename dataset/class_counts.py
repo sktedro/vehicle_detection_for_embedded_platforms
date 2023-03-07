@@ -1,4 +1,8 @@
+"""
+Counts class instances and number of images in all datasets combined
+"""
 import json
+import os
 
 # The script should be importable but also executable from the terminal...
 if __name__ == '__main__':
@@ -8,7 +12,8 @@ else:
 
 def printClassCounts():
     classes_counts = [0] * len(common.classes_ids)
-    with open(common.dataset_filepath) as f:
+    gt_filepath = os.path.join(common.paths.datasets_dirpath, common.gt_combined_filenames["combined"])
+    with open(gt_filepath) as f:
         data = json.loads(f.read())
         images_count = len(data["images"])
         for anno in data["annotations"]:

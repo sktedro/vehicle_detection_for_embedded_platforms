@@ -1,6 +1,31 @@
+"""
+Converts ground truth data of the VisDrone DET dataset's train subset
+from CSV to COCO format
+
+VisDrone DET format:
+<bbox_left>,<bbox_top>,<bbox_width>,<bbox_height>,<score>,<object_category>,<truncation>,<occlusion>
+<bbox_left>    The x coordinate of the top-left corner of the predicted bounding box
+<bbox_top>     The y coordinate of the top-left corner of the predicted object bounding box
+<bbox_width>   The width in pixels of the predicted object bounding box
+<bbox_height>  The height in pixels of the predicted object bounding box
+<score>	       The score in the DETECTION file indicates the confidence of the predicted bounding box enclosing 
+                an object instance.
+                The score in GROUNDTRUTH file is set to 1 or 0. 1 indicates the bounding box is considered in evaluation, 
+                while 0 indicates the bounding box will be ignored.
+<object_category>  The object category indicates the type of annotated object, (i.e., ignored regions(0), pedestrian(1), 
+                    people(2), bicycle(3), car(4), van(5), truck(6), tricycle(7), awning-tricycle(8), bus(9), motor(10), 
+                    others(11))
+<truncation>  The score in the DETECTION result file should be set to the constant -1.
+                The score in the GROUNDTRUTH file indicates the degree of object parts appears outside a frame 
+                (i.e., no truncation = 0 (truncation ratio 0%), and partial truncation = 1 (truncation ratio 1% ~ 50%)).
+<occlusion>  The score in the DETECTION file should be set to the constant -1.
+                The score in the GROUNDTRUTH file indicates the fraction of objects being occluded (i.e., no occlusion = 0 
+                (occlusion ratio 0%), partial occlusion = 1 (occlusion ratio 1% ~ 50%), and heavy occlusion = 2 
+                (occlusion ratio 50% ~ 100%)).
+"""
 import os
+from PIL import Image
 import csv
-import cv2
 from tqdm import tqdm
 
 # The script should be importable but also executable from the terminal...
@@ -11,7 +36,7 @@ else:
 
 
 visdrone_det_classes_map = {
-    "0":  -1, # "ignored region" - ignore
+    "0":  common.classes_ids["mask"], # "ignored region" are masks
     "1":  -1, # "pedestrian" - ignore
     "2":  -1, # "people" - ignore
     "3":  common.classes_ids["bicycle"],
@@ -27,33 +52,6 @@ visdrone_det_classes_map = {
 
 
 def process_visdrone_det():
-    """Converts ground truth data of the VisDrone DET dataset's train subset
-    from CSV to mmdetection's middle format in a pickle file
-
-    This can take several minutes
-
-    VisDrone DET format:
-    <bbox_left>,<bbox_top>,<bbox_width>,<bbox_height>,<score>,<object_category>,<truncation>,<occlusion>
-    <bbox_left>    The x coordinate of the top-left corner of the predicted bounding box
-    <bbox_top>     The y coordinate of the top-left corner of the predicted object bounding box
-    <bbox_width>   The width in pixels of the predicted object bounding box
-    <bbox_height>  The height in pixels of the predicted object bounding box
-    <score>	       The score in the DETECTION file indicates the confidence of the predicted bounding box enclosing 
-                   an object instance.
-                   The score in GROUNDTRUTH file is set to 1 or 0. 1 indicates the bounding box is considered in evaluation, 
-                   while 0 indicates the bounding box will be ignored.
-    <object_category>  The object category indicates the type of annotated object, (i.e., ignored regions(0), pedestrian(1), 
-                       people(2), bicycle(3), car(4), van(5), truck(6), tricycle(7), awning-tricycle(8), bus(9), motor(10), 
-                       others(11))
-    <truncation>  The score in the DETECTION result file should be set to the constant -1.
-                  The score in the GROUNDTRUTH file indicates the degree of object parts appears outside a frame 
-                  (i.e., no truncation = 0 (truncation ratio 0%), and partial truncation = 1 (truncation ratio 1% ~ 50%)).
-    <occlusion>  The score in the DETECTION file should be set to the constant -1.
-                 The score in the GROUNDTRUTH file indicates the fraction of objects being occluded (i.e., no occlusion = 0 
-                 (occlusion ratio 0%), partial occlusion = 1 (occlusion ratio 1% ~ 50%), and heavy occlusion = 2 
-                 (occlusion ratio 50% ~ 100%)).
-    """
-
     # Initialize paths
     dataset_abs_dirpath = os.path.join(common.paths.datasets_dirpath, common.datasets["visdrone_det"]["path"])
     gts_abs_dirpath = os.path.join(dataset_abs_dirpath, "annotations")
@@ -82,11 +80,11 @@ def process_visdrone_det():
             continue
 
         # Height and width of an image
-        height, width, _ = cv2.imread(os.path.join(imgs_abs_dirpath, img_filename)).shape
+        width, height = Image.open(os.path.join(imgs_abs_dirpath, img_filename)).size
 
         data["images"].append({
             "id": img_id_counter,
-            "file_name": os.path.join(common.datasets["visdrone_det"]["path"], "images", img_filename),
+            "file_name": os.path.join("images", img_filename),
             "width": width,
             "height": height,
         })

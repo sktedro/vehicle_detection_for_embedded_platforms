@@ -1,6 +1,21 @@
+"""
+Converts ground truth data of the MIO-TCD dataset's train subset from CSV
+to COCO format
+
+Part of code taken from view_bounding_boxes.py script provided by creators of
+MIO-TCD
+
+MIO-TCD format:
+`00000000, pickup_truck, 213, 34, 255, 50` as 
+`a, label, x1, y1, x2, y2`
+
+or, if the row has 7 values:
+`00000000, pickup_truck, 0.9, 213, 34, 255, 50` as 
+`a, label, score, x1, y1, x2, y2`
+"""
 import os
 import csv
-import cv2
+from PIL import Image
 from tqdm import tqdm
 
 # The script should be importable but also executable from the terminal...
@@ -26,25 +41,10 @@ mio_tcd_classes_map = {
 
 
 def process_mio_tcd():
-    """Converts ground truth data of the MIO-TCD dataset's train subset from CSV
-    to COCO format
-
-    This can take several minutes
-
-    Part of code taken from view_bounding_boxes.py script provided by creators of MIO-TCD
-
-    MIO-TCD format:
-    `00000000, pickup_truck, 213, 34, 255, 50` as 
-    `a, label, x1, y1, x2, y2`
-
-    or, if the row has 7 values:
-    `00000000, pickup_truck, 0.9, 213, 34, 255, 50` as 
-    `a, label, score, x1, y1, x2, y2`
-    """
-
     # Initialize paths
     # dataset_path = common.datasets["mio-tcd"]["path"]
-    dataset_abs_dirpath = os.path.join(common.paths.datasets_dirpath, common.datasets["mio-tcd"]["path"])
+    dataset_abs_dirpath = os.path.join(common.paths.datasets_dirpath,
+                                       common.datasets["mio-tcd"]["path"])
     gt_csv_abs_filepath = os.path.join(dataset_abs_dirpath, "gt_train.csv")
     imgs_abs_dirpath = os.path.join(dataset_abs_dirpath, "train")
 
@@ -54,7 +54,7 @@ def process_mio_tcd():
         "images": [],
         "annotations": []
     }
-    imgs_processed = {}
+    imgs_processed = set()
 
     anno_id_counter = 0
 
@@ -70,14 +70,14 @@ def process_mio_tcd():
 
             # Add image info to data var if not already there
             if img_filename not in imgs_processed:
-                imgs_processed[img_filename] = None
+                imgs_processed.add(img_filename)
 
                 # Height and width of an image
-                height, width, _ = cv2.imread(os.path.join(imgs_abs_dirpath, img_filename)).shape
+                width, height = Image.open(os.path.join(imgs_abs_dirpath, img_filename)).size
 
                 data["images"].append({
                     "id": int(img_id_str),
-                    "file_name": os.path.join(common.datasets["mio-tcd"]["path"], "train", img_filename),
+                    "file_name": os.path.join("train", img_filename),
                     "width": width,
                     "height": height,
                 })
@@ -109,4 +109,14 @@ def process_mio_tcd():
     common.save_processed("mio-tcd", data)
 
 if __name__ == "__main__":
+    # import cProfile
+    # import pstats
+    # pr = cProfile.Profile()
+    # pr.enable()
+    # process_mio_tcd()
+    # pr.disable()
+    # ps = pstats.Stats(pr)
+    # ps.sort_stats('cumtime')
+    # ps.print_stats(10)
+
     process_mio_tcd()

@@ -2,20 +2,20 @@ import os
 
 ##### BASE PATHS #####
 
-# datasets_dirpath = "/home/tedro/Downloads/datasets/"
-# datasets_dirpath = "/Users/z004ktej/Downloads/datasets/"
-datasets_dirpath = "/home/xskalo01/datasets/"
-
-# TODO Rename proj_path to repo_path?
 try:
     proj_path = os.path.abspath(__file__)
 except:
     proj_path = os.path.abspath("__file__")
 proj_path = os.path.dirname(proj_path).replace("\\", "/") # Convert backslashes to forward slashes because windows sucks
 
-mmyolo_dirpath = os.path.join(proj_path, "..", "mmyolo")
+datasets_dirpath = "/home/tedro/Downloads/datasets/"
+# datasets_dirpath = "/Users/z004ktej/Downloads/datasets/"
+# datasets_dirpath = "/home/xskalo01/datasets/"
 
-working_dirpath = os.path.join(proj_path, "working_dir_yolov8_dist_384_conf5_lr0005")
+mmyolo_dirpath = os.path.join(proj_path, "..", "mmyolo")
+mmdeploy_dirpath = os.path.join(proj_path, "..", "mmdeploy")
+
+working_dirpath = os.path.join(proj_path, "working_dir_yolov8_dist_384_conf5")
 
 
 ##### CONFIG #####
@@ -44,14 +44,14 @@ deploy_onnx_filename = "end2end.onnx"
 last_checkpoint_link = os.path.join(working_dirpath, "last_checkpoint")
 if os.path.exists(last_checkpoint_link):
     with open(last_checkpoint_link) as f:
-        last_checkpoint_filepath = f.read()
+        last_checkpoint_filepath = f.read().replace("\n", "").replace("\r", "")
 else:
     last_checkpoint_filepath = None
 
 # Check that everything is in the right place
 
-assert os.path.exists(proj_path)
-assert os.path.exists(datasets_dirpath)
+assert os.path.exists(proj_path), f"Project path ({proj_path}) not found"
+assert os.path.exists(datasets_dirpath), f"Datasets path ({datasets_dirpath}) not found"
 
-assert os.path.exists(model_config_filepath)
-assert os.path.exists(model_checkpoint_filepath)
+assert os.path.exists(model_config_filepath), f"Model config path ({model_config_filepath}) not found"
+assert os.path.exists(model_checkpoint_filepath), f"Model checkpoint path ({model_checkpoint_filepath}) not found"

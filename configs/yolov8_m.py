@@ -5,6 +5,7 @@ from copy import deepcopy
 # No way to find out the path of this file since mmdetection does shady things
 # with it, so we need an absolute filepath of the repository
 repo_path = "/home/xskalo01/bp/proj/"
+# repo_path = "/home/tedro/Desktop/d_projekty/bp/proj/"
 sys.path.append(repo_path)
 import paths
 import dataset.common as common
@@ -66,7 +67,6 @@ metainfo = dict(
 num_classes = len(metainfo["classes"])
 
 work_dir = paths.working_dirpath
-data_root = paths.datasets_dirpath
 file_client_args = dict(backend='disk')
 
 min_gt_bbox_wh = (8, 8) # Default YOLO is 1*1, but I imagine 8*8 being better
@@ -176,9 +176,14 @@ for dataset_name in list(common.datasets.keys()):
         times = train_datasets_repeats[dataset_name],
         dataset = dict(
             type = "YOLOv5CocoDataset",
-            ann_file = os.path.join(paths.datasets_dirpath, common.datasets[dataset_name]["path"], common.gt_filenames["train"]),
-            data_prefix = dict(img=data_root),
-            data_root = data_root,
+            ann_file = os.path.join(paths.datasets_dirpath,
+                                    common.datasets[dataset_name]["path"],
+                                    common.gt_filenames["train"]),
+            data_prefix = dict(img=os.path.join(
+                paths.datasets_dirpath,
+                common.datasets[dataset_name]["path"])),
+            data_root = os.path.join(paths.datasets_dirpath,
+                                     common.datasets[dataset_name]["path"]),
             filter_cfg = dict(filter_empty_gt=False, min_size=32),
             pipeline = deepcopy(train_pipeline)))
 
@@ -234,8 +239,8 @@ val_dataloader = dict(
     sampler = dict(type="DefaultSampler", shuffle=False),
     dataset = dict(
         type = "YOLOv5CocoDataset",
-        data_root = data_root,
-        ann_file = os.path.basename(common.dataset_val_filepath),
+        data_root = paths.datasets_dirpath,
+        ann_file = os.path.basename(common.gt_combined_filenames["val"]),
         data_prefix = dict(img=""),
         test_mode = True,
         pipeline = val_pipeline,
@@ -250,8 +255,8 @@ test_dataloader = dict(
     sampler = dict(type="DefaultSampler", shuffle=False),
     dataset = dict(
         type = "YOLOv5CocoDataset",
-        data_root = data_root,
-        ann_file = os.path.basename(common.dataset_test_filepath),
+        data_root = paths.datasets_dirpath,
+        ann_file = os.path.basename(common.gt_combined_filenames["test"]),
         data_prefix = dict(img=""),
         test_mode = True,
         pipeline = test_pipeline
@@ -261,13 +266,13 @@ test_dataloader = dict(
 val_evaluator = dict(
     type='mmdet.CocoMetric',
     proposal_nums=(100, 1, 10),
-    ann_file=common.dataset_val_filepath,
+    ann_file=os.path.join(paths.datasets_dirpath, common.gt_combined_filenames["val"]),
     metric='bbox')
 
 test_evaluator = dict(
     type='mmdet.CocoMetric',
     proposal_nums=(100, 1, 10),
-    ann_file=common.dataset_test_filepath,
+    ann_file=os.path.join(paths.datasets_dirpath, common.gt_combined_filenames["test"]),
     metric='bbox')
 
 optim_wrapper = dict(

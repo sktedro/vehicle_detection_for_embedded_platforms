@@ -1,5 +1,8 @@
+"""
+Processes the AAU RainSnow dataset, which is in COCO format, mapping
+classes and updating file paths. Saves ground truth in a COCO format
+"""
 import os
-import cv2
 import json
 import shutil
 from tqdm import tqdm
@@ -9,6 +12,7 @@ if __name__ == '__main__':
     import common
 else:
     from . import common
+
 
 # Classes persent in the dataset: 1, 2, 3, 4, 6, 8, or in text format:
 # person, bicycle, car, motorbike, bus, truck
@@ -23,11 +27,6 @@ aau_classes_map = {
 
 
 def process_aau():
-    """Processes the AAU RainSnow dataset, which is in COCO format, mapping
-    classes and updating file paths. Saves ground truth in a COCO format. Also
-    applies masks to images and combines them to a separate folder
-    """
-
     # Initialize paths
     dataset_abs_dirpath = os.path.join(common.paths.datasets_dirpath, common.datasets["aau"]["path"])
     gt_json_abs_filepath = os.path.join(dataset_abs_dirpath, "aauRainSnow-rgb.json")
@@ -39,65 +38,35 @@ def process_aau():
         dst = os.path.join(dirpath, "Egensevej-5-mask.png")
         shutil.copy(src, dst)
 
-    # Create a directory for combined images (delete it first if exists)
-    combined_imgs_rel_dirpath = "imgs_combined"
-    combined_imgs_abs_dirpath = os.path.join(dataset_abs_dirpath, combined_imgs_rel_dirpath)
-    if os.path.exists(combined_imgs_abs_dirpath):
-        shutil.rmtree(combined_imgs_abs_dirpath)
-    os.mkdir(combined_imgs_abs_dirpath)
-
-
     print(f"Loading data from {gt_json_abs_filepath}")
     with open(os.path.join(gt_json_abs_filepath)) as f:
         data = json.loads(f.read())
 
     print("Removing ignored images")
     for img in tqdm(data["images"].copy()):
-        ignore = False
         for ignore_str in common.datasets["aau"]["ignored_folders"]:
             if ignore_str in img["file_name"]:
                 data["images"].remove(img)
-                ignore = True
                 break
-        if ignore:
-            continue
 
-    print(f"Applying masks, combining to {combined_imgs_abs_dirpath} and updating filenames")
+    print(f"Saving mask filepaths to ground truth data")
     for img in tqdm(data["images"]):
 
-        # Copy all images to a separate folder while applying detection masks (so
-        # that the image only contains annotated vehicles) and update the paths
-        old_img_rel_filepath = os.path.join(dataset_abs_dirpath, img["file_name"])
-        new_img_rel_filepath = os.path.join(common.datasets["aau"]["path"], combined_imgs_rel_dirpath, str(img["id"]).zfill(9) + ".jpg")
+        sequence_dirpath = os.path.dirname(img["file_name"]) # Egensevej/Egensevej-1
+        location_dirpath = os.path.dirname(sequence_dirpath) # Egensevej
 
-        footage_dirpath = os.path.dirname(old_img_rel_filepath) # .../Egensevej-1
-        location_dirpath = os.path.dirname(footage_dirpath) # .../Evensevej
+        # Mask filename = Egensevej-1-mask.png
+        mask_filename = os.path.basename(sequence_dirpath) + "-mask.png"
 
-        # Mask filename example: Evensevej-1-mask.jpg in the same directory as
-        # Egensevej-1/ directory
-        mask_filename = os.path.basename(footage_dirpath) + "-mask.png"
-        mask_filepath = os.path.join(location_dirpath, mask_filename)
-
-        frame = cv2.imread(old_img_rel_filepath)
-        mask = cv2.imread(mask_filepath)
-        mask = cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY)
-        new_frame = cv2.bitwise_and(frame, frame, mask=mask) # Apply mask
-
-        cv2.imwrite(os.path.join(common.paths.datasets_dirpath, new_img_rel_filepath), new_frame)
-
-        img["file_name"] = new_img_rel_filepath
+        # Mask filepath = Egensevej/Egensevej-1-mask.png
+        img["mask"] = os.path.join(location_dirpath, mask_filename)
 
     print("Removing ignored annotations")
-    img_ids = []
+    img_ids = set()
     for img in data["images"]:
-        img_ids.append(img["id"])
+        img_ids.add(img["id"])
     for anno in tqdm(data["annotations"].copy()):
         if anno["image_id"] not in img_ids:
-            data["annotations"].remove(anno)
-
-    print("Removing annotations with ignored classes")
-    for anno in tqdm(data["annotations"].copy()):
-        if aau_classes_map[anno["category_id"]] == -1:
             data["annotations"].remove(anno)
 
     print("Removing invalid annotations")
@@ -106,8 +75,11 @@ def process_aau():
             data["annotations"].remove(anno)
 
     print("Mapping classes")
-    for anno in tqdm(data["annotations"]):
-        anno["category_id"] = aau_classes_map[anno["category_id"]]
+    for anno in tqdm(data["annotations"].copy()):
+        if aau_classes_map[anno["category_id"]] == -1:
+            data["annotations"].remove(anno)
+        else:
+            anno["category_id"] = aau_classes_map[anno["category_id"]]
 
     # Convert data_dict to a list and all lists (bboxes and labels) to numpy arrays
     common.save_processed("aau", data)

@@ -1,14 +1,17 @@
+"""Reads all datasets and creates a fiftyone dataset while adding a tag to each
+image: dataset name
+"""
 import fiftyone as fo
-import common
+import os
+import sys
 from tqdm import tqdm
 
-"""
-Runs fiftyone. If a dataset was not yet created (or if param delete=False), it
-loads a dataset (reads paths from common.py), adds tags to the samples (dataset
-name) and then runs fiftyone.
-"""
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+import common
+
 
 dataset_name = "dataset"
+
 
 def fiftyone_create():
 
@@ -23,10 +26,11 @@ def fiftyone_create():
             return
 
     print("Creating dataset")
+    gt_filepath = os.path.join(common.paths.datasets_dirpath, common.gt_combined_filenames["combined"])
     dataset = fo.Dataset.from_dir(
         name=dataset_name,
         data_path=common.paths.datasets_dirpath,
-        labels_path=common.dataset_filepath,
+        labels_path=gt_filepath,
         dataset_type=fo.types.COCODetectionDataset
     )
 
@@ -43,6 +47,7 @@ def fiftyone_create():
     print(view)
 
     print("All done")
+
 
 if __name__ == "__main__":
     fiftyone_create()
