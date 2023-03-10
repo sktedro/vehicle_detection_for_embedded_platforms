@@ -39,7 +39,7 @@ def parse_args():
         'config',
         nargs="?",
         default=paths.model_config_filepath,
-        help='train config file path')
+        help='Train config file path. Default from paths.py')
     parser.add_argument(
         '--phase',
         '-p',

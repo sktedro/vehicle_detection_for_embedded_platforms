@@ -4,6 +4,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 import paths
 
 
+max_threads = 12 # Maximum amount of threads for multi-threaded scripts
+
 masked_imgs_rel_dirpath = "imgs_masked/"
 
 gt_unmasked_filenames = {
@@ -121,67 +123,60 @@ def save_processed(dataset_name, data):
     from tqdm import tqdm
     from split_dataset_into_subsets import split_dataset
 
-    data = {
-        "combined": data
-    }
-
     # Save dataset name to each image
-    for img in data["combined"]["images"]:
+    for img in data["images"]:
         img["dataset_name"] = dataset_name
 
     # Save categories
-    data["combined"]["categories"] = []
+    data["categories"] = []
     for cls_id in list(classes_names.keys()):
-        data["combined"]["categories"].append({
+        data["categories"].append({
             "supercategory": "vehicle",
             "id": cls_id,
             "name": classes_names[cls_id]
         })
         if classes_names[cls_id] == "mask":
-            del data["combined"]["categories"][-1]["supercategory"]
+            del data["categories"][-1]["supercategory"]
 
     # Add area for each annotation (because mmdetection requires it...)
     # Although it should be the segmentation area, I don't have segmentations
     # so this will have to do...
     # Also add iscrowd to every annotation because pycocotools requires it...
     print("Calcluating areas and adding 'iscrowd' (always 0)")
-    for anno in tqdm(data["combined"]["annotations"]):
+    for anno in tqdm(data["annotations"]):
         anno["area"] = anno["bbox"][2] * anno["bbox"][3]  # area = w * h
         anno["iscrowd"] = 0
 
     print("Cleaning up the data")
     # Only keep main keys in the data
-    for key in list(data["combined"].keys()):
+    for key in list(data.keys()):
         if key not in ["images", "annotations", "categories", "info", "licenses"]:
-            del data["combined"][key]
+            del data[key]
     # Remove unnecessary key from images
-    for img in tqdm(data["combined"]["images"]):
+    for img in tqdm(data["images"]):
         for key in ["coco_url", "flickr_url", "date_captured"]:
             if key in img:
                 del img[key]
     # Remove unnecessary key from annotations
-    for anno in tqdm(data["combined"]["annotations"]):
+    for anno in tqdm(data["annotations"]):
         for key in ["segmentation"]:
             if key in anno:
                 del anno[key]
     # Remove annotations with areas being 0, because they could cause problems
-    for anno in data["combined"]["annotations"].copy():
+    for anno in data["annotations"].copy():
         if anno["area"] <= 0:
-            data["combined"]["annotations"].remove(anno)
-
-    # Split into train, val, test
-    data = split_dataset(dataset_name, data)
+            data["annotations"].remove(anno)
 
     # Save it to files
     print("Saving...")
-    dataset_path = os.path.join(
-        paths.datasets_dirpath, datasets[dataset_name]["path"])
-    for key in ["combined", "train", "val", "test"]:
-        gt_filepath = os.path.join(dataset_path, gt_unmasked_filenames[key])
-        with open(gt_filepath, 'w') as f:
-            json.dump(data[key], f, indent=2)
+    dataset_path = os.path.join(paths.datasets_dirpath, 
+                                datasets[dataset_name]["path"])
+    gt_filepath = os.path.join(dataset_path, gt_unmasked_filenames["combined"])
+    with open(gt_filepath, 'w') as f:
+        json.dump(data, f, indent=2)
 
-        print(f"{key}: \t{len(data[key]['images'])} images \t{len(data[key]['annotations'])} annotations")
+    print(f"{len(data['images'])} images \t{len(data['annotations'])} annotations")
 
-    print("Remember to run `apply_masks` after processing a dataset, to " +
-          "create masked gt files. Do this even for datasets with no masks!")
+    print("Remember to run `apply_masks` and `split_dataset_into_subsets.py` " +
+          "after processing a dataset, to create masked gt files. Do this " +
+          "even for datasets with no masks!")

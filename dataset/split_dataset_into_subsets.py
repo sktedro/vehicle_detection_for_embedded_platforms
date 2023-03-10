@@ -1,6 +1,10 @@
 """
 Splits a single (masked) dataset (with name provided as an argument) into
-train/val/test subsets according to split requirements in common.datasets
+train/val/test subsets according to split requirements in common.datasets.
+Should be only called if it was not yet split (eg. for DETRAC - detrac.py
+processes the original data into COCO format, which I then reannotated, so
+detrac.py should not be called again. Instead, only apply_masks.py and this file
+should be executed after reannotated dataset was download from labelbox)
 """
 import os
 import json

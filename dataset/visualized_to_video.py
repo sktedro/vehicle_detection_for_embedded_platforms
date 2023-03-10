@@ -7,16 +7,25 @@ import os
 import cv2
 import shutil
 import sys
+import time
 from tqdm import tqdm
+from threading import Thread
 
 import common
 
 
 FPS = 25
 PBAR = None
+TOTAL_DIRS_DISCOVERED = 0
 
+THREADS_LIST = []
+THREADS_RUNNING = 0
 
 def dir_to_videos(src_abs_dirpath, dst_abs_dirpath):
+    global TOTAL_DIRS_DISCOVERED
+    global THREADS_LIST
+    global THREADS_RUNNING
+
     """Recursively converts all images in `src_abs_dirpath` directory to videos.
     Each folder in `src_abs_dirpath` tree containing any number of images will
     result in one video. As said, this function is called for each subdirectory.
@@ -38,16 +47,30 @@ def dir_to_videos(src_abs_dirpath, dst_abs_dirpath):
         src_abs_path = os.path.join(src_abs_dirpath, f)
         if os.path.isdir(src_abs_path):
             dst_abs_path = os.path.join(dst_abs_dirpath, f)
-            dir_to_videos(src_abs_path, dst_abs_path)
 
-    # Then, keep only ".jpg" files in this directory
+            # Create a thread
+            t = Thread(target=dir_to_videos, args=(src_abs_path, dst_abs_path))
+            t.start()
+            THREADS_LIST.append(t)
+
+    # Then, keep only ".jpg" and ".png" files in this directory (in the
+    # variable. Of course we don't delete them from the disk)
     for f in files.copy():
-        if not f.endswith(".jpg"):
+        if not f.endswith(".jpg") and not f.endswith(".png"):
             files.remove(f)
 
     files.sort()
     
     if len(files):
+
+        TOTAL_DIRS_DISCOVERED += 1
+        PBAR.__setattr__("total", TOTAL_DIRS_DISCOVERED)
+
+        # Wait if there are too many threads
+        while THREADS_RUNNING >= common.max_threads:
+            time.sleep(0.1)
+            
+        THREADS_RUNNING += 1
 
         src_abs_filepaths = [os.path.join(src_abs_dirpath, f) for f in files]
 
@@ -60,12 +83,14 @@ def dir_to_videos(src_abs_dirpath, dst_abs_dirpath):
         fourcc = cv2.VideoWriter_fourcc(*"mp4v")
         video = cv2.VideoWriter(dst_abs_filepath, fourcc, FPS, (w, h))
 
-        for src_abs_filepath in tqdm(src_abs_filepaths, leave=False, desc=dst_abs_filepath):
+        for src_abs_filepath in src_abs_filepaths:
             video.write(cv2.imread(src_abs_filepath))
 
         video.release()
 
         PBAR.update(1)
+    
+        THREADS_RUNNING -= 1
 
 
 def remove_empty_dirs(root_dirpath):
@@ -93,10 +118,11 @@ def visualized_to_video(dataset_name):
         dataset_name (str): Dataset name
     """
     global PBAR
+    global THREADS_LIST
 
     print(f"Converting visualized dataset {dataset_name} to video")
 
-    PBAR = tqdm(desc="Processing directories:")
+    PBAR = tqdm(desc="Processing directories")
 
     if dataset_name not in common.datasets.keys():
         print(f"Dataset with name {dataset_name} not found in common.datasets")
@@ -114,9 +140,15 @@ def visualized_to_video(dataset_name):
 
     dir_to_videos(src_dirpath, dst_dirpath)
 
+    while len(THREADS_LIST):
+        THREADS_LIST[0].join()
+        THREADS_LIST.remove(THREADS_LIST[0])
+
     remove_empty_dirs(dst_dirpath)
 
-    print("All done")
+    del PBAR
+
+    tqdm.write("All done")
 
 
 if __name__ == "__main__":

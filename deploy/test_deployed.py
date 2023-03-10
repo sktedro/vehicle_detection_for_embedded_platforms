@@ -16,14 +16,12 @@ test = importlib.util.module_from_spec(spec)
 sys.modules["test.py"] = test
 spec.loader.exec_module(test)
 
-assert os.path.exists(paths.deploy_config_filepath)
-assert os.path.exists(paths.model_config_filepath)
-
 class dotdict(dict):
     """dot.notation access to dictionary attributes"""
     __getattr__ = dict.get
     __setattr__ = dict.__setitem__
     __delattr__ = dict.__delitem__
+
 
 args = dotdict({
         "deploy_cfg": paths.deploy_config_filepath,
@@ -54,6 +52,9 @@ def get_args():
 
 
 def test_deployed():
+    assert os.path.exists(paths.deploy_config_filepath)
+    assert os.path.exists(paths.model_config_filepath)
+
     test.parse_args = get_args
     test.main()
 
