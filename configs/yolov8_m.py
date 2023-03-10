@@ -25,9 +25,9 @@ else:
 
 num_gpus = 4
 
-max_epochs = 300 # 300 # originally 500
+max_epochs = 50 # 300 # originally 500
 warmup_epochs = 3 # 3 # originally 3
-val_interval = 5 # 5 # default 10
+val_interval = 2 # 5 # default 10
 save_epoch_intervals = val_interval
 max_keep_ckpts = 100
 
@@ -72,6 +72,8 @@ file_client_args = dict(backend='disk')
 min_gt_bbox_wh = (8, 8) # Default YOLOv8 is 1*1, but I imagine 8*8 being better
 pad_val = 114
 
+# TODO more (or more aggressive) augmentations since mAP decreases when training?
+# Maybe random stretch along x or y axis?
 train_pipeline = [
     dict(type='LoadImageFromFile',
         file_client_args=file_client_args),
@@ -142,18 +144,18 @@ train_datasets_repeats = {
     "mio-tcd"     : 1,
     "aau"         : 3, # There are some misannotations so don't make it too frequent
     "ndis"        : 25,
-    "mtid"        : 6, # It's a video, so already a lot repeats, but it's a great dataset
+    "mtid"        : 5, # It's a video, so already a lot repeats, but it's a great dataset
     "visdrone_det": 4, # Good dataset, but not very important in this project
-    "detrac"      : 2,
+    "detrac"      : 1,
 }
 
 train_datasets_scaling_ratios = {
-    "mio-tcd"     : (1, 1.1),
+    "mio-tcd"     : (1.0, 1.1),
     "aau"         : (0.9, 1.1),
     "ndis"        : (0.9, 1.5),
     "mtid"        : (0.9, 2),
     "visdrone_det": (1.5, 2.5),
-    "detrac"      : (0.9, 1.1),
+    "detrac"      : (0.8, 1),
 }
 
 # Individual cutout: [Number of holes (closed interval), (patch size in pixels)]
@@ -175,6 +177,7 @@ for dataset_name in list(common.datasets.keys()):
         type = "RepeatDataset",
         times = train_datasets_repeats[dataset_name],
         dataset = dict(
+            metainfo = metainfo,
             type = "YOLOv5CocoDataset",
             ann_file = os.path.join(paths.datasets_dirpath,
                                     common.datasets[dataset_name]["path"],
@@ -241,6 +244,7 @@ val_dataloader = dict(
     drop_last = False,
     sampler = dict(type="DefaultSampler", shuffle=False),
     dataset = dict(
+        metainfo = metainfo,
         type = "YOLOv5CocoDataset",
         data_root = paths.datasets_dirpath,
         ann_file = os.path.basename(common.gt_combined_filenames["val"]),
@@ -257,6 +261,7 @@ test_dataloader = dict(
     drop_last = False,
     sampler = dict(type="DefaultSampler", shuffle=False),
     dataset = dict(
+        metainfo = metainfo,
         type = "YOLOv5CocoDataset",
         data_root = paths.datasets_dirpath,
         ann_file = os.path.basename(common.gt_combined_filenames["test"]),

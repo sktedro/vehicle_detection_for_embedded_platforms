@@ -32,7 +32,7 @@ def combineDatasets():
     for dataset_name in common.datasets:
         for subset in ["train", "val", "test"]:
             gt_filepath = os.path.join(
-                    common.paths.datasets_dirpath, 
+                    common.paths.datasets_dirpath,
                     common.datasets[dataset_name]["path"], 
                     common.gt_filenames[subset])
             with open(gt_filepath) as f:

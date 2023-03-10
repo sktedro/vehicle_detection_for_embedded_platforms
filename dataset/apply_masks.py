@@ -65,10 +65,10 @@ def apply_masks(dataset_name):
     print(f"Applying masks to dataset '{dataset_name}'")
 
     # Load the combined ground truth
-    gt_filepath = os.path.join(common.paths.datasets_dirpath,
+    gt_unmasked_filepath = os.path.join(common.paths.datasets_dirpath,
                                common.datasets[dataset_name]["path"],
-                               common.gt_filenames["combined"])
-    with open(gt_filepath) as f:
+                               common.gt_unmasked_filenames["combined"])
+    with open(gt_unmasked_filepath) as f:
         gt = json.load(f)
 
     # Create a directory for masked images (delete it first if exists)
@@ -135,13 +135,16 @@ def apply_masks(dataset_name):
 
         # Note: ground truth data will be updated later (when saving)
 
-    print("Updating ground truth files")
+    print("Saving masked ground truth files")
     for subset in tqdm(["combined", "train", "val", "test"]):
+        gt_unmasked_filepath = os.path.join(common.paths.datasets_dirpath,
+                                            common.datasets[dataset_name]["path"],
+                                            common.gt_unmasked_filenames[subset])
         gt_filepath = os.path.join(common.paths.datasets_dirpath,
                                    common.datasets[dataset_name]["path"],
                                    common.gt_filenames[subset])
 
-        with open(gt_filepath) as f:
+        with open(gt_unmasked_filepath) as f:
             gt = json.load(f)
 
         for img in gt["images"]:

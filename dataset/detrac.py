@@ -87,11 +87,11 @@ def process_detrac():
             # Save absolute path:
             sequences.append(os.path.join(abs_dirpaths["gt"][key], seq))
 
-    print("Removing ignored sequences")
-    for seq_filepath in sequences.copy():
-        for seq_id in common.datasets["detrac"]["ignored_sequences"]:
-            if seq_id in seq_filepath:
-                sequences.remove(seq_filepath)
+    # print("Removing ignored sequences") # No need after reannotation in labelbox
+    # for seq_filepath in sequences.copy():
+    #     for seq_id in common.datasets["detrac"]["ignored_sequences"]:
+    #         if seq_id in seq_filepath:
+    #             sequences.remove(seq_filepath)
 
     data = {
         "images": [],

@@ -8,15 +8,15 @@ except:
     proj_path = os.path.abspath("__file__")
 proj_path = os.path.dirname(proj_path).replace("\\", "/") # Convert backslashes to forward slashes because windows sucks
 
-datasets_dirpath = "/home/tedro/Downloads/datasets/"
+# datasets_dirpath = "/home/tedro/Downloads/datasets/"
 # datasets_dirpath = "/Users/z004ktej/Downloads/datasets/"
-# datasets_dirpath = "/home/xskalo01/datasets/"
+datasets_dirpath = "/home/xskalo01/datasets/"
 
 mmyolo_dirpath = os.path.join(proj_path, "..", "mmyolo")
 mmdeploy_dirpath = os.path.join(proj_path, "..", "mmdeploy")
 mmrazor_dirpath = os.path.join(proj_path, "..", "mmrazor")
 
-working_dirpath = os.path.join(proj_path, "working_dir_yolov8_dist_384_conf5")
+working_dirpath = os.path.join(proj_path, "working_dir_yolov8_dist_384_conf8")
 
 
 ##### CONFIG #####

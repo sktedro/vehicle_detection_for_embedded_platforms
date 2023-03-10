@@ -34,15 +34,15 @@ args = dotdict({
         "log2file": os.path.join(paths.working_dirpath, "deployed_test_log/"),
         "device": "cpu",
 
-        "speed_test": False,
-        # "speed_test": True,
+        # "speed_test": False,
+        "speed_test": True,
 
         "cfg_options": {},
 
         "show": False,
         "interval": 1, # Default
         "wait_time": 2, # Default
-        "warmup": 10, # Default
+        "warmup": 1, # Default 10
         "log_interval": 100, # Default
         "batch_size": 1, # Default
         "uri": "192.168.1.1:60000", # Default

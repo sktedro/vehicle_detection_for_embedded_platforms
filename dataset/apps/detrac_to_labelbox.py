@@ -26,7 +26,7 @@ def detrac_to_labelbox(api_key):
     # Initialize paths
     dataset_abs_dirpath = os.path.join(common.paths.datasets_dirpath, common.datasets["detrac"]["path"])
 
-    with open(os.path.join(dataset_abs_dirpath, common.gt_filenames["combined"])) as f:
+    with open(os.path.join(dataset_abs_dirpath, common.gt_unmasked_filenames["combined"])) as f:
         gt = json.load(f)
 
     client = lb.Client(api_key=api_key)

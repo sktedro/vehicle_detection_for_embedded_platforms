@@ -6,6 +6,12 @@ import paths
 
 masked_imgs_rel_dirpath = "imgs_masked/"
 
+gt_unmasked_filenames = {
+    "combined": "gt_processed_unmasked.json",
+    "train": "gt_processed_train_unmasked.json",
+    "val": "gt_processed_val_unmasked.json",
+    "test": "gt_processed_test_unmasked.json",
+}
 gt_filenames = {
     "combined": "gt_processed.json",
     "train": "gt_processed_train.json",
@@ -53,7 +59,7 @@ datasets = {
     "mio-tcd": {
         "path": "MIO-TCD/MIO-TCD-Localization/",
         "data_split_tags": {},
-        "data_split": {"train": 1},
+        "data_split": {"train": 0.9, "val": 0.05, "test": 0.05},
         "split_randomly": False,
     },
     "aau": {
@@ -93,104 +99,13 @@ datasets = {
     },
     "detrac": {
         "path": "DETRAC/",
-        "data_split_tags": {"test": ["MVI_40191", "MVI_40204", "MVI_40243"],
-                            "val": ["MVI_40192", "MVI_40201", "MVI_40244"]},
+        "data_split_tags": {
+            "val": ["MVI_40201", "MVI_40244"],
+            "test": ["MVI_40204", "MVI_40243"],
+        },
         "data_split": {"train": 1},
         "split_randomly": False,
-        "ignored_sequences": [],
-        # "ignored_sequences": [ # List of sequence names to ignore when processing
-        #     # Some sequences don't have comments simply because I was lazy to comment the problem
-        #     # They were ignored mainly if containing bicycles or motorcycles
-        #     "20011", # Contains unmasked cyclists in left corner
-        #     "20012", # Contains unmasked cyclists in left corner
-        #     "20032", # Contains unmasked cyclists in left corner
-        #     "20033", # Unannotated motorcycle
-        #     "20034",
-        #     "20035", # Badly masked
-        #     "20051", # Badly masked
-        #     "20061", # Badly annotated
-        #     "20062", # Contains unmasked cyclists in left corner
-        #     "20063", # Cyclists in left corner
-        #     "20064", # Cyclists in left corner
-        #     "20065", # Unannotated motorcycle
-        #     "39031", # Badly masked + motorcycle
-        #     "39051", # Motorcycles
-        #     "39211",
-        #     "39271", # Motorcycles
-        #     "39311", # Motorcycles
-        #     "39361", # Bicycles and motorcycles
-        #     "39371", # Bicycles
-        #     "39401", # Two-wheelers
-        #     "39501", # Bicycles
-        #     "39511",
-        #     "39761", # Bicycles
-        #     "39771", # Badly masked
-        #     "39781", # Motorcycles
-        #     "39801", # Badly masked + two-wheeler
-        #     "39811", # Badly masked + two-wheeler
-        #     "39821", # Motorcycles
-        #     "39851",
-        #     "39861", # Bicycle
-        #     "39931", # Motorcycles
-        #     "40131", # Cyclists
-        #     "40141", # Cyclists
-        #     "40152", # Bicycle
-        #     "40161", # Motorcycle
-        #     "40162", # Badly masked
-        #     "40171", # Bicycle
-        #     "40172", # Badly annotated
-        #     "40181", # Two-wheelers
-        #     "40191",
-        #     "40192", # Badly masked
-        #     "40204", # Motorcycle
-        #     "40211", # Motorcycle
-        #     "40212", # Motorcycle
-        #     "40241", # Motorcycle
-        #     "40244", # Unannotated bus
-        #     "40701",
-        #     "40711",
-        #     "40712",
-        #     "40714",
-        #     "40732",
-        #     "40742",
-        #     "40743",
-        #     "40751",
-        #     "40752",
-        #     "40761", # Bicycles and motorcycles
-        #     "40762",
-        #     "40763",
-        #     "40771",
-        #     "40772",
-        #     "40773",
-        #     "40774",
-        #     "40775",
-        #     "40792",
-        #     "40793",
-        #     "40851",
-        #     "40852",
-        #     "40853",
-        #     "40854",
-        #     "40855",
-        #     "40863",
-        #     "40864",
-        #     "40871",
-        #     "40891",
-        #     "40892",
-        #     "40901",
-        #     "40902",
-        #     "40903",
-        #     "40904",
-        #     "40905",
-        #     "40981",
-        #     "40991",
-        #     "40992",
-        #     "63521",
-        #     "63525",
-        #     "63544",
-        #     "63561", # Badly masked/annotated
-        #     "63562", # Badly masked/annotated
-        #     "63563", # Two-wheeler
-        # ],
+        # "ignored_sequences": [], # No need after reannotation in labelbox
     },
 }
 
@@ -201,67 +116,10 @@ for dataset_name in datasets:
     assert distribution_sum == 1, f"Data distribution for dataset '{dataset_name}' != 1"
 
 
-def split_dataset(dataset_name, data):
-    from tqdm import tqdm
-    import random
-    random.seed(42)
-
-    # Randomly reorder images if desired
-    if "split_randomly" in datasets[dataset_name] and datasets[dataset_name]["split_randomly"] == True:
-        random.shuffle(data["combined"]["images"])
-
-    # Output - datasets split into train/val/test
-    data = {
-        "combined": data["combined"],
-        "train": {"images": [], "annotations": [], "categories": []},
-        "val": {"images": [], "annotations": [], "categories": []},
-        "test": {"images": [], "annotations": [], "categories": []}
-    }
-
-    # Split data into train/val/test
-    images_combined_backup = data["combined"]["images"].copy()
-
-    # Split based on tags (simply remove from "combined" and append to
-    # subset
-    for img in tqdm(data["combined"]["images"].copy()):
-        for subset, tags in datasets[img["dataset_name"]]["data_split_tags"].items():
-            for tag in tags:
-                if tag in img["file_name"]:
-                    data[subset]["images"].append(img)
-                    data["combined"]["images"].remove(img)
-
-    # Split based on percentages
-    distributed = 0 # Amount of images (from index 0) already distributed into subsets
-    for subset in ["train", "val", "test"]:
-        amount = int(len(data["combined"]["images"]) * datasets[dataset_name]["data_split"].get(subset, 0))
-        data[subset]["images"] += data["combined"]["images"][distributed:distributed+amount]
-        distributed += amount
-
-    # Restore "combined"
-    data["combined"]["images"] = images_combined_backup
-
-    # Add annotations and categories to splits
-    for subset in ["train", "val", "test"]:
-
-        # Save image IDs per subset to img_ids
-        img_ids = set()
-        for img in data[subset]["images"]:
-            img_ids.add(img["id"])
-
-        # For each image, find all its annotations and add them to the
-        # same subset
-        for anno in data["combined"]["annotations"].copy():
-            if anno["image_id"] in img_ids:
-                data[subset]["annotations"].append(anno)
-
-        data[subset]["categories"] = data["combined"]["categories"]
-
-    return data
-
-
 def save_processed(dataset_name, data):
     import json
     from tqdm import tqdm
+    from split_dataset_into_subsets import split_dataset
 
     data = {
         "combined": data
@@ -312,7 +170,6 @@ def save_processed(dataset_name, data):
             data["combined"]["annotations"].remove(anno)
 
     # Split into train, val, test
-    print("Splitting into train, val and test...")
     data = split_dataset(dataset_name, data)
 
     # Save it to files
@@ -320,8 +177,11 @@ def save_processed(dataset_name, data):
     dataset_path = os.path.join(
         paths.datasets_dirpath, datasets[dataset_name]["path"])
     for key in ["combined", "train", "val", "test"]:
-        gt_filepath = os.path.join(dataset_path, gt_filenames[key])
+        gt_filepath = os.path.join(dataset_path, gt_unmasked_filenames[key])
         with open(gt_filepath, 'w') as f:
             json.dump(data[key], f, indent=2)
 
         print(f"{key}: \t{len(data[key]['images'])} images \t{len(data[key]['annotations'])} annotations")
+
+    print("Remember to run `apply_masks` after processing a dataset, to " +
+          "create masked gt files. Do this even for datasets with no masks!")
