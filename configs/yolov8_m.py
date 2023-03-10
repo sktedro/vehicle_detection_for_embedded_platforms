@@ -4,8 +4,8 @@ from copy import deepcopy
 
 # No way to find out the path of this file since mmdetection does shady things
 # with it, so we need an absolute filepath of the repository
-repo_path = "/home/xskalo01/bp/proj/"
-# repo_path = "/home/tedro/Desktop/d_projekty/bp/proj/"
+# repo_path = "/home/xskalo01/bp/proj/"
+repo_path = "/home/tedro/Desktop/d_projekty/bp/proj/"
 sys.path.append(repo_path)
 import paths
 import dataset.common as common
@@ -120,7 +120,7 @@ train_pipeline = [
     dict(type="mmdet.PhotoMetricDistortion"),
     dict(type='mmdet.FilterAnnotations',
         min_gt_bbox_wh=min_gt_bbox_wh,
-        keep_empty=True), # Give it some negative images
+        keep_empty=False), # Give it some negative images (if keep_empty=True, it returns None if there are no bboxes...)
     dict(type='mmdet.PackDetInputs',
         meta_keys=('img_id', 'img_path', 'ori_shape', 'img_shape', 'flip', 'flip_direction')),
 ]

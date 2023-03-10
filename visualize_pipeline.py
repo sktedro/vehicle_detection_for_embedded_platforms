@@ -216,14 +216,25 @@ def main():
         all_intermediate_imgs = []
 
         dataset.pipeline = InspectCompose(dataset.pipeline.transforms,
-                                        all_intermediate_imgs)
+                                          all_intermediate_imgs)
 
         # init visualization image number
         assert args.number > 0
         display_number = min(args.number, len(dataset))
 
-        for i in tqdm(range(display_number), desc=progress + "Preparing images"):
-            dataset[i] # This calls the InspectCompose
+        # If val/test pipeline is chosen, pick with stride from whole dataset
+        if args.phase in ["val", "test"]:
+            images_range = range(0, len(dataset), len(dataset) // display_number)
+            if len(images_range) > display_number:
+                images_range = images_range[:display_number]
+
+            for i in tqdm(images_range, desc=progress + "Preparing images"):
+                dataset[i] # This calls the InspectCompose
+
+        # Otherwise (if train pipeline is chosen), go sequentially
+        else:
+            for i in tqdm(range(display_number), desc=progress + "Preparing images"):
+                dataset[i] # This calls the InspectCompose
 
         num_transforms = round(len(all_intermediate_imgs) / display_number)
         for i in tqdm(range(display_number), desc=progress + "Annotating and saving"):
