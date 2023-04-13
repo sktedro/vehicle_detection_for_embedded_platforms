@@ -94,7 +94,7 @@ vehicle detection. First, we introduce systems that are not based on cameras,
 and then we compare CNNs with image processing techniques. \todo{update}
 
 
-\subsection{Vehicle Detection Without a Camera}
+\subsection*{Vehicle Detection Without a Camera}
 
 \todo{Many different types of detectors exist but none is perfect so they're
 used in harmony as complex systems consisting of many detectors?}
@@ -133,7 +133,7 @@ which makes them better at detecting shapes and locations of objects.
 
 
 
-\subsection{Vehicle Detection Based on Image Processing}
+\subsection*{Vehicle Detection Based on Image Processing}
 
 % Kamery sú fajn, univerzálne, neinvazívne
 
@@ -248,12 +248,6 @@ lack versatility in more complex or demanding scenarios.
 
 
 
-% Detectors
-% Lightweight detectors
-% Vehicle detection
-% Lightweight vehicle detection ak niečo nájdem
-
-
 \section{Object Detection?}
 
 
@@ -264,16 +258,13 @@ lack versatility in more complex or demanding scenarios.
 
 
 
+\section{Tools and Libraries}
 
 
-% Nejaké nové veci, ktoré práca prináša, čo som vymyslel a tak
-\chapter{Methodology}
+\subsection*{LabelBox annotation app?}
 
 
-\section{LabelBox annotation app?}
-
-
-\section{MMYOLO Library}
+\subsection*{MMYOLO Library}
 
 In this project, we utilize an open-source library
 called MMYOLO\todo{cite} which is a part of the
@@ -315,7 +306,7 @@ key features of the library include:
 
 
 
-\section{Datasets}
+\chapter{Datasets}
 
 Big and high-quality datasets are very important when training a CNN-based
 detector. In this section, used datasets are listed and analyzed. First, the
@@ -323,19 +314,19 @@ criteria for recognizing an appropriate dataset for our task are explained. Each
 chosen dataset is then analyzed individually. Finally, a summary of all used
 datasets is provided.
 
-\subsection{Dataset Criteria}
+\section{Dataset Criteria}
 
 Here, we briefly explain the most important criteria for selecting datasets to
 be used in a project like this.
 
-\subsubsection*{Camera Angle}
+\subsection*{Camera Angle}
 
 Since we're building a detector for a camera mounted on infrastructure, it is
 recommended to use datasets containing surveillance-type images. Datasets
 containing only images taken from, for example, a car dashboard camera, were
 therefore disregarded.
 
-\subsubsection*{Classes}
+\subsection*{Classes}
 
 If we don't want to re-label the dataset manually, its classes must be mappable
 to \textit{our} classes. In this work, 8 object classes are considered:
@@ -353,32 +344,31 @@ to \textit{our} classes. In this work, 8 object classes are considered:
 Many available datasets didn't annotate some of these classes or aggregated some of them into one
 and were therefore ignored.
 
-\subsubsection*{Diversity of Images}
+\subsection*{Diversity of Images}
 
 For the trained detector to generalize well, it's important for a dataset to
 contain images with different camera angles, lighting conditions, weather, etc.
 60 FPS continuous video does not bring much of an advantage.
 
-\subsubsection*{Dataset Quality}
+\subsection*{Dataset Quality}
 
 We observed that many datasets contained incorrect annotations or
 classifications. It is important to check the dataset and either fix faulty
 annotations, ignore incorrectly annotated images or even disregard the whole
 dataset.
 
-% \subsubsection*{Dataset Size}
 
 
-\subsection{Individual Datasets}
+\section{Individual Datasets}
 
-This subsection individually analyzes all datasets used in this work.
+This section individually analyzes all datasets used in this work.
 \autoref{DatasetsSummary} compares these datasets on a higher level for an
 overview. Example frames of each dataset are shown in figure \todo{examples -
 na jednom obrázku example z každého datasetu} \todo{pod každý dataset dať ref na
 example snímky?} \todo{ref na example snímky}.
 
 
-\subsubsection*{UA-DETRAC}
+\subsection*{UA-DETRAC}
 \label{DetracDataset}
 
 The DETRAC dataset \cite{detrac} provided by the University at Albany is the
@@ -426,7 +416,7 @@ images and these classes (the dataset contains no trailers):
 \end{itemize}
 
 
-\subsubsection*{Miovision Traffic Camera Dataset}
+\subsection*{Miovision Traffic Camera Dataset}
 
 The MIO-TCD (Miovision traffic camera dataset) \cite{MIO2018} is another huge
 and very important dataset. Images are taken at different times of day by
@@ -464,7 +454,7 @@ more pictures with different weather and lighting conditions are needed.
 \todo{example fotka 720x480?}
 
 
-\subsubsection*{AAU RainSnow Traffic Surveillance Dataset}
+\subsection*{AAU RainSnow Traffic Surveillance Dataset}
 \label{AAUDataset}
 
 Another important dataset is the \textit{AAU RainSnow} dataset
@@ -509,7 +499,7 @@ Several other minor problems were found when processing this dataset:
 After processing, the dataset contains \num{10545} objects in \num{1899} images.
 
 
-\subsubsection*{Multi-View Traffic Intersection Dataset}
+\subsection*{Multi-View Traffic Intersection Dataset}
 
 For the MTID dataset, the authors \cite{Jensen2020} recorded one intersection
 from two points of view at \SI{30}{fps} - one camera was mounted on existing
@@ -543,7 +533,7 @@ When processing this dataset, two other problems were encountered:
 The processed dataset contains \num{64979} objects in \num{5399} frames.
 
 
-\subsubsection*{Night and Day Instance Segmented Park Dataset}
+\subsection*{Night and Day Instance Segmented Park Dataset}
 
 Another useful dataset is the \textit{NDISPark} \cite{Luca2022}, which contains
 images of parked vehicles taken by a camera mounted on infrastructure. Although
@@ -559,7 +549,7 @@ cars, \textit{transporters} and a few unattached car trailers. All
 \textit{transporters} and \textit{trailers} were manually classified.
 
 
-\subsubsection*{VisDrone Dataset}
+\subsection*{VisDrone Dataset}
 
 The VisDrone dataset \cite{Zhu2022} is very different from all the previous
 datasets since it doesn't just contain traffic surveillance images. Images are
@@ -574,7 +564,7 @@ Additionally, objects in this dataset are classified into 12 classes, which can
 be easily mapped to our 8 \textit{internal} classes.
 
 
-\subsection{Dataset processing}
+\section{Dataset processing}
 
 \todo{v akom formáte sú datasety, do akého ich konvertujem, aké súbory vytváram a tak. Asi pokojne vcelku podrobne}
 
@@ -611,7 +601,7 @@ uploading the DETRAC dataset to LabelBox for reannotation and one for
 downloading the reannotated labels.
 
 
-\subsection{Summary of Datasets}
+\section{Summary of Datasets}
 
 In \autoref{DatasetsSummary}, we compare used datasets on a higher level and
 show the number of images and instances contained with additional comments. It
@@ -678,9 +668,11 @@ inbalance?}
 \todo{Treba potom niekde povedať o train/val/test split. Tu?}
 
 
-\section{Model Configuration}
 
-In this section, an overview of configurations used to train the vehicle
+
+\chapter{Model Configuration and Training}
+
+In this chapter, an overview of configurations used to train the vehicle
 detectors is displayed. Configuration of an object detection model contains a
 set of parameters that define the model's behavior and the training, validation
 and testing pipelines. These parameters can have a significant impact on the
@@ -742,7 +734,7 @@ found in \autoref{ModelSpecificConfigurations}.
 \end{table}
 
 
-\subsection{Training Augmentation Pipeline}
+\section{Training Augmentation Pipeline}
 
 Data augmentations are very important when training an object detector,
 especially for detectors from the YOLO family. An augmentation in this context
@@ -758,18 +750,18 @@ the input images is crucial to train a robust model.
 
 % At the beginning of the pipeline, images and annotations are loaded.
 
-\subsubsection*{Resize}
+\subsection*{Resize}
 
 First, the image is resized to fit in the model's input size while, of course,
 keeping the aspect ratio unchanged.
 
-\subsubsection*{Pad}
+\subsection*{Pad}
 
 \label{PadTransformation}
 If the aspect ratio of the input image is not the same as the model's input, extra pixels around the input image must be added
 to adapt to the model input's aspect ratio. The \textbf{color value} of the padded pixels is set to RGB(114, 114, 114).
 
-\subsubsection*{Random Affine}
+\subsection*{Random Affine}
 
 The \textit{YOLOv5RandomAffine} applies affine transformations to the image,
 while randomly selecting the values from configured ranges. Parameters:\\
@@ -799,7 +791,7 @@ while randomly selecting the values from configured ranges. Parameters:\\
 The \textbf{color value for padding} around the tranformed image (if needed)
 is set to RGB(114, 114, 114) to be the same as in the \textit{Pad} \ref{PadTransformation} transformation.
 
-\subsubsection*{Cut Out}
+\subsection*{Cut Out}
 
 The \textit{CutOut} transformations randomly selects regions of the image and fills them by a single color. Again,
 parameters of this transformation are set individually for each dataset and are shown in \autoref{CutOutParams}.
@@ -825,7 +817,7 @@ parameters of this transformation are set individually for each dataset and are 
 The \textbf{fill color value} is again set to RGB(114, 114, 114), same as for
 padding in the previous transformations.
 
-\subsubsection*{Custom Cut Out}
+\subsection*{Custom Cut Out}
 
 A custom cut out transformation was developed, similar to \textit{CutOut} used
 in the previous step. Here, the regions are selected within each bounding box
@@ -842,7 +834,7 @@ The \textbf{probability} of a region being dropped from each bounding box is set
 to 0.5 and the \textbf{region area} is set to be randomly selected from
 interval $[5\%, 35\%]$.
 
-\subsubsection*{Albumentations}
+\subsection*{Albumentations}
 
 Albumentations\cite{Albumentations} are a popular open-source library for data
 augmentation. The MMYOLO \todo{cite or something?} library provides the option
@@ -853,17 +845,17 @@ to use these transformations in the data augmentation pipeline. Settings are lef
 \textbf{Grayscale probability:} 0.01 \\
 \textbf{CLAHE probability:} 0.01
 
-\subsubsection*{HSV Random Augmentations}
+\subsection*{HSV Random Augmentations}
 
 The \textit{YOLOv5HSVRandomAug} simply adjusts the hue, saturation and value of
 the image randomly.
 
-\subsubsection*{Random Flip}
+\subsection*{Random Flip}
 
 With \textbf{probability} of 0.5, the image is horizontally flipped using the
 \textit{RandomFlip} augmentation.
 
-\subsubsection*{Photometric Distortion}
+\subsection*{Photometric Distortion}
 
 The \textit{PhotoMetricDistortion} augmentation distorts an image sequentially,
 while each transformation is applied with a probability of 0.5. It modifies the
@@ -871,17 +863,37 @@ brightness, contrast, converts color from BGR to HSV, modifies the saturation,
 hue, converts from BGR to HSV, modifies the contrast and finally, randomly swaps
 the color channels.
 
-\subsubsection*{Filter Annotations}
+\subsection*{Filter Annotations}
 
 As the last step in the pipeline, \textit{FilterAnnotations} is called to remove
 bounding boxes with \textbf{width or height} lower than $8 \times 8$ pixels.
 
 
-\section{Model Optimizations}
+
+
+
+
+\chapter{Model Optimization}
+
+
+
+
+\chapter{Inference and Deployment}
+
+
+
+
+\chapter{Evaluation}
+
+
+
+
 
 
 
 % Čo a ako som naprogramoval + zhodnotenie, porovnania a tak
+\chapter{Experiments}
+
 \chapter{Results}
 
 
