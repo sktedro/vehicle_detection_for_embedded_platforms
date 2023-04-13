@@ -1,0 +1,903 @@
+% For compilation piecewise (see projekt.tex), it is necessary to uncomment it and change
+% \documentclass[../projekt.tex]{subfiles}
+% \begin{document}
+
+
+% - Research pre viac aplikácií - napr. RPI s mini sieťou na riadenie križovatky
+%   a congestion reduction, lebo tam netreba veľkú presnosť, a napr. jetson na
+%   detekciu wrong-way a takých, a možno napr. colar na niečo medzi 
+
+\newpage
+
+\chapter{Introduction}
+% TODO malo by to asi byť viac o tom, čo budem v papieri písať
+
+% \todo{Na čo vehicle detection}
+Vehicle detection in real-time is crucial for enhancing traffic safety and flow.
+It can be used to manage traffic at an intersection using traffic lights, spot
+speeding or wrong-way drivers, enhance route planning to ease congestion, alert
+drivers to potentially dangerous situations, and offer insightful information
+about driving behavior.
+
+% \todo{ako na vehicle detection}
+% TODO toto nejak skrátiť. Alebo to vôbec nepatrí do úvodu
+
+There are various methods for detecting vehicles, each of which has
+its advantages and limitations. In this paper, we focus on detection using a
+camera-based traffic surveillance system. This approach was chosen because of
+its low price, versatility, and ease of installation.
+
+% \todo{detekcia s kamerami, výhody a nevýhody}
+
+There are two main techniques for vehicle detection using a camera: image
+processing and convolutional neural networks (CNNs). Both approaches are based
+on analyzing images to identify patterns and features to detect vehicles. Image
+processing techniques involve applying a series of pre-defined filters and
+transformations to an image to extract relevant information. CNNs, on the other
+hand, are a type of machine learning algorithm that learns to recognize patterns
+and features through training. CNNs are generally more effective than image
+processing techniques for vehicle detection, as they can learn to recognize
+complex patterns and features that may be difficult to extract using pre-defined
+filters and transformations, but they have traditionally required a significant
+amount of computing power, commonly provided by a graphical processing
+unit (GPU). However, recent developments suggest that it may now be possible to
+perform CNN-based tasks in real time with reduced processing requirements. 
+% Eliminating the need for a GPU and processing video on a CPU would greatly
+% reduce cost and
+
+% This will be evaluated in the current paper.
+
+% CNNs typically require lots of processing
+% power, but recent developments suggest that this might not be the case anymore.
+
+% However, image processing can still be extremely
+% helpful for simpler tasks or as a component of a larger vehicle detection
+% system. Additionally, CNNs typically require a lot more processing power.
+
+% \todo{cieľ a výsledky}
+% The implementation of vehicle detection using CNNs requires the utilization of
+% hardware with a high level of computational power, typically in the form of
+% graphical processing units (GPUs). This hardware is usually located in a central
+% server room and the video feed is transmitted over the internet, which can
+% consume a significant amount of bandwidth.
+
+% In this paper, we attempt to train a CNN with a smaller architecture that is
+% capable of running on a single central processing unit (CPU). This would
+% allow the hardware to be connected directly to the camera, with only the
+% detection information being transmitted over the internet. This approach has the
+% potential to reduce the computational demands on the hardware and potentially
+% mitigate the need for high-powered GPUs or servers in a remote location.
+
+
+In this paper, we attempt to train a CNN with a smaller architecture that is
+able to run on a single central processing unit (CPU) instead of a GPU. This
+would allow the system to process the camera feed on-site, rather than relying
+on its transmission over the internet and remote processing. This would reduce
+the cost of the system and the amount of network bandwidth required, as well as
+expand the range of purposes for which the system can be utilized.
+
+
+% \todo{štruktúra dokumentu (kde čo hľadať)}
+% v sekcii X ukážeme, aké datasety sme použili a info o nich. v sekcii Y 
+% aké modely sme použili a ako sme postupovali, neskôr experimenty pri ktorých
+% sme dosiahli 999999% úspešnosť a tak...
+
+
+\chapter{Background and Related Work}
+
+
+
+\section{Common Approaches to Vehicle Detection}
+
+This chapter contains a summary of commonly used solutions for the problem of
+vehicle detection. First, we introduce systems that are not based on cameras,
+and then we compare CNNs with image processing techniques. \todo{update}
+
+
+\subsection{Vehicle Detection Without a Camera}
+
+\todo{Many different types of detectors exist but none is perfect so they're
+used in harmony as complex systems consisting of many detectors?}
+
+\subsubsection*{Magnetic Sensors}
+
+One of the simplest solutions to detect vehicles is to use an induction
+loop.\cite{MagneticSensors} The sensor, composed of a single wire, can be buried
+under concrete and detect the presence of metal objects passing by. With a
+controller, induction loops typically provide data about vehicle presence, but
+using more advanced algorithms, speed, approximate classification and much more
+can be determined from this simple sensor. Although the design is very simple,
+installation is not and induction loops can even get damaged over time, while
+repairs call for temporary shutdowns of roads. It is worth noting that there
+are many other types of magnetic sensors, which can provide more detailed and
+accurate data with simpler sensor installation, but the idea stays the same.
+
+\subsubsection*{Ultrasonic Sensors}
+
+Another type of inexpensive and simple detector is an ultrasonic
+sensor.\cite{UltrasonicSensors} These sensors can operate in a variety of
+conditions and are typically mounted on existing infrastructure. These distance
+measurement sensors are usually used to detect the presence and distance of nearby
+vehicles and their speed, but they can be utilized in many different ways to
+even provide a simple shape of a vehicle to classify it.
+
+\subsubsection*{Radars and Lidars}
+
+Radars (Radio Detection and Ranging), which can also be mounted on existing
+infrastructure above ground, work similarly to ultrasonic sensors, but a single
+radar can oversee a much wider area of a road.\cite{RadarSensors} They are
+usually used to detect the presence, speed, heading and shape of a vehicle. The
+shape can then be used to predict a class of the vehicle. Lidars (Light
+Detection and Ranging) can be used in a similar way, but are far more accurate,
+which makes them better at detecting shapes and locations of objects.
+
+
+
+\subsection{Vehicle Detection Based on Image Processing}
+
+% Kamery sú fajn, univerzálne, neinvazívne
+
+% Ako to funguje?
+
+% Treba stabilizáciu, homography (projective transform), detekciu, ktorá tiež veľa stojí
+% K tomu, je ťažké to prispôsobiť na sneh, dážď, tornádo, divné vozidlá a tak
+% A konfigurácia závisí od kamery a na inú kameru by to trebalo prispôsobiť
+
+% However, they often have a problem with illumination changes, rain or snow,
+% shadows, occlusions or noise. 
+
+% Of course, there are methods for eliminating most
+% of these problems, most importantly shadow removal\cite{ShadowRemoval}, but
+% these methods add to the computational requirements of the system. 
+
+% As our research suggests, the image processing approach is highly suitable for
+% simpler tasks or lower accuracy requirements, but lacks versatility and is very
+% hard to implement.
+
+Image processing techniques take a camera feed as input and in addition to
+detecting the presence, speed, heading and shape of a vehicle, they can
+also provide its color, license plate and countless other characteristics,
+limited mostly by the software. These camera-based systems, which are
+relatively inexpensive, can be mounted on existing infrastructure, do not emit
+energy and are highly versatile, while providing a large amount of data.
+
+An algorithm applies a series of pre-defined filters and transformations to an
+image to extract patterns and features that resemble vehicles. Although modern
+convolutional neural networks (explained in the following \autoref{CNNs}) are generally
+more effective at recognizing more complex patterns, image processing can still
+be extremely helpful for simpler tasks or as a component of a larger vehicle
+detection system.
+
+A huge amount of research has been conducted on using image processing to solve
+the problem of vehicle detection.\cite{ImageProcessingOverview} Many of the
+techniques proposed can operate in real-time and are very reliable in typical
+environmental conditions. However, they can be sensitive to changes in
+illumination or have their performance affected by rain, snow, shadows,
+occlusions, or noise. While there are methods for addressing some of these
+challenges, such as shadow removal techniques\cite{ShadowRemoval}, they add to
+the computational requirements of the system. Overall, our research suggests
+that the image processing approach is well-suited for simpler tasks or systems
+with lower accuracy requirements, but it is often difficult to implement and may
+lack versatility in more complex or demanding scenarios.
+
+
+
+% \section{Vehicle Detection With a Camera}
+
+% Camera-based systems, which are relatively inexpensive, can be mounted on
+% existing infrastructure, do not emit energy and are highly versatile, while
+% providing a large amount of data. In addition to detecting the presence, speed,
+% heading and shape of a vehicle, these systems can also provide its color,
+% license plate and countless other characteristics.
+
+% There are two main techniques for vehicle detection using a camera: image
+% processing and convolutional neural networks (CNNs). Both approaches are based
+% on analyzing images to identify patterns and features to detect vehicles. Image
+% processing techniques involve applying a series of pre-defined filters and
+% transformations to an image to extract relevant information. CNNs, on the other
+% hand, are a type of machine learning algorithm that learns to recognize patterns
+% and features through training. CNNs are generally more effective than image
+% processing techniques for vehicle detection, as they can learn to recognize
+% complex patterns and features that may be difficult to extract using pre-defined
+% filters and transformations. However, image processing can still be extremely
+% helpful for simpler tasks or as a component of a larger vehicle detection
+% system. Additionally, CNNs typically require a lot more processing power.
+
+% \subsection*{Image Processing Techniques}
+
+% % Treba stabilizáciu, homography (projective transform), detekciu, ktorá tiež veľa stojí
+% % K tomu, je ťažké to prispôsobiť na sneh, dážď, tornádo, divné vozidlá a tak
+% % A konfigurácia závisí od kamery a na inú kameru by to trebalo prispôsobiť
+
+% % However, they often have a problem with illumination changes, rain or snow,
+% % shadows, occlusions or noise. 
+
+% % Of course, there are methods for eliminating most
+% % of these problems, most importantly shadow removal\cite{ShadowRemoval}, but
+% % these methods add to the computational requirements of the system. 
+
+% % As our research suggests, the image processing approach is highly suitable for
+% % simpler tasks or lower accuracy requirements, but lacks versatility and is very
+% % hard to implement.
+
+% A huge amount of research has been conducted on using image processing to solve
+% the problem of vehicle detection.\cite{ImageProcessingOverview} Many of the
+% techniques proposed can operate in real-time and are very reliable in typical
+% environmental conditions.  However, they can be sensitive to changes in
+% illumination or have their performance affected by rain, snow, shadows,
+% occlusions, or noise. While there are methods for addressing some of these
+% challenges, such as shadow removal techniques\cite{ShadowRemoval}, they add to
+% the computational requirements of the system. Overall, our research suggests
+% that the image processing approach is well-suited for simpler tasks or systems
+% with lower accuracy requirements, but it is often difficult to implement and may
+% lack versatility in more complex or demanding scenarios.
+
+
+
+% \subsection*{Convolutional Neural Networks}
+% % rozdiel od image processing prístupu a proste čo robia. Nie ako fungujú
+
+\section{Convolutional Neural Networks}
+\label{CNNs}
+
+\todo{ako fungujú?}
+
+% Ako fungujú CNNs + pár príkladov? Asi to skôr v related work
+% lightweight CNNs? Asi skôr v related work
+%
+
+
+
+% Detectors
+% Lightweight detectors
+% Vehicle detection
+% Lightweight vehicle detection ak niečo nájdem
+
+
+\section{Object Detection?}
+
+
+\section{Light-weight Detectors}
+
+
+\section{Vehicle Detection}
+
+
+
+
+
+% Nejaké nové veci, ktoré práca prináša, čo som vymyslel a tak
+\chapter{Methodology}
+
+
+\section{LabelBox annotation app?}
+
+
+\section{MMYOLO Library}
+
+In this project, we utilize an open-source library
+called MMYOLO\todo{cite} which is a part of the
+OpenMMLab project\todo{cite?}. It is an extension of the MMDetection\todo{cite}
+library, which provides a flexible framework for various object detection tasks,
+supporting many state-of-the-art object detection models. The MMYOLO library
+instead only focuses on object detectors from the YOLO family and at the time of
+writing, supports the state-of-the-art YOLO detector\,--\,YOLOv8. Some of the
+key features of the library include:
+% Other notable features of the library include:
+
+\begin{itemize}
+    \item It is based on the PyTorch\footnote{PyTorch is a popular open-source
+    machine learning framework used in computer vision and natural language
+    processing} machine learning framework
+    \item It builds upon and uses other open-source libraries from the OpenMMLab
+    project, such as MMCV\footnote{MMCV is a library for computer vision
+    research including building blocks for convolutional neural networks, tools
+    for image processing, transformations and much more},
+    MMEngine\footnote{MMEngine library serves as the training engine for all
+    OpenMMLab codebases, supporting hundreds of algorithms frequently used in
+    deep learning} and MMDeploy\footnote{MMDeploy library provides tools for
+    deploying deep learning models}
+    \item Library's modular design allows for easy customization and extension
+    of the codebase
+    \item It includes pre-trained models and their configurations which makes
+    training and comparing different models fast and simple, while making it
+    possible to use the transfer learning technique\todo{footnote ak som
+    nevysvetlil transfer learning v teórii} which significantly speeds up the
+    process.
+    \item Implementation of YOLO-specific components, such as the CSPDarknet and
+    PANet backbone networks
+    \item Support for YOLO-specific training techniques, like data augmentations
+    or loss functions
+\end{itemize}
+
+\todo{In practice - proste upraviť config a trénovať}
+
+
+
+
+\section{Datasets}
+
+Big and high-quality datasets are very important when training a CNN-based
+detector. In this section, used datasets are listed and analyzed. First, the
+criteria for recognizing an appropriate dataset for our task are explained. Each
+chosen dataset is then analyzed individually. Finally, a summary of all used
+datasets is provided.
+
+\subsection{Dataset Criteria}
+
+Here, we briefly explain the most important criteria for selecting datasets to
+be used in a project like this.
+
+\subsubsection*{Camera Angle}
+
+Since we're building a detector for a camera mounted on infrastructure, it is
+recommended to use datasets containing surveillance-type images. Datasets
+containing only images taken from, for example, a car dashboard camera, were
+therefore disregarded.
+
+\subsubsection*{Classes}
+
+If we don't want to re-label the dataset manually, its classes must be mappable
+to \textit{our} classes. In this work, 8 object classes are considered:
+\begin{itemize}
+    \item Bicycle
+    \item Motorcycle (any two-wheeled motorized vehicle)
+    \item Passenger Car
+    \item Transporter (or a van, pick-up truck, etc.)
+    \item Bus (including a minibus)
+    \item Truck
+    \item Trailer
+    \item Unknown
+\end{itemize}
+
+Many available datasets didn't annotate some of these classes or aggregated some of them into one
+and were therefore ignored.
+
+\subsubsection*{Diversity of Images}
+
+For the trained detector to generalize well, it's important for a dataset to
+contain images with different camera angles, lighting conditions, weather, etc.
+60 FPS continuous video does not bring much of an advantage.
+
+\subsubsection*{Dataset Quality}
+
+We observed that many datasets contained incorrect annotations or
+classifications. It is important to check the dataset and either fix faulty
+annotations, ignore incorrectly annotated images or even disregard the whole
+dataset.
+
+% \subsubsection*{Dataset Size}
+
+
+\subsection{Individual Datasets}
+
+This subsection individually analyzes all datasets used in this work.
+\autoref{DatasetsSummary} compares these datasets on a higher level for an
+overview. Example frames of each dataset are shown in figure \todo{examples -
+na jednom obrázku example z každého datasetu} \todo{pod každý dataset dať ref na
+example snímky?} \todo{ref na example snímky}.
+
+
+\subsubsection*{UA-DETRAC}
+\label{DetracDataset}
+
+The DETRAC dataset \cite{detrac} provided by the University at Albany is the
+biggest and the most important dataset for this work, originally containing
+\num{1274055} annotations of \num{8250} vehicles in \num{138252} images. The
+dataset is provided as frames from 100 video sequences of \SI{25}{fps} with the
+resolution being $960 \times 540$ pixels. The length of these sequences varies, but
+is usually between 30 seconds and 90 seconds. The video is of a surveillance
+type and almost all sequences have a unique point of view, usually from a
+bridge. Many sequences were recorded in rain or at night and there is no lens
+flare from cars' headlights.
+
+However, there are several issues with this dataset:
+\begin{itemize}
+    \item Bicycles, motorcycles and a few vehicles that cannot be classified are
+    not annotated at all
+    \item Bounding boxes are often loose and do not fit tightly to the objects
+    \item Vehicles near the edge of the frame, although fully visible,
+    sometimes lack labels
+    \item In several sequences, vehicles are tracked and annotated even on
+    frames on which they are fully occluded (by other vehicles or infrastructure)
+    \item Vehicle annotations are inconsistent in relation to masks, as some are
+    labeled even when masked, while others are left unlabeled even when already
+    fully visible outside of a mask. This is likely due to the camera being
+    hand-held while the mask is static throughout the sequence
+\end{itemize}
+
+These problems were fixed by importing the dataset to a labeling application
+LabelBox \cite{labelbox}, adjusting the masks (while also making them dynamic),
+annotating or masking bicycles, motorcycles and "unknown" vehicles and finally,
+carefully repairing individual annotations if needed. Many sequences were hectic
+or were annotated so poorly that reannotating would be too time-consuming, so
+only 71 of 100 sequences were reannotated.
+
+The reannotated dataset contains \num{733833} annotations in \num{99771}
+images and these classes (the dataset contains no trailers):
+\begin{itemize}
+    \item Bicycle
+    \item Motorcycle
+    \item Car
+    \item Bus
+    \item Van - mapped to \textit{transporter}
+    \item Others - mapped to \textit{truck}
+    \item Unknown
+\end{itemize}
+
+
+\subsubsection*{Miovision Traffic Camera Dataset}
+
+The MIO-TCD (Miovision traffic camera dataset) \cite{MIO2018} is another huge
+and very important dataset. Images are taken at different times of day by
+thousands of traffic cameras in Canada and the United States. Roughly $79\%$ of
+all images are of resolution $720 \times 480$ pixels, but the image quality
+seems to be lower. The rest is of resolution $342 \times 228$ pixels. \todo{ref
+na example fotku}
+
+The dataset consists of two parts: \textit{Classification dataset} and
+\textit{Localization dataset}. Only the \textit{Train} subset of the
+\textit{Classification} part is used here because the \textit{Test} subset is
+not annotated.
+
+The part used contains \num{351549} objects of these classes:
+\begin{itemize}
+    \item Pedestrian - ignored
+    \item Bicycle
+    \item Motorcycle
+    \item Car
+    \item Pickup truck - mapped to \textit{transporter}
+    \item Work van - mapped to \textit{transporter}
+    \item Bus
+    \item Articulated truck - mapped to \textit{truck}bridge. Many sequences were recorded in rain or at night and there is no lens flare from
+    cars' headlights.
+    \item Single unit truck - mapped to \textit{truck}
+    \item Non-motorized vehicle - mapped to \textit{trailer}
+    \item Motorized vehicle - mapped to \textit{unknown}
+\end{itemize}
+The processed dataset (without pedestrian annotations) contains \num{344416}
+objects in \num{110000} images.
+
+The images are of low quality, there aren't many bicycles and motorcycles, and
+more pictures with different weather and lighting conditions are needed.
+
+\todo{example fotka 720x480?}
+
+
+\subsubsection*{AAU RainSnow Traffic Surveillance Dataset}
+\label{AAUDataset}
+
+Another important dataset is the \textit{AAU RainSnow} dataset
+\cite{Bahnsen2019}. The authors mounted two synchronized (one RGB and one
+thermal) cameras on street lamps at seven different Danish intersections to take
+5-minute long videos at different lighting and weather conditions - night and
+day, rain and snow. They then extracted \num{2200} frames from the videos and
+annotated them on a pixel-level. Several different types of masks were also
+created and included in the dataset.
+
+In our work, we only use the annotated frames from the RGB camera, containing
+\num{13297} annotations in \num{2200} frames (before processing) of resolution
+$640 \times 480$ pixels. \todo{ref na example fotku}
+
+The dataset uses these 6 classes:
+\begin{itemize}
+    \item Pedestrian
+    \item Bicycle
+    \item Motorbike
+    \item Car
+    \item Bus
+    \item Truck
+\end{itemize}
+This creates a problem - vehicles of our internal class \textit{transporter}
+(van) don't have their own class in the dataset, but are classified as trucks.
+However, the dataset is small and it is impossible to perfectly divide
+transporters and trucks into two classes as there are many different models
+between which a line cannot be drawn.  Ignoring this issue should therefore not
+cause any problems.
+
+Several other minor problems were found when processing this dataset:
+\begin{itemize}
+    \item Frames in groups \verb|Egensevej-1|, \verb|Egensevej-3| and
+    \verb|Egensevej-5| are hardly usable because of the low-quality camera and
+    challenging weather and lighting conditions, so they were dismissed
+    \item Some frames had bounding boxes over the whole frame - this is most
+    certainly an annotation error. These labels were ignored as well
+    \item The mask for \verb|Hadsundvej| intersection didn't fully cover the
+    area that should be ignored. This was fixed by simply editing the mask
+\end{itemize}
+
+After processing, the dataset contains \num{10545} objects in \num{1899} images.
+
+
+\subsubsection*{Multi-View Traffic Intersection Dataset}
+
+For the MTID dataset, the authors \cite{Jensen2020} recorded one intersection
+from two points of view at \SI{30}{fps} - one camera was mounted on existing
+infrastructure and one was attached to a hovering drone. The dataset contains
+\num{65299} annotated objects in \num{5776} frames (equal share of frames for
+both cameras).
+
+\todo{ref na example fotku}
+
+All annotated objects fall into one of four classes:
+\begin{itemize}
+    \item Bicycle
+    \item Car
+    \item Bus
+    \item Lorry - mapped to \textit{truck}
+\end{itemize}
+This, at first, might not seem like enough, but a closer inspection of the
+annotated frames reveals that there are no pedestrians or motorcycles. However,
+similarly to the AAU dataset in \autoref{AAUDataset}, there are transporters in the frames
+that are classified as trucks. Again, this issue is simply ignored.
+
+When processing this dataset, two other problems were encountered:
+\begin{itemize}
+    \item Vehicles that are not on the road are not annotated, so they have to
+    be masked out. This is not as easy for the drone video because the camera is
+    moving, but it is still simple enough
+    \item Many frames of the drone footage lack some or all labels and have to
+    be ignored. Ranges of images numbers which are ignored: $[1,31]$,
+    $[659,659]$, $[1001,1318]$ and $[3301,3327]$
+\end{itemize}
+The processed dataset contains \num{64979} objects in \num{5399} frames.
+
+
+\subsubsection*{Night and Day Instance Segmented Park Dataset}
+
+Another useful dataset is the \textit{NDISPark} \cite{Luca2022}, which contains
+images of parked vehicles taken by a camera mounted on infrastructure. Although
+the annotated part of the dataset only contains \num{142} frames after
+processing, there are \num{3302} objects annotated in total. This still makes it
+a tiny dataset, but it provides images of vehicles from many different points of
+view and also contains many occluded vehicles. \todo{ref example fotku}
+Additionally, all frames are \num{2400} px in width and within \num{908} px and
+\num{1808} px in height.
+
+This dataset does not contain any classifications, but luckily, it only contains
+cars, \textit{transporters} and a few unattached car trailers. All
+\textit{transporters} and \textit{trailers} were manually classified.
+
+
+\subsubsection*{VisDrone Dataset}
+
+The VisDrone dataset \cite{Zhu2022} is very different from all the previous
+datasets since it doesn't just contain traffic surveillance images. Images are
+taken by a camera mounted on a drone, from many different points of view. After
+processing, there are \num{47720} annotated objects in \num{1610} frames.
+
+This dataset might be a helpful addition to our datasets as it contains useful
+negative images (many annotated people and new points of view) and it often
+captures vehicles from a bid's-eye view.
+
+Additionally, objects in this dataset are classified into 12 classes, which can
+be easily mapped to our 8 \textit{internal} classes.
+
+
+\subsection{Dataset processing}
+
+\todo{v akom formáte sú datasety, do akého ich konvertujem, aké súbory vytváram a tak. Asi pokojne vcelku podrobne}
+
+Before training, all datasets used in this project must be converted to a
+unified format, object classes need to be mapped to be the same in each dataset,
+some datasets include images with regions shat should be masked out and certain
+subsets or images of some datasets need to be ignored.
+
+For this, a python script was developed for each dataset. It first loads the
+annotations from the original format - COCO \todo{ref?} for AAU RainSnow, MTID
+and NDISPark, XML for DETRAC and different CSV formats for MIO-TCD and VisDrone.
+The script then maps the classes to ones shown in \todo{ref} and if needed,
+removes the ignored subsets or images before saving the labels in a COCO format.
+The processing script for NDISPark dataset also corrects the object classes
+before saving, as it was not done on the original ground-truth \todo{footnote
+explain?} file (class corrections are defined in the script itself).
+
+MMDetection's middle format was considered as a more efficient alternative to
+the COCO format, but the COCO format is more popular and is supported by most
+relevant application, while also being human-readable (MMDetection's middle
+format is saved as a pickle \todo{footnote?} file), and most importantly, MMYOLO
+and the newest version of MMDetection at the time of writing this paper (v3.0.0)
+does not seem to fully support datasets in the middle format.
+
+Several other python processing scripts were developed, to apply masks, combine
+all ground-truth files into one and split the combined ground-truth file into
+train, validation and test subsets. Additionally, scripts to review datasets
+manually were created - one to visualize a dataset by simply adding bounding
+boxes (with class labels) to the images and one converts the visualized images
+to video (or videos).
+
+A few more scripts were written, of which two are worth mentioning - one for
+uploading the DETRAC dataset to LabelBox for reannotation and one for
+downloading the reannotated labels.
+
+
+\subsection{Summary of Datasets}
+
+In \autoref{DatasetsSummary}, we compare used datasets on a higher level and
+show the number of images and instances contained with additional comments. It
+is clear that the DETRAC \autoref{DetracDataset} dataset amounts for most of our
+data and might have been enough by itself, but to make this project as
+successful as possible, every available useful dataset should be used. The
+images from the selected datasets feature a great variety of lighting and
+weather conditions, points of view, object scales and other relevant factors.
+Additionally, in \autoref{DatasetsCounts} we show the number of annotated object
+instances per class in all used datasets combined. \todo{Povedať niečo k class
+inbalance?}
+
+
+\begin{table}[t]
+\centering
+\label{DatasetsSummary}
+\begin{tabular}{|l|rr|p{5cm}|}
+    \hline
+    Dataset tag & \# images & \# instances & Comments \\
+    \hline
+    DETRAC      &  \num{99771}  & \num{733833} & Large \newline Continuous video \newline High-quality camera \newline Different lighting conditions \\
+    \hline
+    MIO-TCD     &  \num{110000} & \num{344416} & Large \newline Low-quality images \\
+    \hline
+    AAU         &    \num{1899} &  \num{10545} & Small \newline Different weather conditions \\
+    \hline
+    MTID        &    \num{5399} &  \num{64979} & Small \newline Continuous video \\
+    \hline
+    NDISPark    &     \num{142} &   \num{3302} & Small \newline Occlusions \\
+    \hline
+    VisDrone    &    \num{1610} &  \num{47720} & Small \newline Negative images \newline New points of view \\
+    \hline
+    \hline
+    Total       &  \num{218821} & \num{1204795} & - \\
+    \hline
+\end{tabular}
+\caption{High-level comparison of used datasets}
+\end{table}
+
+\begin{table}[t]
+\centering
+\label{DatasetsCounts}
+\begin{tabular}{|l|r|}
+    \hline
+    Class         & \# instances \\
+    \hline
+    Bicycle       &  \num{14036} \\
+    Motorcycle    &  \num{17187} \\
+    Passenger car & \num{916317} \\
+    Transporter   & \num{123585} \\
+    Bus           &  \num{64529} \\
+    Truck         &  \num{38069} \\
+    Trailer       &   \num{2360} \\
+    Unknown       &  \num{28712} \\
+    \hline
+    \hline
+    Total         & \num{1204795} \\
+    \hline
+\end{tabular}
+\caption{Numbers of class instances in all datasets combined}
+\end{table}
+
+
+\todo{Treba potom niekde povedať o train/val/test split. Tu?}
+
+
+\section{Model Configuration}
+
+In this section, an overview of configurations used to train the vehicle
+detectors is displayed. Configuration of an object detection model contains a
+set of parameters that define the model's behavior and the training, validation
+and testing pipelines. These parameters can have a significant impact on the
+model's speed and accuracy and tuning them is essential to achieve good results.
+
+Most of the YOLOv8 parameters are left unchanged from the default configuration
+of YOLOv8-m\footnote{TODO yolov8\_m\_syncbn\_fast\_8xb16-500e\_coco.py}, like: \\
+\textbf{Optimizer:} Stochastic Gradient Descent with momentum \num{0.937} and weight decay \num{0.0005} \\
+\textbf{Parameter scheduler:} Linear \verb|YOLOv5ParamScheduler| with learning rate factor of 0.01
+
+To compensate for some datasets being smaller than others while being important
+and of a high quality, a dataset wrapper \textit{RepeatDataset} is used, which
+makes the underlying dataset n-times more frequent when training. The repetition
+factor of each dataset is shown in \autoref{RepetitionFactors}.
+
+\begin{table}[h]
+\centering
+\label{RepetitionFactors}
+\small
+\begin{tabular}{|c|c|c|c|}
+    \hline
+    Dataset name & \# images & Repetition factor & \# images after over-sampling \\
+    \hline
+    DETRAC       &  \num{99771} &  1 & \num{99771} \\
+    MIO-TCD      & \num{110000} &  1 & \num{110000} \\
+    AAU RainSnow &   \num{1899} &  3 & \num{5697} \\
+    MTID         &   \num{5399} &  5 & \num{26995} \\
+    NDISPark     &    \num{142} & 25 & \num{3550} \\
+    VisDrone     &   \num{1610} &  4 & \num{6440} \\
+    \hline
+\end{tabular}
+\caption{Repetition factors for each dataset used when training.}
+\end{table}
+
+Configuration entries that were adjusted individually for each model can be
+found in \autoref{ModelSpecificConfigurations}.
+
+\begin{table}[h]
+\centering
+\label{ModelSpecificConfigurations}
+\small
+\begin{tabular}{|p{3cm}|c|c|c|c|c|c|}
+    \hline
+    % \multicolumn{7}{|c|c|c|c|c|c|c|}{Model}
+    \multirow{2}{*}{Model} & Deepen & Widen & \multirow{2}{*}{Learning rate} & \multirow{2}{*}{Batch size} & \multirow{2}{*}{Epochs} & Warmup \\
+    & factor & factor & & & & epochs \\
+    % & factor & factor & & & & epochs \\
+    \hline
+    YOLOv8 medium \newline $640 \times 384$ & & & & & & \\
+    \hline
+    YOLOv8 nano \newline $640 \times 384$   & & & & & & \\
+    \hline
+    YOLOv8 nano \newline $512 \times 288$   & & & & & & \\
+    \hline
+    YOLOv8 pico \newline $512 \times 288$   & & & & & & \\
+    \hline
+\end{tabular}
+\caption{Training configurations for individual models.}
+\end{table}
+
+
+\subsection{Training Augmentation Pipeline}
+
+Data augmentations are very important when training an object detector,
+especially for detectors from the YOLO family. An augmentation in this context
+refers to the process of applying various transformations to an image to
+artificially increase the size and diversity of the training dataset, which
+helps prevent overfitting and improves the generalization ability of the trained
+model. To a convolutional neural network, even a tiny rotation, translation,
+image flip, noise or color distortion makes an input image appear to be
+something completely different, so applying these transformations randomly to
+the input images is crucial to train a robust model.
+
+\todo{nezabudnúť že posledných 10 epoch sa mení pipeline. Napísať to tu niekde}
+
+% At the beginning of the pipeline, images and annotations are loaded.
+
+\subsubsection*{Resize}
+
+First, the image is resized to fit in the model's input size while, of course,
+keeping the aspect ratio unchanged.
+
+\subsubsection*{Pad}
+
+\label{PadTransformation}
+If the aspect ratio of the input image is not the same as the model's input, extra pixels around the input image must be added
+to adapt to the model input's aspect ratio. The \textbf{color value} of the padded pixels is set to RGB(114, 114, 114).
+
+\subsubsection*{Random Affine}
+
+The \textit{YOLOv5RandomAffine} applies affine transformations to the image,
+while randomly selecting the values from configured ranges. Parameters:\\
+\textbf{Maximum translation ratio:} 0.05 \\
+\textbf{Maximum rotation degree:} 5 \\
+\textbf{Maximum shear degree:} 3 \\
+\textbf{Scaling ratio} is set individually for each dataset as shown in \autoref{RandomAffineScalingRatios}.
+
+\begin{table}[h]
+\centering
+\label{RandomAffineScalingRatios}
+\begin{tabular}{|c|c|c|}
+    \hline
+    Dataset name & Minimum scaling ratio & Maximum scaling ratio \\
+    \hline
+    DETRAC       & 0.8 & 1.0 \\
+    MIO-TCD      & 1.0 & 1.1 \\
+    AAU RainSnow & 0.9 & 1.1 \\
+    MTID         & 0.9 & 2.0 \\
+    NDISPark     & 0.9 & 1.5 \\
+    VisDrone     & 1.5 & 2.5 \\
+    \hline
+\end{tabular}
+\caption{Image scaling ratios in \textit{RandomAffine} transformation for each dataset.}
+\end{table}
+
+The \textbf{color value for padding} around the tranformed image (if needed)
+is set to RGB(114, 114, 114) to be the same as in the \textit{Pad} \ref{PadTransformation} transformation.
+
+\subsubsection*{Cut Out}
+
+The \textit{CutOut} transformations randomly selects regions of the image and fills them by a single color. Again,
+parameters of this transformation are set individually for each dataset and are shown in \autoref{CutOutParams}.
+
+\begin{table}[h]
+\centering
+\label{CutOutParams}
+\begin{tabular}{|c|c|c|}
+    \hline
+    Dataset name & Number of regions & Size of a single region \\
+    \hline
+    DETRAC       &  6 & $22 \times 22$ px \\
+    MIO-TCD      &  4 & $26 \times 26$ px \\
+    AAU RainSnow &  8 & $10 \times 10$ px \\
+    NDISPark     & 12 & $20 \times 20$ px \\
+    MTID         & 12 & $10 \times 10$ px \\
+    VisDrone     & 20 & $8 \times 8$ px \\
+    \hline
+\end{tabular}
+\caption{\textit{CutOut} transformation parameters for each dataset.}
+\end{table}
+
+The \textbf{fill color value} is again set to RGB(114, 114, 114), same as for
+padding in the previous transformations.
+
+\subsubsection*{Custom Cut Out}
+
+A custom cut out transformation was developed, similar to \textit{CutOut} used
+in the previous step. Here, the regions are selected within each bounding box
+with a certain probability, rather than being chosen randomly within the image.
+Also, the region size is specified as a range of areas in relation to the
+bounding box area - if the upper value is $10\%$ and a bounding box area is 100
+pixels, the maximum region area can be 10 pixels.
+
+With the boolean option \textit{random\_pixels} toggled, the color of each pixel
+of a cut out region is generated randomly instead of filling it with a
+pre-defined color. However, it was found to have no effect after testing.
+
+The \textbf{probability} of a region being dropped from each bounding box is set
+to 0.5 and the \textbf{region area} is set to be randomly selected from
+interval $[5\%, 35\%]$.
+
+\subsubsection*{Albumentations}
+
+Albumentations\cite{Albumentations} are a popular open-source library for data
+augmentation. The MMYOLO \todo{cite or something?} library provides the option
+to use these transformations in the data augmentation pipeline. Settings are left unchanged from the original \todo{ref or something?}
+\textit{YOLOv8-m} configuration: \\
+\textbf{Blur probability:} 0.01 \\
+\textbf{Median blur probability:} 0.01 \\
+\textbf{Grayscale probability:} 0.01 \\
+\textbf{CLAHE probability:} 0.01
+
+\subsubsection*{HSV Random Augmentations}
+
+The \textit{YOLOv5HSVRandomAug} simply adjusts the hue, saturation and value of
+the image randomly.
+
+\subsubsection*{Random Flip}
+
+With \textbf{probability} of 0.5, the image is horizontally flipped using the
+\textit{RandomFlip} augmentation.
+
+\subsubsection*{Photometric Distortion}
+
+The \textit{PhotoMetricDistortion} augmentation distorts an image sequentially,
+while each transformation is applied with a probability of 0.5. It modifies the
+brightness, contrast, converts color from BGR to HSV, modifies the saturation,
+hue, converts from BGR to HSV, modifies the contrast and finally, randomly swaps
+the color channels.
+
+\subsubsection*{Filter Annotations}
+
+As the last step in the pipeline, \textit{FilterAnnotations} is called to remove
+bounding boxes with \textbf{width or height} lower than $8 \times 8$ pixels.
+
+
+\section{Model Optimizations}
+
+
+
+% Čo a ako som naprogramoval + zhodnotenie, porovnania a tak
+\chapter{Results}
+
+
+
+
+
+\chapter{Future Work}
+
+
+
+
+
+% Tu nemá byť nič nové - iba zhrnutie
+\chapter{Conclusion}
+
+
+
+% For compilation piecewise (see projekt.tex), it is necessary to uncomment it
+% \end{document}
