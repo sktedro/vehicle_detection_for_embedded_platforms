@@ -4,13 +4,19 @@ from copy import deepcopy
 
 # No way to find out the path of this file since mmdetection does shady things
 # with it, so we need an absolute filepath of the repository
-# repo_path = "/home/xskalo01/bp/proj/"
-repo_path = "/home/tedro/Desktop/d_projekty/bp/proj/"
+repo_path = "/home/xskalo01/bp/proj/"
+# repo_path = "/home/tedro/Desktop/d_projekty/bp/proj/"
 sys.path.append(repo_path)
 import paths
 import dataset.common as common
 
+sys.path.append(os.path.join(repo_path, "configs"))
+from settings import num_gpus, img_scale, max_epochs, warmup_epochs, val_interval, save_epoch_intervals
+
+
+# Import custom modules - Custom CutOut
 custom_imports = dict(imports=["custom_modules"], allow_failed_imports=False)
+
 
 default_scope = 'mmyolo'
 deepen_factor = 0.67
@@ -20,15 +26,10 @@ if paths.last_checkpoint_filepath:
     load_from = paths.last_checkpoint_filepath
     resume = True
 else:
-    load_from = paths.model_checkpoint_filepath
+    if paths.model_checkpoint_filepath:
+        load_from = paths.model_checkpoint_filepath
     resume = False
 
-num_gpus = 4
-
-max_epochs = 50 # 300 # originally 500
-warmup_epochs = 3 # 3 # originally 3
-val_interval = 2 # 5 # default 10
-save_epoch_intervals = val_interval
 max_keep_ckpts = 100
 
 pre_trained_model_batch_size_per_gpu = 16 # 16 for YOLOv8
@@ -56,10 +57,9 @@ test_num_workers = 16
 # Per gpu, because mmengine anyways says when training: LR is set based on batch size of [batch_size*num_gpus] and the current batch size is [batch_size]. Scaling the original LR by [1/num_gpus].
 # base_lr = 0.00125 * num_gpus * (train_batch_size_per_gpu / pre_trained_model_batch_size_per_gpu)
 base_lr = 0.00125 # Tried different LRs on 4 GPUs, 48 batch size, and 0.002 was worse and 0.0005 was worse, so scaling doesn't seem to be needed...
+# base_lr = 0.01 # Default
 
 lr_factor = 0.01
-
-img_scale = (384, 640) # height, width; need to be multiples of 32
 
 metainfo = dict(
     classes = tuple(common.classes_ids.keys())
@@ -309,7 +309,7 @@ default_hooks = dict(
         interval=50),
     param_scheduler=dict(
         type = 'YOLOv5ParamSchedulerHook',
-        scheduler_type = 'linear',
+        scheduler_type = 'linear', # TODO cosine?
         lr_factor = lr_factor,
         max_epochs = max_epochs,
         warmup_epochs = warmup_epochs),

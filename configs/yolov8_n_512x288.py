@@ -1,7 +1,7 @@
 _base_ = './yolov8_m.py'
 
 
-train_batch_size_per_gpu = 112 # YOLOv8-n, Sophie with 640x384. 120 -> CUDA out of memory
+train_batch_size_per_gpu = 192 # YOLOv8-n, Sophie with 512x288. 224 -> CUDA out of memory
 
 train_num_workers = 16
 
