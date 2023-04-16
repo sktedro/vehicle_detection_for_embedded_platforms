@@ -2,6 +2,6 @@
 !Makefile
 !.gitignore
 !doc.tex
-!doc.bib
+!doc-*
 !doc.pdf
 !src/
