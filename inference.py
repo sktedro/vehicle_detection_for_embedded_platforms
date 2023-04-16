@@ -1,6 +1,7 @@
 import os
 import argparse
 import shutil
+import time
 from tqdm import tqdm
 
 import mmcv
@@ -47,10 +48,12 @@ if __name__ == "__main__":
 
     # If epoch number was provided, update the checkpoint filepath
     if isinstance(args.epoch, int):
-        paths.last_checkpoint_filepath = os.path.join(paths.working_dirpath, f"epoch_{args.epoch}.pth")
+        paths.last_checkpoint_filepath = os.path.join(args.work_dir, f"epoch_{args.epoch}.pth")
     # Else, update the epoch number
     else:
         args.epoch = int(paths.last_checkpoint_filepath.split("_")[-1].split(".")[0])
+    # TODO remove this line:
+    # paths.last_checkpoint_filepath = "/home/xskalo01/bp/proj/working_dir_yolov8_n_conf8_512x288_prune/epoch_1.pth"
     assert os.path.exists(paths.last_checkpoint_filepath), "Could not find desired checkpoint: " + paths.last_checkpoint_filepath
 
     # Get the filepath of the model configuration file (should be the only file
@@ -90,8 +93,9 @@ if __name__ == "__main__":
     if not os.path.exists(out_img_dirpath):
         os.mkdir(out_img_dirpath)
 
-    # TODO something's wrong with the outputted video - it's not continuous!
     try:
+        inference_durations = []
+
         print("Reading and annotating images")
         for i in tqdm(range(args.number)):
 
@@ -105,7 +109,10 @@ if __name__ == "__main__":
                 break
 
             frame = mmcv.imconvert(frame, "bgr", "rgb")
+
+            start = time.process_time()
             result = inference_detector(model, frame)
+            inference_durations.append(time.process_time() - start)
 
             # Visualize predictions and save to a file
             out_img_filename = str(i).zfill(6) + ".jpg"
@@ -128,6 +135,9 @@ if __name__ == "__main__":
 
     except KeyboardInterrupt:
         print("KeyboardInterrupt: Stopped annotating images")
+
+    if len(inference_durations):
+        print("Average inference CPU time:", sum(inference_durations) / len(inference_durations))
 
     try:
         print("Converting to video")

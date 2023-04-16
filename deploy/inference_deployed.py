@@ -17,7 +17,9 @@ default_input = os.path.join(paths.proj_path, "vid", "day_hq.mp4")
 default_threshold = 0.3
 default_device = "cpu"
 
-# TODO use mm visualizer
+# TODO use MM visualizer?
+# TODO option to keep original image shape
+# TODO number of threads instead of -m flag
 
 
 if __name__ == "__main__":
@@ -25,6 +27,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("work_dir",             type=str,   default=paths.working_dirpath, nargs="?",
                         help="working dirpath. Leave blank to use one from paths.py")
+    parser.add_argument("-d", "--device",         type=str,   default="cpu",
+                        help="device to use for inference ('cpu' or 'cuda')")
     parser.add_argument("-s", "--step",         type=int,   default=1,
                         help="image step size (every step'th image will be taken)")
     parser.add_argument("-i", "--input",        type=str,   default=default_input,
@@ -68,13 +72,19 @@ if __name__ == "__main__":
     if not args.multi_thread: # Single-thread
         session_options.intra_op_num_threads = 1
         session_options.inter_op_num_threads = 1
-    session = onnxruntime.InferenceSession(model_filepath, session_options, providers=['CPUExecutionProvider'])
+
+    assert args.device in ["cpu", "cuda"], "Incorrect device name in --device"
+    if args.device == "cpu":
+        provider = "CPUExecutionProvider"
+    else
+        provider = "CUDAExecutionProvider"
+
+    session = onnxruntime.InferenceSession(model_filepath, session_options, providers=[provider])
 
     session.get_modelmeta()
     first_input_name = session.get_inputs()[0].name
     first_output_name = session.get_outputs()[0].name
 
-    # TODO read this from config
     detector_input_size = session.get_inputs()[0].shape[::-1][:2]
     print("Input size:", detector_input_size)
 

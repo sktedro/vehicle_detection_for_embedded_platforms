@@ -7,4 +7,4 @@ __pycache__
 .vscode
 working_dir*
 work_dir*
-checkpoints
+checkpoints/*.pth

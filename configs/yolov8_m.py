@@ -11,7 +11,7 @@ import paths
 import dataset.common as common
 
 sys.path.append(os.path.join(repo_path, "configs"))
-from settings import num_gpus, img_scale, max_epochs, warmup_epochs, val_interval, save_epoch_intervals
+from settings import num_gpus, img_scale, max_epochs, warmup_epochs, val_interval, save_epoch_intervals, base_lr
 
 
 # Import custom modules - Custom CutOut
@@ -47,17 +47,11 @@ train_batch_size_per_gpu = 46 # YOLOv8-m, Sophie with 640x384. 48 -> Cuda out of
 # train_num_workers = 1
 train_num_workers = 8 # On Sophie (internal GPU), more workers is better
 
-val_batch_size_per_gpu = 1
+val_batch_size_per_gpu = 32
 val_num_workers = 16
 
-test_batch_size_per_gpu = 1
+test_batch_size_per_gpu = 32
 test_num_workers = 16
-
-# Learning rate  = 0.00125 per gpu, linear to batch size (https://stackoverflow.com/questions/53033556/how-should-the-learning-rate-change-as-the-batch-size-change)
-# Per gpu, because mmengine anyways says when training: LR is set based on batch size of [batch_size*num_gpus] and the current batch size is [batch_size]. Scaling the original LR by [1/num_gpus].
-# base_lr = 0.00125 * num_gpus * (train_batch_size_per_gpu / pre_trained_model_batch_size_per_gpu)
-base_lr = 0.00125 # Tried different LRs on 4 GPUs, 48 batch size, and 0.002 was worse and 0.0005 was worse, so scaling doesn't seem to be needed...
-# base_lr = 0.01 # Default
 
 lr_factor = 0.01
 
@@ -309,7 +303,7 @@ default_hooks = dict(
         interval=50),
     param_scheduler=dict(
         type = 'YOLOv5ParamSchedulerHook',
-        scheduler_type = 'linear', # TODO cosine?
+        scheduler_type = 'linear',
         lr_factor = lr_factor,
         max_epochs = max_epochs,
         warmup_epochs = warmup_epochs),

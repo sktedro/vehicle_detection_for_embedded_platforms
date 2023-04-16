@@ -4,6 +4,8 @@ from mmengine.config import Config
 
 import paths
 
+# Note: to set port and IP (when training multiple models at the same time), set
+# `export PORT=29501` and `export MASTER_ADDR=127.0.0.2` or something like that
 
 def main():
 
