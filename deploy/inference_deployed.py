@@ -13,7 +13,7 @@ sys.path.append(repo_path)
 import paths
 
 
-default_input = os.path.join(paths.proj_path, "vid", "day_hq.mp4")
+default_input = os.path.join(paths.proj_path, "vid", "MVI_40701.mp4")
 default_threshold = 0.3
 default_device = "cpu"
 
@@ -26,17 +26,17 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("work_dir",             type=str,   default=paths.working_dirpath, nargs="?",
-                        help="working dirpath. Leave blank to use one from paths.py")
+                        help=f"working dirpath. Leave blank to use one from paths.py ({paths.working_dirpath})")
     parser.add_argument("-d", "--device",         type=str,   default="cpu",
-                        help="device to use for inference ('cpu' or 'cuda')")
+                        help=f"device to use for inference ('cpu' or 'cuda'). Default {default_device}")
     parser.add_argument("-s", "--step",         type=int,   default=1,
-                        help="image step size (every step'th image will be taken)")
+                        help="image step size (every step'th image will be taken). Default 1")
     parser.add_argument("-i", "--input",        type=str,   default=default_input,
-                        help="input video file")
+                        help=f"input video file. Default {default_input}")
     parser.add_argument("-n", "--number",       type=int,   default=-1,
-                        help="number of frames to annotate. -1 to annotate all")
+                        help="number of frames to annotate. -1 to annotate all. Default -1")
     parser.add_argument("-t", "--threshold",    type=float, default=default_threshold,
-                        help="score threshold")
+                        help=f"score threshold. Default {default_threshold}")
     parser.add_argument("-c", "--clean",        action="store_true",
                         help="remove the images dir after finish")
     parser.add_argument("-m", "--multi-thread", action="store_true",
@@ -65,7 +65,7 @@ if __name__ == "__main__":
     if not os.path.exists(out_img_dirpath):
         os.mkdir(out_img_dirpath)
 
-    model_filepath = os.path.join(paths.working_dirpath, paths.deploy_onnx_filename)
+    model_filepath = os.path.join(args.work_dir, paths.deploy_onnx_filename)
     assert os.path.exists(model_filepath), f"Model was not found at {model_filepath}"
 
     session_options = onnxruntime.SessionOptions()
@@ -76,7 +76,7 @@ if __name__ == "__main__":
     assert args.device in ["cpu", "cuda"], "Incorrect device name in --device"
     if args.device == "cpu":
         provider = "CPUExecutionProvider"
-    else
+    else:
         provider = "CUDAExecutionProvider"
 
     session = onnxruntime.InferenceSession(model_filepath, session_options, providers=[provider])

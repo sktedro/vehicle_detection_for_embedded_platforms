@@ -16,7 +16,7 @@ import paths
 from dataset import common
 
 
-default_input = "vid/day_hq.mp4"
+default_input = os.path.join(paths.proj_path, "vid", "MVI_40701.mp4")
 default_threshold = 0.3
 default_device = "cpu"
 
@@ -52,8 +52,6 @@ if __name__ == "__main__":
     # Else, update the epoch number
     else:
         args.epoch = int(paths.last_checkpoint_filepath.split("_")[-1].split(".")[0])
-    # TODO remove this line:
-    # paths.last_checkpoint_filepath = "/home/xskalo01/bp/proj/working_dir_yolov8_n_conf8_512x288_prune/epoch_1.pth"
     assert os.path.exists(paths.last_checkpoint_filepath), "Could not find desired checkpoint: " + paths.last_checkpoint_filepath
 
     # Get the filepath of the model configuration file (should be the only file

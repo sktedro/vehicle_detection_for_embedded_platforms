@@ -1,7 +1,7 @@
 _base_ = './yolov8_m.py'
 
 
-train_batch_size_per_gpu = 224 # YOLOv8-p, Sophie with 512x288. Even at this point, CPU is 100% utilized with 4 GPUs
+train_batch_size_per_gpu = 256
 
 train_num_workers = 16
 
@@ -11,8 +11,8 @@ train_dataloader = dict(
 
 optim_wrapper = dict(optimizer = dict(batch_size_per_gpu=train_batch_size_per_gpu))
 
-deepen_factor = 0.166
-widen_factor = 0.125
+deepen_factor = 0.33
+widen_factor = 0.25
 model = dict(
     backbone=dict(deepen_factor=deepen_factor, widen_factor=widen_factor),
     neck=dict(deepen_factor=deepen_factor, widen_factor=widen_factor),

@@ -1,7 +1,7 @@
 _base_ = './yolov8_m.py'
 
 
-train_batch_size_per_gpu = 224 # YOLOv8-p, Sophie with 512x288. Even at this point, CPU is 100% utilized with 4 GPUs
+train_batch_size_per_gpu = 512 # TODO
 
 train_num_workers = 16
 
