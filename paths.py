@@ -25,9 +25,9 @@ mmrazor_dirpath = os.path.join(proj_path, "..", "mmrazor")
 # Don't forget to update settings.py when changing the model config
 
 # TODO YOLOv8 with MobileNetV2 (indices 2,4,6)
-# working_dirname = "working_dir_yolov8_conf8_512x288_mobilenet_v2_indices_246"
-# model_config_filename = "yolov8_512x288_mobilenet_v2_indices_246.py"
-# model_checkpoint_filename = None
+working_dirname = "working_dir_yolov8_conf8_512x288_mobilenet_v2_indices_246"
+model_config_filename = "yolov8_512x288_mobilenet_v2_indices_246.py"
+model_checkpoint_filename = None
 
 # TODO YOLOv8-s
 # working_dirname = "working_dir_yolov8_s_conf8"
@@ -60,9 +60,9 @@ mmrazor_dirpath = os.path.join(proj_path, "..", "mmrazor")
 # model_checkpoint_filename = None
 
 # TODO YOLOv8-f 384x224
-working_dirname = "working_dir_yolov8_f_conf8_384x224_lr01"
-model_config_filename = "yolov8_f_384x224.py"
-model_checkpoint_filename = None
+# working_dirname = "working_dir_yolov8_f_conf8_384x224_lr01"
+# model_config_filename = "yolov8_f_384x224.py"
+# model_checkpoint_filename = None
 
 
 
@@ -83,8 +83,9 @@ distill_config_filepath = os.path.join(proj_path, "distill", "conf.py")
 
 ##### DEPLOY #####
 
-deploy_config_filename = "detection_onnxruntime_static.py"
-deploy_config_filepath = os.path.join(proj_path, "deploy", deploy_config_filename)
+deploy_config_filepath_onnx = os.path.join(proj_path, "deploy", "detection_onnxruntime_static.py")
+deploy_config_filepath_trt = os.path.join(proj_path, "deploy", "detection_tensorrt_static-640x640.py")
+deploy_config_filepath_ts = os.path.join(proj_path, "deploy", "detection_torchscript.py")
 deploy_onnx_filename = "end2end.onnx"
 deploy_trt_filename = "end2end.trt"
 deploy_armnn_filename = "end2end.armnn"
@@ -94,15 +95,34 @@ deploy_ncnn_filename = "end2end"
 
 ##### AUTOMATION #####
 
-last_checkpoint_link = os.path.join(working_dirpath, "last_checkpoint")
-if os.path.exists(last_checkpoint_link):
-    with open(last_checkpoint_link) as f:
-        last_checkpoint_filepath = f.read().replace("\n", "").replace("\r", "")
-        # The absolute path depends on the machine, so make it work anywhere:
-        last_checkpoint_filename = os.path.basename(last_checkpoint_filepath)
-        last_checkpoint_filepath = os.path.join(working_dirpath, last_checkpoint_filename)
-else:
-    last_checkpoint_filepath = None
+def get_last_checkpoint_filepath(working_dirpath):
+    last_checkpoint_link = os.path.join(working_dirpath, "last_checkpoint")
+    if os.path.exists(last_checkpoint_link):
+        with open(last_checkpoint_link) as f:
+            last_checkpoint_filepath = f.read().replace("\n", "").replace("\r", "")
+            # The absolute path depends on the machine, so make it work anywhere:
+            last_checkpoint_filename = os.path.basename(last_checkpoint_filepath)
+            last_checkpoint_filepath = os.path.join(working_dirpath, last_checkpoint_filename)
+    else:
+        last_checkpoint_filepath = None
+    return last_checkpoint_filepath
+last_checkpoint_filepath = get_last_checkpoint_filepath(working_dirpath)
+
+def get_config_from_working_dirpath(working_dirpath):
+    files = [f for f in os.listdir(working_dirpath) if f.endswith("py")]
+    if len(files) == 1:
+        return os.path.join(working_dirpath, files[0])
+    elif len(files) == 0:
+        raise Exception(f"FATAL: No config file was found in the working dir {working_dirpath}")
+    else:
+        # If only one is name can be found in configs, choose it
+        available_config_files = os.listdir(os.path.join(proj_path, "configs"))
+        files_filtered = [f for f in files if f in available_config_files]
+        if len(files_filtered) == 1:
+            print(f"Choosing {files_filtered[0]} as the config file")
+            return os.path.join(working_dirpath, files[0])
+        else:
+            raise Exception(f"FATAL: More than one python file found in the working dir: {files}")
 
 
 # Check that everything is in the right place

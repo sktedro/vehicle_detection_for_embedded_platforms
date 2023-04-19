@@ -24,7 +24,7 @@ class dotdict(dict):
 
 
 args = dotdict({
-        "deploy_cfg": paths.deploy_config_filepath,
+        "deploy_cfg": paths.deploy_config_filepath_onnx,
         "model_cfg": paths.model_config_filepath,
         "model": [os.path.join(paths.working_dirpath, paths.deploy_onnx_filename)],
         "work_dir": paths.working_dirpath,
@@ -52,7 +52,7 @@ def get_args():
 
 
 def test_deployed():
-    assert os.path.exists(paths.deploy_config_filepath)
+    assert os.path.exists(paths.deploy_config_filepath_onnx)
     assert os.path.exists(paths.model_config_filepath)
 
     test.parse_args = get_args

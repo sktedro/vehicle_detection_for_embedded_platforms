@@ -1,11 +1,11 @@
-"""
-Converts model (with settings as in paths.py) to ONNX format to the working dir.
-"""
-import os
-import sys
 import argparse
+import os
 from pprint import pprint
-from mmdeploy.apis import torch2onnx
+
+from mmdet.apis import init_detector
+from mmdeploy.apis import torch2torchscript # TODO use this!
+from mmyolo.utils import register_all_modules
+register_all_modules()
 
 import sys
 repo_path = os.path.join(os.path.dirname(__file__), '..')
@@ -14,7 +14,6 @@ import paths
 
 
 def main(args):
-    assert os.path.exists(paths.deploy_config_filepath_onnx), f"Deploy config path ({paths.deploy_config_filepath_onnx}) not found"
 
     if isinstance(args.epoch, int):
         checkpoint_filepath = os.path.join(args.work_dir, "epoch_" + str(args.epoch) + ".pth")
@@ -25,32 +24,45 @@ def main(args):
     model_config_filepath = paths.get_config_from_working_dirpath(args.work_dir)
 
     print(args.work_dir)
-    print(paths.deploy_config_filepath_onnx)
+    print(paths.deploy_config_filepath_ts)
     print(model_config_filepath)
     print(checkpoint_filepath)
 
-    print("Converting to ONNX")
+    model = init_detector(model_config_filepath, checkpoint_filepath, device="cpu")
 
-    def torch2onnx_debug(**kwargs):
+    if checkpoint_filepath.endswith(".pth"):
+        output_filepath = checkpoint_filepath[:-1] # Same name without `h` in `.pth`
+    else:
+        raise Exception(f"Checkpoint filename should have the .pth extension ({checkpoint_filepath})")
+
+    print("Converting to TorchScript")
+
+    # TODO Save as TorchScript
+    def torch2ts_debug(**kwargs):
         pprint(kwargs)
-        torch2onnx(**kwargs)
+        torch2torchscript(**kwargs)
 
-    torch2onnx_debug(
+    torch2ts_debug(
         img=os.path.join(repo_path, "deploy", "demo.jpg"),
         work_dir=args.work_dir,
-        save_file=args.output_filename,
-        deploy_cfg=paths.deploy_config_filepath_onnx,
+        save_file=output_filepath,
+        deploy_cfg=paths.deploy_config_filepath_ts,
         model_cfg=model_config_filepath,
         model_checkpoint=checkpoint_filepath,
         device="cpu"
         )
 
+    # This won't work because the model is not a PyTorch model
+    # model_scripted = torch.jit.script(model)
+    # model_scripted.save(output_filepath)
+
+    print(f"Saved to {output_filepath}")
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("work_dir",          type=str,   default=paths.working_dirpath, nargs="?",
                         help="working dirpath. Leave blank to use paths.working_dirpath")
-    parser.add_argument("-o", "--output_filename",   type=str,   default=paths.deploy_onnx_filename,
-                        help="output filename. Leave blank to use paths.deploy_onnx_filename")
     parser.add_argument("-e", "--epoch",     type=int,
                         help="epoch number to use. Leave blank to use latest")
     # TODO device arg?
