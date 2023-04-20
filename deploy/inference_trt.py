@@ -3,56 +3,117 @@ import argparse
 import shutil
 import time
 from tqdm import tqdm
-
 import mmcv
-from mmdet.apis import init_detector, inference_detector
+import numpy as np
+import torch
+import mmcv
+
+import sys
+repo_path = os.path.join(os.path.dirname(__file__), '..')
+sys.path.append(repo_path)
+import paths
+from dataset import common
+
+from mmdeploy.apis.utils import build_task_processor
+
+from mmdeploy.utils import get_input_shape, load_config
 
 # MMYOLO integration
 from mmyolo.utils import register_all_modules
 from mmyolo.registry import VISUALIZERS
 register_all_modules()
 
-import paths
-from dataset import common
+from mmengine.registry import TRANSFORMS
+
+from mmyolo.utils import register_all_modules as mmyolo_reg
+mmyolo_reg()
+
+from mmdet.utils import register_all_modules as mmdet_reg
+from mmdet.datasets.transforms import loading
+a = loading.LoadImageFromNDArray()
+mmdet_reg()
+
+@TRANSFORMS.register_module()
+class LoadImageFromNDArray(loading.LoadImageFromFile):
+    """Load an image from ``results['img']``.
+
+    Similar with :obj:`LoadImageFromFile`, but the image has been loaded as
+    :obj:`np.ndarray` in ``results['img']``. Can be used when loading image
+    from webcam.
+
+    Required Keys:
+
+    - img
+
+    Modified Keys:
+
+    - img
+    - img_path
+    - img_shape
+    - ori_shape
+
+    Args:
+        to_float32 (bool): Whether to convert the loaded image to a float32
+            numpy array. If set to False, the loaded image is an uint8 array.
+            Defaults to False.
+    """
+
+    def transform(self, results: dict) -> dict:
+        """Transform function to add image meta information.
+
+        Args:
+            results (dict): Result dict with Webcam read image in
+                ``results['img']``.
+
+        Returns:
+            dict: The dict contains loaded image and meta information.
+        """
+
+        img = results['img']
+        if self.to_float32:
+            img = img.astype(np.float32)
+
+        results['img_path'] = None
+        results['img'] = img
+        results['img_shape'] = img.shape[:2]
+        results['ori_shape'] = img.shape[:2]
+        return results
+
 
 
 default_input = os.path.join(paths.proj_path, "vid", "MVI_40701.mp4")
 default_threshold = 0.3
-default_device = "cpu"
 
 
 if __name__ == "__main__":
 
+    # TODO:
+    deploy_cfg = "/home/user/bp/proj/deploy/detection_tensorrt_static-640x640.py"
+
+    # TODO:
+    engine = "/home/user/bp/proj/working_dir_yolov8_m_384_conf8/end2end.engine"
+
+    from torch.cuda import is_available
+    assert is_available(), "Cuda not available on your device"
+
     parser = argparse.ArgumentParser()
     parser.add_argument("work_dir",          type=str,   default=paths.working_dirpath, nargs="?",
                         help="working dirpath. Leave blank to use one from paths.py")
-    parser.add_argument("-e", "--epoch",     type=int,
-                        help="epoch number to use. Leave blank to use latest")
     parser.add_argument("-s", "--step",      type=int,   default=1,
                         help="image step size (every step'th image will be taken)")
     parser.add_argument("-i", "--input",     type=str,   default=default_input,
                         help="input video file")
     parser.add_argument("-n", "--number",    type=int,   default=-1,
                         help="number of frames to annotate. -1 to annotate all")
-    parser.add_argument("-d", "--device",    type=str,   default=default_device,
-                        help="device for inference, cpu or cuda")
+    parser.add_argument("-d", "--device",    type=str,   default="cuda:0",
+                        help="device for inference, default cuda:0")
     parser.add_argument("-t", "--threshold", type=float, default=default_threshold,
                         help="score threshold")
     parser.add_argument("-c", "--clean",     action="store_true",
                         help="remove the images dir after finish")
     args = parser.parse_args()
 
-    assert isinstance(args.epoch, int) or paths.last_checkpoint_filepath != None, "Epoch number not given and last checkpoint filepath empty"
-
     assert os.path.exists(args.work_dir), "Working dir does not exist: " + args.work_dir
-
-    # If epoch number was provided, update the checkpoint filepath
-    if isinstance(args.epoch, int):
-        paths.last_checkpoint_filepath = os.path.join(args.work_dir, f"epoch_{args.epoch}.pth")
-    # Else, update the epoch number
-    else:
-        args.epoch = int(paths.last_checkpoint_filepath.split("_")[-1].split(".")[0])
-    assert os.path.exists(paths.last_checkpoint_filepath), "Could not find desired checkpoint: " + paths.last_checkpoint_filepath
 
     # Get the filepath of the model configuration file (should be the only file
     # in the work dir with .py extension
@@ -62,30 +123,31 @@ if __name__ == "__main__":
 
     assert os.path.exists(args.input), "Input video not found: " + args.input
 
-    if args.device.startswith("cuda"):
-        from torch.cuda import is_available
-        assert is_available(), "Cuda not available on your device"
 
     video = mmcv.VideoReader(args.input)
 
     if args.number == -1:
         args.number = len(video)
 
+    deploy_cfg, model_cfg = load_config(deploy_cfg, model_config_filepath)
+    task_processor = build_task_processor(model_cfg, deploy_cfg, args.device)
+    model = task_processor.build_backend_model([engine], task_processor.update_data_preprocessor)
+    # model = task_processor.init_backend_model([engine])
+    input_shape = get_input_shape(deploy_cfg)
+
     print("Working dir:", args.work_dir)
     print("Model:", model_config_filepath)
-    print("Checkpoint:", paths.last_checkpoint_filepath)
     print("Input video:", args.input, "at", int(video.fps), "fps")
     print("Device:", args.device)
     print("Number of frames:", args.number, "with step", args.step)
     print("Score threshold:", args.threshold)
 
-    out_img_dirname = f"annotated_e{args.epoch}_t{args.threshold}_" + os.path.basename(args.input).split(".")[0]
+    out_img_dirname = f"annotated_trt_t{args.threshold}_" + os.path.basename(args.input).split(".")[0]
     out_img_dirpath = os.path.join(args.work_dir, out_img_dirname + "/")
     out_vid_filename = out_img_dirname + ".mp4"
     out_vid_filepath = os.path.join(args.work_dir, out_vid_filename)
 
-    model = init_detector(model_config_filepath, paths.last_checkpoint_filepath, device=args.device)
-    visualizer = VISUALIZERS.build(model.cfg.visualizer)
+    visualizer = VISUALIZERS.build(model_cfg.visualizer)
     visualizer.dataset_meta["classes"] = tuple(common.classes_ids.keys())
 
     if not os.path.exists(out_img_dirpath):
@@ -96,7 +158,6 @@ if __name__ == "__main__":
 
         print("Reading and annotating images")
         for i in tqdm(range(args.number)):
-
             # Get the frame, convert to rgb and run inference
             # frame = video[i * args.step] # This doesn't work well :/
             frame = video.read()
@@ -108,8 +169,14 @@ if __name__ == "__main__":
 
             frame = mmcv.imconvert(frame, "bgr", "rgb")
 
+            model_inputs, _ = task_processor.create_input(frame, input_shape)
+
             start = time.process_time()
-            result = inference_detector(model, frame)
+            start_real = time.time()
+            with torch.no_grad():
+                # result = task_processor.run_inference(model, model_inputs)
+                result = model.test_step(model_inputs)
+            print(time.time() - start_real)
             inference_durations.append(time.process_time() - start)
 
             # Visualize predictions and save to a file
@@ -118,7 +185,7 @@ if __name__ == "__main__":
             visualizer.add_datasample(
                 name=out_img_filename,
                 image=frame,
-                data_sample=result,
+                data_sample=result[0],
                 draw_gt=False,
                 out_file=out_img_filepath,
                 pred_score_thr=args.threshold)
