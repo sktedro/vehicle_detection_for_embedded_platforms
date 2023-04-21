@@ -152,8 +152,6 @@ def get_config_from_working_dirpath(working_dirpath):
             raise Exception(f"FATAL: More than one python file found in the working dir: {files}")
 
 
-last_checkpoint_filepath = get_last_checkpoint_filepath(working_dirpath)
-
 # Check that everything is in the right place
 
 for path in [proj_path, datasets_dirpath, model_config_filepath, model_checkpoint_filepath]:

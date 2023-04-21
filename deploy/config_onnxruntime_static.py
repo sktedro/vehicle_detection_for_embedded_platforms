@@ -1,13 +1,17 @@
+# This will be replaced before deploying, by common.deploy_config_from_file()
+h = "WIDTH_PLACEHOLDER"
+w = "HEIGHT_PLACEHOLDER"
+output_filename = "FILENAME_PLACEHOLDER"
+
 onnx_config = dict(
     type='onnx',
     export_params=True,
     keep_initializers_as_inputs=False,
     opset_version=11,
-    save_file='end2end.onnx',
+    save_file=output_filename + '.onnx',
     input_names=['input'],
     output_names=['dets', 'labels'],
-    input_shape=None,
-    # input_shape=(640, 384),
+    input_shape=(w, h), # Shouldn't this be reversed? No (tested)
     optimize=True)
 codebase_config = dict(
     type='mmyolo',
