@@ -1,11 +1,11 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 # File taken from mmdeploy/tools/ and slightly modified by Patrik Skaloš
+# TODO refactor the code because this is humiliating
 import argparse
 import logging
 import os
 import os.path as osp
 import sys
-from collections import namedtuple
 from functools import partial
 
 import mmengine
@@ -105,13 +105,9 @@ def main(args):
     PIPELINE_MANAGER.enable_multiprocess(True, pipeline_funcs)
     PIPELINE_MANAGER.set_log_level(log_level, pipeline_funcs)
 
-    deploy_cfg_path = args.deploy_cfg
-    quant = args.quant
-    quant_image_dir = args.quant_image_dir
-
     # Get model and deploy configs
     model_cfg = load_config(model_config_filepath)
-    deploy_cfg = deploy_common.get_deploy_config(deploy_cfg_path, model_cfg, args.output_filename)
+    deploy_cfg = deploy_common.get_deploy_config(args.deploy_cfg, model_cfg, args.output_filename)
 
     # create work_dir if not
     mmengine.mkdir_or_exist(osp.abspath(args.work_dir))
@@ -194,7 +190,7 @@ def main(args):
         device=args.device)
 
     # ncnn quantization
-    if backend == Backend.NCNN and quant:
+    if backend == Backend.NCNN and args.quant:
         from onnx2ncnn_quant_table import get_table
 
         from mmdeploy.apis.ncnn import get_quant_model_file, ncnn2int8
@@ -213,7 +209,7 @@ def main(args):
                 'ncnn quant table',
                 target=get_table,
                 args=(onnx_path, deploy_cfg, model_cfg, quant_onnx,
-                      quant_table, quant_image_dir, args.device),
+                      quant_table, args.quant_image_dir, args.device),
                 kwargs=dict(),
                 ret_value=ret_value)
 

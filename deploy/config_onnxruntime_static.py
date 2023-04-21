@@ -26,3 +26,4 @@ codebase_config = dict(
         keep_top_k=100,
         background_label_id=-1),
     module=['mmyolo.deploy'])
+backend_config = dict(type='onnxruntime')
