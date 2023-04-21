@@ -35,13 +35,15 @@ def main(args):
     if args.number == -1:
         args.number = len(video)
 
+    model_filepath = os.path.join(args.work_dir, paths.deploy_onnx_filename)
+
     # Print args
     for name, value in vars(args).items():
         print(name + ":", value)
     print("input video fps:", round(video.fps, 2))
+    print("model:", model_filepath)
 
     # More assertions
-    model_filepath = os.path.join(args.work_dir, paths.deploy_onnx_filename)
     assert os.path.exists(model_filepath), f"Model was not found at {model_filepath}"
 
     # Paths for outputs
@@ -52,7 +54,7 @@ def main(args):
     if not os.path.exists(out_img_dirpath):
         os.mkdir(out_img_dirpath)
 
-    # Initialize a onnxruntime session
+    # Initialize an onnxruntime session
     session_options = onnxruntime.SessionOptions()
     if not args.multi_thread: # Single-thread
         session_options.intra_op_num_threads = 1
@@ -60,9 +62,7 @@ def main(args):
     provider = "CPUExecutionProvider" if args.device == "cpu" else "CUDAExecutionProvider"
     session = onnxruntime.InferenceSession(model_filepath, session_options, providers=[provider])
     session.get_modelmeta()
-
     session_input_name = session.get_inputs()[0].name
-
     detector_input_shape = session.get_inputs()[0].shape[::-1][:2]
     print("Detector input shape:", detector_input_shape)
 
@@ -120,9 +120,9 @@ def main(args):
             # Update pbar description - average inference duration
             avg_duration = sum(inference_durations) / len(inference_durations)
             if args.device == "cpu":
-                pbar.set_description(f"Avg CPU duration: {'%.3f' % avg_duration}s")
+                pbar.set_description(f"Avg inference CPU duration: {'%.3f' % avg_duration}s")
             else:
-                pbar.set_description(f"Avg real duration: {'%.3f' % avg_duration}s")
+                pbar.set_description(f"Avg inference real duration: {'%.3f' % avg_duration}s")
 
         print("Images annotated to", out_img_dirpath)
 

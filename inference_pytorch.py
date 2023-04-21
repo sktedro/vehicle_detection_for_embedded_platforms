@@ -7,9 +7,9 @@ from tqdm import tqdm
 
 import mmcv
 from mmdet.apis import init_detector, inference_detector
-from mmyolo.utils import register_all_modules
+from mmyolo.utils import register_all_modules as mmyolo_register_all_modules
 from mmyolo.registry import VISUALIZERS
-register_all_modules()
+mmyolo_register_all_modules()
 
 repo_path = os.path.join(os.path.dirname(__file__), '..')
 sys.path.append(repo_path)
@@ -43,8 +43,8 @@ def main(args):
     for name, value in vars(args).items():
         print(name + ":", value)
     print("input video fps:", round(video.fps, 2))
-    print("checkpoint:", checkpoint_filepath)
     print("model config:", model_config_filepath)
+    print("checkpoint:", checkpoint_filepath)
 
     # More assertions
     assert os.path.exists(checkpoint_filepath), "Could not find desired checkpoint: " + checkpoint_filepath
@@ -56,8 +56,10 @@ def main(args):
     if not os.path.exists(out_img_dirpath):
         os.mkdir(out_img_dirpath)
 
-    # Initialize the detector and a visualizer
+    # Initialize the detector
     model = init_detector(model_config_filepath, checkpoint_filepath, device=args.device)
+
+    # Initialize a visualizer
     visualizer = VISUALIZERS.build(model.cfg.visualizer)
     visualizer.dataset_meta["classes"] = tuple(common.classes_ids.keys())
 
@@ -80,6 +82,7 @@ def main(args):
             # Pre-process
             frame = mmcv.imconvert(frame, "bgr", "rgb")
 
+            # Run the inference and measure the duration
             if args.device == "cpu":
                 start = time.process_time()
                 result = inference_detector(model, frame)
@@ -103,9 +106,9 @@ def main(args):
             # Update pbar description - average inference duration
             avg_duration = sum(inference_durations) / len(inference_durations)
             if args.device == "cpu":
-                pbar.set_description(f"Avg CPU duration: {'%.3f' % avg_duration}s")
+                pbar.set_description(f"Avg inference CPU duration: {'%.3f' % avg_duration}s")
             else:
-                pbar.set_description(f"Avg real duration: {'%.3f' % avg_duration}s")
+                pbar.set_description(f"Avg inference real duration: {'%.3f' % avg_duration}s")
 
         print("Images annotated to", out_img_dirpath)
 
