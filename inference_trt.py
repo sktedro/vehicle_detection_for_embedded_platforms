@@ -1,3 +1,4 @@
+# TODO update based on inference_onnxruntime.py - keď už bude hotovo
 import os
 import argparse
 import shutil
