@@ -1,7 +1,7 @@
 _base_ = './yolov8_m.py'
 
 
-train_batch_size_per_gpu = 320
+train_batch_size_per_gpu = 380
 
 train_num_workers = 16
 

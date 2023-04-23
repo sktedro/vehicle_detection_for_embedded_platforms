@@ -13,6 +13,7 @@ onnx_config = dict(
     output_names=['dets', 'labels'],
     input_shape=(w, h), # Shouldn't this be reversed? No (tested)
     optimize=True)
+
 codebase_config = dict(
     type='mmyolo',
     task='ObjectDetection',
@@ -26,4 +27,5 @@ codebase_config = dict(
         keep_top_k=100,
         background_label_id=-1),
     module=['mmyolo.deploy'])
+
 backend_config = dict(type='onnxruntime')

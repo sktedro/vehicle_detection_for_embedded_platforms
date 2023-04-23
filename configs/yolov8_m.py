@@ -17,16 +17,19 @@ from settings import num_gpus, img_scale, max_epochs, warmup_epochs, val_interva
 # Import custom modules - Custom CutOut
 custom_imports = dict(imports=["custom_modules"], allow_failed_imports=False)
 
+work_dir = paths.working_dirpath
 
 default_scope = 'mmyolo'
 deepen_factor = 0.67
 widen_factor = 0.75
 
-if paths.last_checkpoint_filepath:
-    load_from = paths.last_checkpoint_filepath
+try:
+    load_from = paths.get_last_checkpoint_filepath(work_dir)
     resume = True
-else:
+except Exception as e:
+    print(f"Not resuming training because checkpoint was not found: {str(e)}. Trying a pre-trained model")
     if paths.model_checkpoint_filepath:
+        print(f"Pre-trained model found: {paths.model_checkpoint_filepath}")
         load_from = paths.model_checkpoint_filepath
     resume = False
 
@@ -60,7 +63,6 @@ metainfo = dict(
 )
 num_classes = len(metainfo["classes"])
 
-work_dir = paths.working_dirpath
 file_client_args = dict(backend='disk')
 
 min_gt_bbox_wh = (8, 8) # Default YOLOv8 is 1*1, but I imagine 8*8 being better

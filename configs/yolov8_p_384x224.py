@@ -1,7 +1,7 @@
 _base_ = './yolov8_m.py'
 
 
-train_batch_size_per_gpu = 512 # TODO
+train_batch_size_per_gpu = 576 # 640 too much for 24564MiB RAM 
 
 train_num_workers = 16
 
