@@ -164,7 +164,7 @@ if __name__ == "__main__":
     parser.add_argument("work_dir",             type=str,   default=paths.working_dirpath, nargs="?",
                         help=f"working dirpath. Leave blank to use one from paths.py ({paths.working_dirpath})")
     parser.add_argument("-e", "--engine",       type=str,
-                        help=f"inference engine filepath or filename. Defaultly taken from deploy configuration file")
+                        help="inference engine filepath or filename. Defaultly taken from deploy configuration file")
     parser.add_argument("-i", "--input",        type=str,   default=DEFAULT_INPUT,
                         help=f"input video file. Default {DEFAULT_INPUT}")
     parser.add_argument("-s", "--step",         type=int,   default=1,
