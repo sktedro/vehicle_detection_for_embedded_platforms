@@ -1,6 +1,6 @@
 # This will be replaced before deploying, by common.deploy_config_from_file()
-h = "WIDTH_PLACEHOLDER"
-w = "HEIGHT_PLACEHOLDER"
+w = "WIDTH_PLACEHOLDER"
+h = "HEIGHT_PLACEHOLDER"
 output_filename = "FILENAME_PLACEHOLDER"
 
 onnx_config = dict(
