@@ -229,25 +229,26 @@ def main(args):
         show_result=False)
 
     # get backend inference result, try render
-    create_process(
-        f'visualize {backend.value} model',
-        target=visualize_model,
-        args=(model_config_filepath, deploy_cfg, backend_files, img,
-              args.device),
-        kwargs=extra,
-        ret_value=ret_value)
+    if args.visualize:
+        create_process(
+            f'visualize {backend.value} model',
+            target=visualize_model,
+            args=(model_config_filepath, deploy_cfg, backend_files, img,
+                args.device),
+            kwargs=extra,
+            ret_value=ret_value)
 
-    # get pytorch model inference result, try visualize if possible
-    create_process(
-        'visualize pytorch model',
-        target=visualize_model,
-        args=(model_config_filepath, deploy_cfg, [checkpoint_filepath],
-              img, args.device),
-        kwargs=dict(
-            backend=Backend.PYTORCH,
-            output_file=osp.join(args.work_dir, 'output_pytorch.jpg'),
-            show_result=False),
-        ret_value=ret_value)
+        # get pytorch model inference result, try visualize if possible
+        create_process(
+            'visualize pytorch model',
+            target=visualize_model,
+            args=(model_config_filepath, deploy_cfg, [checkpoint_filepath],
+                img, args.device),
+            kwargs=dict(
+                backend=Backend.PYTORCH,
+                output_file=osp.join(args.work_dir, 'output_pytorch.jpg'),
+                show_result=False),
+            ret_value=ret_value)
     logger.info('All process success.')
 
 
@@ -263,6 +264,8 @@ def parse_args():
                         help="filename for the deployed model (without extension). Default end2end")
     parser.add_argument("-d", '--device',            type=str,   default='cpu',
                         help='device used for conversion. Default cpu')
+    parser.add_argument("-v", '--visualize',
+                        help='visualize the models (to compare the pytorch model and the backend model)', action='store_true')
     parser.add_argument("-q", '--quant',
                         help='quantize model to low bit', action='store_true')
     parser.add_argument('--calib-dataset-cfg',                   default=None,
