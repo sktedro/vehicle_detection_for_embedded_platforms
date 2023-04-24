@@ -12,6 +12,19 @@ onnx_config = dict(
     input_names=['input'],
     output_names=['dets', 'labels'],
     input_shape=(w, h), # Shouldn't this be reversed? No (tested)
+    dynamic_axes={ # Use a dynamic model, but only to be able to use batches
+        'input': {
+            0: 'batch',
+        },
+        'dets': {
+            0: 'batch',
+            1: 'num_dets',
+        },
+        'labels': {
+            0: 'batch',
+            1: 'num_dets',
+        },
+    },
     optimize=True)
 
 codebase_config = dict(
