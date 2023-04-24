@@ -231,8 +231,6 @@ val_pipeline = [
         meta_keys=('img_id', 'img_path', 'ori_shape', 'img_shape',
                    'scale_factor', 'pad_param'))
 ]
-test_pipeline = val_pipeline
-
 val_dataloader = dict(
     batch_size = val_batch_size_per_gpu,
     num_workers = val_num_workers,
@@ -250,6 +248,25 @@ val_dataloader = dict(
     )
 )
 
+# For some reason, test_pipeline needs a different pipeline. I guess validator
+# and tester scripts work differently or something...
+test_pipeline = [
+    dict(type='LoadImageFromFile',
+        file_client_args=file_client_args),
+    dict(type='LetterResize',
+        scale=img_scale, # This takes h*w, believe me...
+        allow_scale_up=False,
+        pad_val=dict(img=pad_val)),
+    dict(type='LoadAnnotations',
+        with_bbox=True,
+        _scope_='mmdet'),
+    # dict(type='mmdet.FilterAnnotations', # Can't be here - wouldn't be able to deploy
+    #     min_gt_bbox_wh=min_gt_bbox_wh,
+    #     keep_empty=False),
+    dict(type='mmdet.PackDetInputs',
+        meta_keys=('img_id', 'img_path', 'ori_shape', 'img_shape',
+                   'scale_factor', 'pad_param'))
+]
 test_dataloader = dict(
     batch_size = test_batch_size_per_gpu,
     num_workers = test_num_workers,
