@@ -47,11 +47,11 @@ num_gpus = 2
 # base_lr = 0.01
 
 # TODO YOLOv8-p 448x256
-# img_scale = (256, 448)
-# max_epochs = 500
-# base_lr = 0.01
+img_scale = (256, 448)
+max_epochs = 500
+base_lr = 0.01
 
-# TODO YOLOv8-p 384x224
+# YOLOv8-p 384x224
 # img_scale = (224, 384)
 # max_epochs = 500
 # base_lr = 0.01
@@ -61,15 +61,20 @@ num_gpus = 2
 # max_epochs = 500
 # base_lr = 0.01
 
-# TODO YOLOv8-f 448x256
+# YOLOv8-f 448x256
 # img_scale = (256, 448)
 # max_epochs = 500
 # base_lr = 0.01
 
-# TODO YOLOv8-f 384x224
-img_scale = (224, 384)
-max_epochs = 500
-base_lr = 0.01
+# YOLOv8-f 384x224
+# img_scale = (224, 384)
+# max_epochs = 500
+# base_lr = 0.01
+
+# YOLOv8-f 352x192
+# img_scale = (192, 352)
+# max_epochs = 500
+# base_lr = 0.01
 
 
 # YOLOv8 MobileNetV2 512x288

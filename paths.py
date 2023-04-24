@@ -22,14 +22,14 @@ mmrazor_dirpath = os.path.join(proj_path, "..", "mmrazor")
 
 ##### TODO WORK DIR #####
 
-# Don't forget to update settings.py when changing the model config
+# !!! Don't forget to update configs/settings.py when changing the model config
 
-# TODO YOLOv8 with MobileNetV2 (indices 2,4,6)
+# YOLOv8 with MobileNetV2 (indices 2,4,6)
 # working_dirname = "working_dir_yolov8_conf8_512x288_mobilenet_v2_indices_246"
 # model_config_filename = "yolov8_512x288_mobilenet_v2_indices_246.py"
 # model_checkpoint_filename = None
 
-# TODO YOLOv8-s
+# YOLOv8-s
 # working_dirname = "working_dir_yolov8_s_conf8"
 # model_config_filename = "yolov8_s.py"
 # model_checkpoint_filename = "yolov8_s_syncbn_fast_8xb16-500e_coco_20230117_180101-5aa5f0f1.pth"
@@ -40,28 +40,33 @@ mmrazor_dirpath = os.path.join(proj_path, "..", "mmrazor")
 # model_checkpoint_filename = "yolov8_n_syncbn_fast_8xb16-500e_coco_20230114_131804-88c11cdb.pth"
 
 # TODO YOLOv8-p 448x256
-# working_dirname = "working_dir_yolov8_p_conf8_448x256_lr01"
-# model_config_filename = "yolov8_p_448x256.py"
-# model_checkpoint_filename = None
+working_dirname = "working_dir_yolov8_p_conf8_448x256_lr01"
+model_config_filename = "yolov8_p_448x256.py"
+model_checkpoint_filename = None
 
-# TODO YOLOv8-p 384x224
+# YOLOv8-p 384x224
 # working_dirname = "working_dir_yolov8_p_conf8_384x224_lr01"
 # model_config_filename = "yolov8_p_384x224.py"
 # model_checkpoint_filename = None
 
-# TODO YOLOv8-f 512x288
-working_dirname = "working_dir_yolov8_f_conf8_512x288_lr01"
-model_config_filename = "yolov8_f_512x288.py"
-model_checkpoint_filename = None
+# YOLOv8-f 512x288
+# working_dirname = "working_dir_yolov8_f_conf8_512x288_lr01"
+# model_config_filename = "yolov8_f_512x288.py"
+# model_checkpoint_filename = None
 
-# TODO YOLOv8-f 448x256
+# YOLOv8-f 448x256
 # working_dirname = "working_dir_yolov8_f_conf8_448x256_lr01"
 # model_config_filename = "yolov8_f_448x256.py"
 # model_checkpoint_filename = None
 
-# TODO YOLOv8-f 384x224
+# YOLOv8-f 384x224
 # working_dirname = "working_dir_yolov8_f_conf8_384x224_lr01"
 # model_config_filename = "yolov8_f_384x224.py"
+# model_checkpoint_filename = None
+
+# YOLOv8-f 352x192
+# working_dirname = "working_dir_yolov8_f_conf8_352x192_lr01"
+# model_config_filename = "yolov8_f_352x192.py"
 # model_checkpoint_filename = None
 
 
@@ -142,12 +147,12 @@ def get_config_from_working_dirpath(working_dirpath):
     elif len(files) == 0:
         raise Exception(f"FATAL: No config file was found in the working dir {working_dirpath}")
     else:
-        # If only one is name can be found in configs, choose it
+        # If only one name can be found in configs, choose it
         available_config_files = os.listdir(os.path.join(proj_path, "configs"))
         files_filtered = [f for f in files if f in available_config_files]
         if len(files_filtered) == 1:
             print(f"Choosing {files_filtered[0]} from {files} as the config file")
-            return os.path.join(working_dirpath, files[0])
+            return os.path.join(working_dirpath, files_filtered[0])
         else:
             raise Exception(f"FATAL: More than one python file found in the working dir: {files}")
 
