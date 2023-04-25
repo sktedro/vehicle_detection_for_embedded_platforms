@@ -135,7 +135,8 @@ def main(args):
             start = time.time()
             with torch.no_grad():
                 results = model.test_step(model_inputs)
-            inference_durations.append((time.time() - start) / len(frames))
+            if i // args.batch_size > args.warmup:
+                inference_durations.append((time.time() - start) / len(frames))
 
             # Visualize predictions and save to files
             for img_in_batch_i in range(len(frames)):
@@ -154,8 +155,9 @@ def main(args):
             pbar.update(args.batch_size)
 
             # Update pbar description - average inference duration
-            avg_duration = sum(inference_durations) / len(inference_durations) / args.batch_size
-            pbar.set_description(f"Avg inference duration: {'%.3f' % avg_duration}s")
+            if len(inference_durations):
+                avg_duration = sum(inference_durations) / len(inference_durations)
+                pbar.set_description(f"Avg inference duration: {'%.3f' % avg_duration}s")
 
         del pbar
         print("Images annotated to", out_img_dirpath)
@@ -164,7 +166,7 @@ def main(args):
         print("KeyboardInterrupt: Stopped annotating images")
 
     if len(inference_durations):
-        avg_duration = sum(inference_durations) / len(inference_durations) / args.batch_size
+        avg_duration = sum(inference_durations) / len(inference_durations)
         print("Average inference duration (per sample):", avg_duration)
 
     try:
@@ -199,10 +201,12 @@ if __name__ == "__main__":
                         help="inference engine filepath or filename. Defaultly taken from deploy configuration file")
     parser.add_argument("-i", "--input",        type=str,   default=DEFAULT_INPUT,
                         help=f"input video file. Default {DEFAULT_INPUT}")
-    parser.add_argument("-s", "--step",         type=int,   default=1,
-                        help="image step size (every step'th image will be taken). Default 1")
     parser.add_argument("-b", "--batch-size",   type=int,   default=1,
                         help="Inference batch size. Model needs to be dynamic to allow for it! Default 1")
+    parser.add_argument("-s", "--step",         type=int,   default=1,
+                        help="image step size (every step'th image will be taken). Default 1")
+    parser.add_argument("-w", "--warmup",       type=int,   default=10,
+                        help="don't count first <w> batches into the average inference time. Default 10")
     parser.add_argument("-n", "--number",       type=int,   default=-1,
                         help="number of frames to annotate. Default -1 to annotate all")
     parser.add_argument("-t", "--threshold",    type=float, default=DEFAULT_THRESHOLD,

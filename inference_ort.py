@@ -18,6 +18,7 @@ DEFAULT_INPUT = os.path.join(paths.proj_path, "vid", "MVI_40701.mp4")
 DEFAULT_THRESHOLD = 0.3
 DEFAULT_DEVICE = "cpu"
 
+
 # TODO inference_common.py alebo niečo, kde bude väčšina tohto kódu...
 # Môžem napríklad z onnxruntime vrátiť bboxes labels scores alebo dokonca
 # PackDetInputs či ako sa volá to, čo vracia model od task_processora, a také
@@ -27,6 +28,7 @@ DEFAULT_DEVICE = "cpu"
 # TODO option to keep original image shape (transform back to it after inference)
 
 # TODO use MM visualizer?
+
 
 def main(args):
     # Basic assertions
@@ -126,11 +128,13 @@ def main(args):
             if args.device == "cpu":
                 start = time.process_time()
                 bboxes, labels = session.run(None, {session_input_name: detector_input})
-                inference_durations.append((time.process_time() - start) / len(frames_orig))
+                if i // args.batch_size > args.warmup:
+                    inference_durations.append((time.process_time() - start) / len(frames_orig))
             else:
                 start = time.time()
                 bboxes, labels = session.run(None, {session_input_name: detector_input})
-                inference_durations.append((time.time() - start) / len(frames_orig))
+                if i // args.batch_size > args.warmup:
+                    inference_durations.append((time.time() - start) / len(frames_orig))
 
             for img_in_batch_i in range(len(frames_resized)):
                 frame = frames_resized[img_in_batch_i]
@@ -153,11 +157,12 @@ def main(args):
             pbar.update(args.batch_size)
 
             # Update pbar description - average inference duration
-            avg_duration = sum(inference_durations) / len(inference_durations)
-            if args.device == "cpu":
-                pbar.set_description(f"Avg inference CPU duration: {'%.3f' % avg_duration}s")
-            else:
-                pbar.set_description(f"Avg inference real duration: {'%.3f' % avg_duration}s")
+            if len(inference_durations):
+                avg_duration = sum(inference_durations) / len(inference_durations)
+                if args.device == "cpu":
+                    pbar.set_description(f"Avg inference CPU duration: {'%.3f' % avg_duration}s")
+                else:
+                    pbar.set_description(f"Avg inference real duration: {'%.3f' % avg_duration}s")
 
         del pbar
         print("Images annotated to", out_img_dirpath)
@@ -199,10 +204,12 @@ if __name__ == "__main__":
                         help=f"device to use for inference ('cpu' or 'cuda'). Default {DEFAULT_DEVICE}")
     parser.add_argument("-i", "--input",          type=str,   default=DEFAULT_INPUT,
                         help=f"input video file. Default {DEFAULT_INPUT}")
-    parser.add_argument("-s", "--step",           type=int,   default=1,
-                        help="image step size (every step'th image will be taken). Default 1")
     parser.add_argument("-b", "--batch-size",     type=int,   default=1,
                         help="Inference batch size. Model needs to be dynamic to allow for it! Default 1")
+    parser.add_argument("-s", "--step",           type=int,   default=1,
+                        help="image step size (every step'th image will be taken). Default 1")
+    parser.add_argument("-w", "--warmup",       type=int,   default=10,
+                        help="don't count first <w> batches into the average inference time. Default 10")
     parser.add_argument("-n", "--number",         type=int,   default=-1,
                         help="number of frames to annotate. Default -1 to annotate all")
     parser.add_argument("-t", "--threshold",      type=float, default=DEFAULT_THRESHOLD,
