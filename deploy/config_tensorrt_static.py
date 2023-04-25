@@ -39,4 +39,4 @@ backend_config = dict(
                     opt_shape=[1, 3, h, w],
                     max_shape=[1, 3, h, w])))])
 
-use_efficientnms = True
+use_efficientnms = False # EfficientNMS doesn't work for some reason
