@@ -121,11 +121,11 @@ def main(args):
             if args.device == "cpu":
                 start = time.process_time()
                 bboxes, labels = session.run(None, {session_input_name: detector_input})
-                inference_durations.append(time.process_time() - start)
+                inference_durations.append((time.process_time() - start) / len(frames_orig))
             else:
                 start = time.time()
                 bboxes, labels = session.run(None, {session_input_name: detector_input})
-                inference_durations.append(time.time() - start)
+                inference_durations.append((time.time() - start) / len(frames_orig))
 
             for img_in_batch_i in range(len(frames_resized)):
                 frame = frames_resized[img_in_batch_i]

@@ -1,4 +1,5 @@
 import argparse
+import numpy as np
 import os
 import shutil
 import time
@@ -33,6 +34,15 @@ DEFAULT_THRESHOLD = 0.3
 
 
 def main(args):
+    # Basic assertions
+    assert torch.cuda.is_available(), "Cuda not available on your device"
+    assert os.path.exists(args.work_dir), "Working dir does not exist: " + args.work_dir
+    assert os.path.exists(args.input), "Input video not found: " + args.input
+    assert args.step > 0
+    assert args.batch_size >= 1
+    assert args.number >= -1
+    assert 0 <= args.threshold <= 1
+
     video = mmcv.VideoReader(args.input)
 
     if args.number == -1:
@@ -85,8 +95,8 @@ def main(args):
     # Initialize the detector and a visualizer
     task_processor = build_task_processor(model_config, deploy_config, "cuda")
     model = task_processor.build_backend_model([args.engine], task_processor.update_data_preprocessor)
-    detector_input_shape = get_input_shape(deploy_config)
-    print("Detector input shape:", detector_input_shape)
+    input_w, input_h = get_input_shape(deploy_config)
+    print("Detector input shape (w, h):", input_w, input_h)
 
     # Initialize a visualizer
     visualizer = VISUALIZERS.build(model_config.visualizer)
@@ -97,49 +107,65 @@ def main(args):
     try:
 
         pbar = tqdm(range(args.number))
-        for i in pbar:
+        for i in range(0, args.number, args.batch_size): # Progress bar will be updated manually based on the batch size
 
-            # Get the frame
-            # frame = video[i * args.step] # This doesn't work well :/
-            frame = video.read()
-            for _ in range(args.step - 1): # This fixes it
-                video.read()
+            frames = []
 
-            if frame is None:
+            # Read a frame
+            for _ in range(args.batch_size):
+
+                # This is necessary - indexing in the video doesn't work well
+                frame = video.read()
+                for _ in range(args.step - 1): # Skip frames according to step
+                    video.read()
+
+                if frame is None:
+                    break
+
+                frame = mmcv.imconvert(frame, "bgr", "rgb")
+                frames.append(frame)
+
+            if len(frames) == 0:
                 break
 
-            # Pre-process
-            frame = mmcv.imconvert(frame, "bgr", "rgb")
-            model_inputs, _ = task_processor.create_input(frame, detector_input_shape)
+            model_inputs, _ = task_processor.create_input(frames,
+                                                          (input_w, input_h))
 
             # Run the inference and measure the duration
             start = time.time()
             with torch.no_grad():
                 results = model.test_step(model_inputs)
-            inference_durations.append(time.time() - start)
+            inference_durations.append((time.time() - start) / len(frames))
 
-            # Visualize predictions and save to a file
-            out_img_filename = str(i).zfill(6) + ".jpg"
-            out_img_filepath = os.path.join(out_img_dirpath, out_img_filename)
-            visualizer.add_datasample(
-                name=out_img_filename,
-                image=frame,
-                data_sample=results[0],
-                draw_gt=False,
-                out_file=out_img_filepath,
-                pred_score_thr=args.threshold)
+            # Visualize predictions and save to files
+            for img_in_batch_i in range(len(frames)):
+                img_number = i + img_in_batch_i
+                out_img_filename = str(img_number).zfill(6) + ".jpg"
+                out_img_filepath = os.path.join(out_img_dirpath, out_img_filename)
+                visualizer.add_datasample(
+                    name=out_img_filename,
+                    image=frames[img_in_batch_i],
+                    data_sample=results[img_in_batch_i],
+                    draw_gt=False,
+                    out_file=out_img_filepath,
+                    pred_score_thr=args.threshold)
+
+            # Update pbar
+            pbar.update(args.batch_size)
 
             # Update pbar description - average inference duration
-            avg_duration = sum(inference_durations) / len(inference_durations)
+            avg_duration = sum(inference_durations) / len(inference_durations) / args.batch_size
             pbar.set_description(f"Avg inference duration: {'%.3f' % avg_duration}s")
 
+        del pbar
         print("Images annotated to", out_img_dirpath)
 
     except KeyboardInterrupt:
         print("KeyboardInterrupt: Stopped annotating images")
 
     if len(inference_durations):
-        print("Average inference duration:", sum(inference_durations) / len(inference_durations))
+        avg_duration = sum(inference_durations) / len(inference_durations) / args.batch_size
+        print("Average inference duration (per sample):", avg_duration)
 
     try:
         print("Converting to video")
@@ -175,6 +201,8 @@ if __name__ == "__main__":
                         help=f"input video file. Default {DEFAULT_INPUT}")
     parser.add_argument("-s", "--step",         type=int,   default=1,
                         help="image step size (every step'th image will be taken). Default 1")
+    parser.add_argument("-b", "--batch-size",   type=int,   default=1,
+                        help="Inference batch size. Model needs to be dynamic to allow for it! Default 1")
     parser.add_argument("-n", "--number",       type=int,   default=-1,
                         help="number of frames to annotate. Default -1 to annotate all")
     parser.add_argument("-t", "--threshold",    type=float, default=DEFAULT_THRESHOLD,
@@ -182,13 +210,5 @@ if __name__ == "__main__":
     parser.add_argument("-c", "--clean",        action="store_true",
                         help="remove the images dir after finish")
     args = parser.parse_args()
-
-    # Basic assertions
-    assert torch.cuda.is_available(), "Cuda not available on your device"
-    assert os.path.exists(args.work_dir), "Working dir does not exist: " + args.work_dir
-    assert os.path.exists(args.input), "Input video not found: " + args.input
-    assert args.step > 0
-    assert args.number >= -1
-    assert 0 <= args.threshold <= 1
 
     main(args)
