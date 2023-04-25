@@ -46,7 +46,12 @@ def main(args):
     if args.number == -1:
         args.number = len(video)
 
-    model_filepath = os.path.join(args.work_dir, paths.deploy_onnx_filename)
+    if os.path.exists(args.model_filepath):
+        model_filepath = args.model_filepath
+    elif os.path.exists(os.path.join(args.work_dir, args.model_filepath)):
+        model_filepath = os.path.join(args.work_dir, args.model_filepath)
+    else:
+        raise Exception(f"Model file not found ({args.model_filepath})")
 
     # Print args
     for name, value in vars(args).items():
@@ -148,7 +153,7 @@ def main(args):
             pbar.update(args.batch_size)
 
             # Update pbar description - average inference duration
-            avg_duration = sum(inference_durations) / len(inference_durations) / args.batch_size
+            avg_duration = sum(inference_durations) / len(inference_durations)
             if args.device == "cpu":
                 pbar.set_description(f"Avg inference CPU duration: {'%.3f' % avg_duration}s")
             else:
@@ -161,7 +166,7 @@ def main(args):
         print("KeyboardInterrupt: Stopped annotating images")
 
     if len(inference_durations):
-        avg_duration = sum(inference_durations) / len(inference_durations) / args.batch_size
+        avg_duration = sum(inference_durations) / len(inference_durations)
         if args.device == "cpu":
             print("Average inference CPU duration (per sample):", avg_duration)
         else:
@@ -186,23 +191,25 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("work_dir",             type=str,   default=paths.working_dirpath, nargs="?",
+    parser.add_argument("work_dir",               type=str,   default=paths.working_dirpath, nargs="?",
                         help=f"working dirpath. Leave blank to use one from paths.py ({paths.working_dirpath})")
-    parser.add_argument("-d", "--device",       type=str,   default=DEFAULT_DEVICE,
+    parser.add_argument("-f", "--model-filepath", type=str,   default=paths.deploy_onnx_filename,
+                        help=f"model filepath or filename (can be relative to the work dir). Default {paths.deploy_onnx_filename}")
+    parser.add_argument("-d", "--device",         type=str,   default=DEFAULT_DEVICE,
                         help=f"device to use for inference ('cpu' or 'cuda'). Default {DEFAULT_DEVICE}")
-    parser.add_argument("-i", "--input",        type=str,   default=DEFAULT_INPUT,
+    parser.add_argument("-i", "--input",          type=str,   default=DEFAULT_INPUT,
                         help=f"input video file. Default {DEFAULT_INPUT}")
-    parser.add_argument("-s", "--step",         type=int,   default=1,
+    parser.add_argument("-s", "--step",           type=int,   default=1,
                         help="image step size (every step'th image will be taken). Default 1")
-    parser.add_argument("-b", "--batch-size",   type=int,   default=1,
+    parser.add_argument("-b", "--batch-size",     type=int,   default=1,
                         help="Inference batch size. Model needs to be dynamic to allow for it! Default 1")
-    parser.add_argument("-n", "--number",       type=int,   default=-1,
+    parser.add_argument("-n", "--number",         type=int,   default=-1,
                         help="number of frames to annotate. Default -1 to annotate all")
-    parser.add_argument("-t", "--threshold",    type=float, default=DEFAULT_THRESHOLD,
+    parser.add_argument("-t", "--threshold",      type=float, default=DEFAULT_THRESHOLD,
                         help=f"score threshold. Default {DEFAULT_THRESHOLD}")
-    parser.add_argument("-c", "--clean",        action="store_true",
+    parser.add_argument("-c", "--clean",          action="store_true",
                         help="remove the images dir after finish")
-    parser.add_argument("-m", "--multi-thread", action="store_true",
+    parser.add_argument("-m", "--multi-thread",   action="store_true",
                         help="multi-threaded inference (when on cpu)")
     args = parser.parse_args()
 
