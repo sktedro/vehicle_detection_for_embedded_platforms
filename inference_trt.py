@@ -18,7 +18,8 @@ import sys
 repo_path = os.path.join(os.path.dirname(__file__), '..')
 sys.path.append(repo_path)
 import paths
-from dataset import common
+import dataset.common as dataset_common
+import deploy.common as deploy_common
 
 # This is necessary because MMEngine doesn't correctly register
 # LoadImageFromNDArray by itself
@@ -50,8 +51,13 @@ def main(args):
     # Get the filepath of the model configuration file
     model_config_filepath = paths.get_config_from_working_dirpath(args.work_dir)
 
-    # Load the deploy config and model config
-    deploy_config, model_config = load_config(args.deploy_cfg, model_config_filepath)
+    # Get model and deploy configs
+    model_config = load_config(model_config_filepath)
+    engine_filename = ".".join(os.path.basename(args.engine).split(".")[:-1]) # Without extension
+    deploy_config = deploy_common.get_deploy_config(args.deploy_cfg,
+                                                    model_config,
+                                                    engine_filename)
+    model_config = model_config[0]
 
     # Get path to the deployed engine
     if isinstance(args.engine, str):
@@ -84,7 +90,7 @@ def main(args):
 
     # Initialize a visualizer
     visualizer = VISUALIZERS.build(model_config.visualizer)
-    visualizer.dataset_meta["classes"] = tuple(common.classes_ids.keys())
+    visualizer.dataset_meta["classes"] = tuple(dataset_common.classes_ids.keys())
 
     print("Reading and annotating images")
     inference_durations = []
