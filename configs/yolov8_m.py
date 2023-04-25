@@ -75,11 +75,11 @@ train_pipeline = [
         file_client_args=file_client_args),
     dict(type='LoadAnnotations', with_bbox=True),
     dict(type='mmdet.Resize',
-        scale=img_scale, # h*w I guess. Shouldn't matter at all here
+        scale=img_scale, # Shouldn't matter at all here
         keep_ratio=True),
     dict(type='mmdet.Pad',
         pad_to_square=False,
-        size=img_scale[::-1], # width * height...
+        size=img_scale, # width * height...
         pad_val=dict(img=(pad_val, pad_val, pad_val))),
     dict(type='YOLOv5RandomAffine',
         # min_bbox_size=8, # No need. Done in FilterAnnotations
@@ -212,21 +212,33 @@ train_dataloader = dict(
 )
 del train_dataset # Delete it so it's not in the final config
 
-# LoadAnnotations before resizing! Contrary to the official YOLOv8 MM config
-# Also, YOLOv5KeepRatioResize does nothing. LetterResize is enough
 val_pipeline = [
     dict(type='LoadImageFromFile',
         file_client_args=file_client_args),
     dict(type='LoadAnnotations',
         with_bbox=True,
         _scope_='mmdet'),
+    dict(type='YOLOv5KeepRatioResize', scale=img_scale),
     dict(type='LetterResize',
-        scale=img_scale[::-1], # This takes w*h, believe me... (or maybe it doesn't matter)
+        scale=img_scale, # This takes w*h
         allow_scale_up=False,
         pad_val=dict(img=pad_val)),
-    # dict(type='mmdet.FilterAnnotations', # Can't be here - wouldn't be able to deploy
-    #     min_gt_bbox_wh=min_gt_bbox_wh,
-    #     keep_empty=False),
+
+    dict(type='mmdet.PackDetInputs',
+        meta_keys=('img_id', 'img_path', 'ori_shape', 'img_shape',
+                   'scale_factor', 'pad_param'))
+]
+# For some reason, test pipeline needs to be different...
+test_pipeline = [
+    dict(type='LoadImageFromFile',
+        file_client_args=file_client_args),
+    dict(type='LetterResize',
+        scale=img_scale, # This takes w*h
+        allow_scale_up=False,
+        pad_val=dict(img=pad_val)),
+    dict(type='LoadAnnotations',
+        with_bbox=True,
+        _scope_='mmdet'),
     dict(type='mmdet.PackDetInputs',
         meta_keys=('img_id', 'img_path', 'ori_shape', 'img_shape',
                    'scale_factor', 'pad_param'))
@@ -244,29 +256,9 @@ val_dataloader = dict(
         ann_file = os.path.basename(common.gt_combined_filenames["val"]),
         data_prefix = dict(img=""),
         test_mode = True,
-        pipeline = val_pipeline,
+        pipeline = val_pipeline
     )
 )
-
-# For some reason, test_pipeline needs a different pipeline. I guess validator
-# and tester scripts work differently or something...
-test_pipeline = [
-    dict(type='LoadImageFromFile',
-        file_client_args=file_client_args),
-    dict(type='LetterResize',
-        scale=img_scale, # This takes h*w, believe me...
-        allow_scale_up=False,
-        pad_val=dict(img=pad_val)),
-    dict(type='LoadAnnotations',
-        with_bbox=True,
-        _scope_='mmdet'),
-    # dict(type='mmdet.FilterAnnotations', # Can't be here - wouldn't be able to deploy
-    #     min_gt_bbox_wh=min_gt_bbox_wh,
-    #     keep_empty=False),
-    dict(type='mmdet.PackDetInputs',
-        meta_keys=('img_id', 'img_path', 'ori_shape', 'img_shape',
-                   'scale_factor', 'pad_param'))
-]
 test_dataloader = dict(
     batch_size = test_batch_size_per_gpu,
     num_workers = test_num_workers,

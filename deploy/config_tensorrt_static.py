@@ -11,7 +11,7 @@ onnx_config = dict(
     save_file=output_filename + '.onnx',
     input_names=['input'],
     output_names=['dets', 'labels'],
-    input_shape=(h, w), # Shouldn't this be reversed? No (tested)
+    input_shape=(w, h), # w*h (should be h*w according to MMDeploy docs, but that doesn't work!)
     optimize=True)
 
 codebase_config = dict(

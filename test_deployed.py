@@ -35,11 +35,11 @@ def parse_args():
                         help="Deploy config filepath. Can be relative to deploy/ folder or relative to the project folder")
     parser.add_argument("work_dir",             type=str,
                         help="working dirpath. Preferably relative to the proj path or absolute")
-    parser.add_argument("-f", "--filepath",     type=str,
+    parser.add_argument("filepath",             type=str,
                         help="model filepath, can be relative to the working dir, eg. end2end.onnx")
-    parser.add_argument("-d", '--device',       type=str,
+    parser.add_argument("device",               type=str,
                         help="device used for inference, cpu or cuda")
-    # TODO allow for testing with custom dataset
+    # TODO allow for testing with custom dataset filename
     # parser.add_argument("-t", "--test-dataset", type=str, default=DEFAULT_TEST_DATASET,
     #                     help=f"COCO dataset filepath to test with. Default {DEFAULT_TEST_DATASET}")
     parser.add_argument("-b", "--batch-size",   type=int, default=1,

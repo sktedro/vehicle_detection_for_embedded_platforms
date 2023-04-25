@@ -264,15 +264,15 @@ def parse_args():
                         help="filename for the deployed model (without extension). Default end2end")
     parser.add_argument("-d", '--device',            type=str,   default='cpu',
                         help='device used for conversion. Default cpu')
-    parser.add_argument("-v", '--visualize',
-                        help='visualize the models (to compare the pytorch model and the backend model)', action='store_true')
-    parser.add_argument("-q", '--quant',
-                        help='quantize model to low bit', action='store_true')
-    parser.add_argument('--calib-dataset-cfg',                   default=None,
+    parser.add_argument("-v", '--visualize',         action='store_true',
+                        help='visualize the models (to compare the pytorch model and the backend model)')
+    parser.add_argument("-q", '--quant',             action='store_true',
+                        help='quantize model to low bit')
+    parser.add_argument('--calib-dataset-cfg',       default=None,
                         help='dataset config path used to calibrate in int8 mode. If not specified, it will use "val" dataset in model config instead')
-    parser.add_argument('--quant-image-dir',                     default=None,
+    parser.add_argument('--quant-image-dir',         default=None,
                         help='image directory for model quantization')
-    parser.add_argument('--log-level',                           default='INFO',
+    parser.add_argument('--log-level',               default='INFO',
                         help='set log level',
                         choices=list(logging._nameToLevel.keys()))
     args = parser.parse_args()

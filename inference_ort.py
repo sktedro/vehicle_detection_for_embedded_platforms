@@ -74,10 +74,10 @@ def main(args):
     session = onnxruntime.InferenceSession(model_filepath, session_options, providers=[provider])
     session.get_modelmeta()
     session_input_name = session.get_inputs()[0].name
-    detector_input_shape = session.get_inputs()[0].shape[::-1][:2] # w*h
+    input_h, input_w = session.get_inputs()[0].shape[2:] # It should be h*w
     dynamic_batch_size = session.get_inputs()[0].shape[0] != 1
     assert dynamic_batch_size or args.batch_size == 1, "Batch size needs to be 1 for static models"
-    print("Detector input shape:", detector_input_shape)
+    print("Detector input shape (w, h):", input_w, input_h)
     print("Allow dynamic batch size:", dynamic_batch_size)
 
     print("Reading and annotating images")
@@ -105,12 +105,11 @@ def main(args):
                 frames_orig.append(frame)
 
                 # Resize to detector input shape
-                frame = mmcv.imresize(frame, detector_input_shape)
+                frame = mmcv.imresize(frame, (input_w, input_h))
                 frames_resized.append(frame)
 
-                # Pre-process
+                # Pre-process - channels = channels,h,w
                 frame = frame.transpose(2, 0, 1).astype(np.float32) / 255.
-                # frame = np.expand_dims(frame, axis=0)
                 frames_preprocessed.append(frame)
 
             if len(frames_orig) == 0:
@@ -155,12 +154,11 @@ def main(args):
             else:
                 pbar.set_description(f"Avg inference real duration: {'%.3f' % avg_duration}s")
 
+        del pbar
         print("Images annotated to", out_img_dirpath)
 
     except KeyboardInterrupt:
         print("KeyboardInterrupt: Stopped annotating images")
-
-    del pbar
 
     if len(inference_durations):
         avg_duration = sum(inference_durations) / len(inference_durations) / args.batch_size

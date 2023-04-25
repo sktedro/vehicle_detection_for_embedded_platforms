@@ -24,51 +24,76 @@ mmrazor_dirpath = os.path.join(proj_path, "..", "mmrazor")
 
 # !!! Don't forget to update configs/settings.py when changing the model config
 
-# YOLOv8 with MobileNetV2 (indices 2,4,6)
-# working_dirname = "working_dir_yolov8_conf8_512x288_mobilenet_v2_indices_246"
-# model_config_filename = "yolov8_512x288_mobilenet_v2_indices_246.py"
-# model_checkpoint_filename = None
-
-# YOLOv8-s
-# working_dirname = "working_dir_yolov8_s_conf8"
-# model_config_filename = "yolov8_s.py"
-# model_checkpoint_filename = "yolov8_s_syncbn_fast_8xb16-500e_coco_20230117_180101-5aa5f0f1.pth"
-
-# TODO YOLOv8-n 448x256
-# working_dirname = "working_dir_yolov8_n_conf8_448x256"
-# model_config_filename = "yolov8_n_448x256.py"
-# model_checkpoint_filename = "yolov8_n_syncbn_fast_8xb16-500e_coco_20230114_131804-88c11cdb.pth"
-
-# TODO YOLOv8-p 448x256
-working_dirname = "working_dir_yolov8_p_conf8_448x256_lr01"
-model_config_filename = "yolov8_p_448x256.py"
-model_checkpoint_filename = None
-
-# YOLOv8-p 384x224
-# working_dirname = "working_dir_yolov8_p_conf8_384x224_lr01"
-# model_config_filename = "yolov8_p_384x224.py"
-# model_checkpoint_filename = None
-
-# YOLOv8-f 512x288
-# working_dirname = "working_dir_yolov8_f_conf8_512x288_lr01"
-# model_config_filename = "yolov8_f_512x288.py"
-# model_checkpoint_filename = None
-
-# YOLOv8-f 448x256
-# working_dirname = "working_dir_yolov8_f_conf8_448x256_lr01"
-# model_config_filename = "yolov8_f_448x256.py"
-# model_checkpoint_filename = None
-
-# YOLOv8-f 384x224
-# working_dirname = "working_dir_yolov8_f_conf8_384x224_lr01"
-# model_config_filename = "yolov8_f_384x224.py"
-# model_checkpoint_filename = None
 
 # YOLOv8-f 352x192
-# working_dirname = "working_dir_yolov8_f_conf8_352x192_lr01"
+# working_dirname = "working_dir_yolov8_f_352x192"
 # model_config_filename = "yolov8_f_352x192.py"
 # model_checkpoint_filename = None
 
+# YOLOv8-f 384x224
+# working_dirname = "working_dir_yolov8_f_384x224"
+# model_config_filename = "yolov8_f_384x224.py"
+# model_checkpoint_filename = None
+
+# YOLOv8-f 448x256
+# working_dirname = "working_dir_yolov8_f_448x256"
+# model_config_filename = "yolov8_f_448x256.py"
+# model_checkpoint_filename = None
+
+# YOLOv8-f 512x288
+# working_dirname = "working_dir_yolov8_f_512x288"
+# model_config_filename = "yolov8_f_512x288.py"
+# model_checkpoint_filename = None
+
+# YOLOv8 with MobileNetV2 (indices 2,4,6)
+# working_dirname = "working_dir_yolov8_l_mobilenet_v2_512x288_indices_246"
+# model_config_filename = "yolov8_l_mobilenet_v2_512x288_indices_246.py"
+# model_checkpoint_filename = None
+
+# YOLOv8-m 640x384 lr0.01
+# working_dirname = "working_dir_yolov8_m_640x384_lr0.01"
+# model_config_filename = "yolov8_m.py"
+# model_checkpoint_filename = None
+
+# YOLOv8-m 640x384
+# working_dirname = "working_dir_yolov8_m_640x384_lr0.00125"
+# model_config_filename = "yolov8_m.py"
+# model_checkpoint_filename = None
+
+# YOLOv8-n 448x256
+# working_dirname = "working_dir_yolov8_n_448x256"
+# model_config_filename = "yolov8_n_448x256.py"
+# model_checkpoint_filename = "yolov8_n_syncbn_fast_8xb16-500e_coco_20230114_131804-88c11cdb.pth"
+
+# YOLOv8-n 512x288
+# working_dirname = "working_dir_yolov8_n_512x288"
+# model_config_filename = "yolov8_n_512x288.py"
+# model_checkpoint_filename = "yolov8_n_syncbn_fast_8xb16-500e_coco_20230114_131804-88c11cdb.pth"
+
+# YOLOv8-n 640x384
+# working_dirname = "working_dir_yolov8_n_640x384"
+# model_config_filename = "yolov8_n_640x384.py"
+# model_checkpoint_filename = "yolov8_n_syncbn_fast_8xb16-500e_coco_20230114_131804-88c11cdb.pth"
+
+# YOLOv8-p 384x224
+# working_dirname = "working_dir_yolov8_p_384x224"
+# model_config_filename = "yolov8_p_384x224.py"
+# model_checkpoint_filename = None
+
+# YOLOv8-p 448x256
+working_dirname = "working_dir_yolov8_p_448x256"
+model_config_filename = "yolov8_p_448x256.py"
+model_checkpoint_filename = None
+
+# YOLOv8-p 512x288
+# working_dirname = "working_dir_yolov8_p_512x288"
+# model_config_filename = "yolov8_p_512x288.py"
+# model_checkpoint_filename = None
+
+# YOLOv8-s 640x384
+# working_dirname = "working_dir_yolov8_s_640x384"
+# model_config_filename = "yolov8_s.py"
+# model_checkpoint_filename = "yolov8_s_syncbn_fast_8xb16-500e_coco_20230117_180101-5aa5f0f1.pth"
 
 
 
