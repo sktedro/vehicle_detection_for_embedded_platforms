@@ -29,6 +29,7 @@ import paths
 # from dataset import common
 
 
+
 def create_process(name, target, args, kwargs, ret_value=None):
     logger = get_root_logger()
     logger.info(f'{name} start.')
@@ -64,7 +65,6 @@ def torch2ir(ir_type: IR):
 
 
 def main(args):
-
     assert os.path.exists(args.work_dir)
 
     # Find deploy config
@@ -190,39 +190,6 @@ def main(args):
         log_level=log_level,
         device=args.device)
 
-    # ncnn quantization
-    if backend == Backend.NCNN and args.quant:
-        from onnx2ncnn_quant_table import get_table
-
-        from mmdeploy.apis.ncnn import get_quant_model_file, ncnn2int8
-        model_param_paths = backend_files[::2]
-        model_bin_paths = backend_files[1::2]
-        backend_files = []
-        for onnx_path, model_param_path, model_bin_path in zip(
-                ir_files, model_param_paths, model_bin_paths):
-
-            deploy_cfg, model_cfg = load_config(deploy_cfg,
-                                                model_config_filepath)
-            quant_onnx, quant_table, quant_param, quant_bin = get_quant_model_file(  # noqa: E501
-                onnx_path, args.work_dir)
-
-            create_process(
-                'ncnn quant table',
-                target=get_table,
-                args=(onnx_path, deploy_cfg, model_cfg, quant_onnx,
-                      quant_table, args.quant_image_dir, args.device),
-                kwargs=dict(),
-                ret_value=ret_value)
-
-            create_process(
-                'ncnn_int8',
-                target=ncnn2int8,
-                args=(model_param_path, model_bin_path, quant_table,
-                      quant_param, quant_bin),
-                kwargs=dict(),
-                ret_value=ret_value)
-            backend_files += [quant_param, quant_bin]
-
     extra = dict(
         backend=backend,
         output_file=osp.join(args.work_dir, f'output_{backend.value}.jpg'),
@@ -266,12 +233,6 @@ def parse_args():
                         help='device used for conversion. Default cpu')
     parser.add_argument("-v", '--visualize',         action='store_true',
                         help='visualize the models (to compare the pytorch model and the backend model)')
-    parser.add_argument("-q", '--quant',             action='store_true',
-                        help='quantize model to low bit')
-    parser.add_argument('--calib-dataset-cfg',       default=None,
-                        help='dataset config path used to calibrate in int8 mode. If not specified, it will use "val" dataset in model config instead')
-    parser.add_argument('--quant-image-dir',         default=None,
-                        help='image directory for model quantization')
     parser.add_argument('--log-level',               default='INFO',
                         help='set log level',
                         choices=list(logging._nameToLevel.keys()))
