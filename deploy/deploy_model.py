@@ -24,7 +24,8 @@ from mmdeploy.utils import (IR, Backend, get_backend, get_calib_filename,
 if __name__ == "__main__":
     import common as deploy_common
 else:
-    from . import common as deploy_common
+    sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+    import common as deploy_common
 
 repo_path = os.path.join(os.path.dirname(__file__), '..')
 sys.path.append(repo_path)

@@ -17,7 +17,8 @@ from concurrent.futures import ThreadPoolExecutor
 if __name__ == "__main__":
     import deploy_model
 else:
-    from . import deploy_model
+    sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+    import deploy_model
 
 repo_path = os.path.join(os.path.dirname(__file__), '..')
 sys.path.append(repo_path)
