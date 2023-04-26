@@ -21,7 +21,10 @@ from mmdeploy.utils import (IR, Backend, get_backend, get_calib_filename,
                             get_ir_config, get_partition_config,
                             get_root_logger, load_config, target_wrapper)
 
-import common as deploy_common
+if __name__ == "__main__":
+    import common as deploy_common
+else:
+    from . import common as deploy_common
 
 repo_path = os.path.join(os.path.dirname(__file__), '..')
 sys.path.append(repo_path)

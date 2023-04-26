@@ -17,6 +17,7 @@ test = importlib.util.module_from_spec(spec)
 sys.modules["test.py"] = test
 spec.loader.exec_module(test)
 
+
 # Acts like a dictionary of arguments - to pass to the mmdeploy's test.py module
 class dotdict(dict):
     __getattr__ = dict.get
@@ -25,7 +26,7 @@ class dotdict(dict):
 
 
 DEFAULT_TEST_DATASET = os.path.join(
-    paths.datasets_dirpath, 
+    paths.datasets_dirpath,
     dataset_common.gt_combined_filenames["test"])
 
 
@@ -44,8 +45,8 @@ def parse_args():
     #                     help=f"COCO dataset filepath to test with. Default {DEFAULT_TEST_DATASET}")
     parser.add_argument("-b", "--batch-size",   type=int, default=1,
                         help="test batch size. Default 1")
-    parser.add_argument("-i", "--interval",     type=int, default=1,
-                        help="only every i-th sample will be visualized to a file. Default 1")
+    parser.add_argument("-v", "--visualize",        action="store_true",
+                        help="visualize the test ouput to a directory (in the work dir)")
     parser.add_argument("-w", "--warmup",       type=int, default=10,
                         help="warmup during speed test. Speed is not calculated for the first w samples. Default 10")
     parser.add_argument("-s", "--speed-test",   action="store_true",
@@ -76,7 +77,6 @@ def main(args):
     assert os.path.exists(args.deploy_cfg), f"Deploy config not found at {args.deploy_cfg}"
     assert os.path.exists(args.work_dir), f"Working dir not found at {args.work_dir}"
     assert args.device == "cpu" or args.device.startswith("cuda")
-    assert args.interval >= 0
     assert args.warmup >= 0
     assert args.batch_size > 0
 
@@ -88,14 +88,14 @@ def main(args):
             "work_dir": args.work_dir,
             "model_cfg": model_cfg,
             "model": [model_filepath],
-            "show_dir": out_dirpath,
+            "show_dir": out_dirpath if args.visualize else None,
             "log2file": log_dirpath,
             "device": args.device,
             "speed_test": args.speed_test,
             "cfg_options": {},
             "show": False,
             "wait_time": 2, # Default 2
-            "interval": args.interval,
+            "interval": 0 if args.visualize != 0 else 1,
             "warmup": args.warmup,
             "log_interval": 100, # Default
             "batch_size": args.batch_size,

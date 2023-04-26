@@ -14,7 +14,10 @@ from datetime import datetime
 from pprint import pformat
 from concurrent.futures import ThreadPoolExecutor
 
-import deploy_model
+if __name__ == "__main__":
+    import deploy_model
+else:
+    from . import deploy_model
 
 repo_path = os.path.join(os.path.dirname(__file__), '..')
 sys.path.append(repo_path)
@@ -35,29 +38,7 @@ def run_task(output_filepath, args, logger):
     logger.info("Task done: " + output_filepath)
 
 
-def main(args):
-
-    print("If you also want to log everything the subprocesses output, please use bash redirection to your own file. Logger here only logs output from this file")
-    time.sleep(1)
-
-    general_log_filepath = os.path.join(
-        paths.proj_path,
-        "deploy_all_log_" + datetime.today().strftime('%Y-%m-%d_%H-%M-%S') + ".txt")
-    print("Logging to:", general_log_filepath)
-
-    # Log to stdout and a file
-    logFormatter = logging.Formatter("%(asctime)s: %(message)s")
-    logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG)
-    consoleHandler = logging.StreamHandler(sys.stdout)
-    consoleHandler.setFormatter(logFormatter)
-    logger.addHandler(consoleHandler)
-    consoleHandler = logging.FileHandler(general_log_filepath)
-    consoleHandler.setFormatter(logFormatter)
-    logger.addHandler(consoleHandler)
-
-    assert os.path.exists(paths.proj_path)
-
+def get_all_tasks(args, logger):
     # Get a list of all work dirs
     work_dirpaths = []
     for file in os.listdir(paths.proj_path):
@@ -95,10 +76,8 @@ def main(args):
                     "config_filepath": ".../deploy/config_onnxruntime_static.py",
                     "backend": "onnxruntime",
                     "config_name": "onnxruntime_static",
-                    "output_filename_without_ext": "static",
-                    "output_filename": "static.onnx",
-                    "output_filepath": ".../<working_dirname>/static.onnx",
-                    "log_filepath": ".../<working_dirname>/static.onnx.log"
+                    "output_filename": "onnxruntime_static.onnx",
+                    "output_filepath": ".../<working_dirname>/onnxruntime_static.onnx",
                 }
             ]
         }
@@ -135,7 +114,6 @@ def main(args):
             elif backend == "onnxruntime":
                 output_filename = config_name + ".onnx" # static.onnx
             output_filepath = os.path.join(working_dirpath, output_filename) # .../work_dir/static.onnx
-            log_filepath = output_filepath + ".log" # .../work_dir/static.onnx.log
 
             tasks[working_dirname]["configs"].append({
                 "config_filepath": deploy_config_filepath,
@@ -143,11 +121,39 @@ def main(args):
                 "config_name": config_name,
                 "output_filename": output_filename,
                 "output_filepath": output_filepath,
-                "log_filepath": log_filepath
             })
+
+    return tasks
+
+
+def main(args):
+
+    print("If you also want to log everything the subprocesses output, please use bash redirection to your own file. Logger here only logs output from this file")
+    time.sleep(1)
+
+    general_log_filepath = os.path.join(
+        paths.proj_path,
+        "deploy_all_log_" + datetime.today().strftime('%Y-%m-%d_%H-%M-%S') + ".txt")
+    print("Logging to:", general_log_filepath)
+
+    # Log to stdout and a file
+    logFormatter = logging.Formatter("%(asctime)s: %(message)s")
+    logger = logging.getLogger("deploy_all.py")
+    logger.setLevel(logging.DEBUG)
+    consoleHandler = logging.StreamHandler(sys.stdout)
+    consoleHandler.setFormatter(logFormatter)
+    logger.addHandler(consoleHandler)
+    consoleHandler = logging.FileHandler(general_log_filepath)
+    consoleHandler.setFormatter(logFormatter)
+    logger.addHandler(consoleHandler)
+
+    assert os.path.exists(paths.proj_path)
+
+    tasks = get_all_tasks(args, logger)
 
     logger.info("Tasks:")
     logger.info(pformat(tasks))
+    logger.info(f"Total: {len(tasks)} tasks")
 
     with ThreadPoolExecutor(args.deploy_jobs) as executor:
         futures = []
@@ -193,7 +199,6 @@ def main(args):
                     pass
 
     logger.info("All done")
-
 
 
 def parse_args():
