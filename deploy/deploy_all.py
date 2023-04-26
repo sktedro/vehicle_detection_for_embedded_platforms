@@ -129,11 +129,10 @@ def main(args):
             backend = deploy_config_filename.split("_")[1] # config_onnxruntime_static -> onnxruntime
             config_name, _ = os.path.splitext( # config_onnxruntime.py -> onnxruntime
                 "_".join(deploy_config_filename.split("_")[1:]))
-            output_filename_without_ext = "_".join(config_name.split("_")[1:]) # config_onnxruntime_static -> static
             if backend == "tensorrt":
-                output_filename = output_filename_without_ext + ".engine" # static.engine
+                output_filename = config_name + ".engine" # static.engine
             elif backend == "onnxruntime":
-                output_filename = output_filename_without_ext + ".onnx" # static.onnx
+                output_filename = config_name + ".onnx" # static.onnx
             output_filepath = os.path.join(working_dirpath, output_filename) # .../work_dir/static.onnx
             log_filepath = output_filepath + ".log" # .../work_dir/static.onnx.log
 
@@ -141,7 +140,6 @@ def main(args):
                 "config_filepath": deploy_config_filepath,
                 "backend": backend,
                 "config_name": config_name,
-                "output_filename_without_ext": output_filename_without_ext,
                 "output_filename": output_filename,
                 "output_filepath": output_filepath,
                 "log_filepath": log_filepath
@@ -173,7 +171,7 @@ def main(args):
                         "deploy_cfg": config["config_filepath"],
                         "work_dir": tasks[working_dirname]["working_dirpath"],
                         "epoch": epoch,
-                        "output_filename": config["output_filename_without_ext"],
+                        "output_filename": config["config_name"], # deploy_model doesn't want the extension
                         "device": device,
                         "visualize": False,
                         "log_level": "WARNING",
