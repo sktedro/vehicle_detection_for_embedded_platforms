@@ -29,10 +29,10 @@ class dotdict(dict):
 
 
 def run_task(output_filepath, args, logger):
-    logger.info("Task begin:", output_filepath)
+    logger.info("Task begin: " + output_filepath)
     logger.info(pformat(args))
     deploy_model.main(args)
-    logger.info("Task done:", output_filepath)
+    logger.info("Task done: " + output_filepath)
 
 
 def main(args):
