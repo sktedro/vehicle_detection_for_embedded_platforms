@@ -2,14 +2,16 @@
 
 in_dir(){
     for f in "$1"/*; do
-        if [ -f "$f" ] && [ ${f##*.} = "py" ]; then
-            if [ -z "$2" ] || [ -z "$3" ]; then
-                echo "$f"
-            else
-                echo "Processing $f"
-                CMD="s~$2~$3~g"
-                # echo $CMD
-                sed -i "$CMD" "$f"
+        if [ -f "$f" ]; then
+            if [ ${f##*/} = "last_checkpoint" ] || [ ${f##*.} = "py" ]; then
+                if [ -z "$2" ] || [ -z "$3" ]; then
+                    echo "$f"
+                else
+                    echo "Processing $f"
+                    CMD="s~$2~$3~g"
+                    # echo $CMD
+                    sed -i "$CMD" "$f"
+                fi
             fi
         fi
     done
