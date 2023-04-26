@@ -56,9 +56,17 @@ backend_config = dict(
                     opt_shape=[1, 3, h, w],
                     max_shape=[32, 3, h, w])))])
 
+# TODO Remove this - it only works if executed from project directory
+from os.path import exists as exists
+calib_filename = f"calib_data_{w}x{h}.h5"
 calib_config = dict(
-    create_calib=True,
-    calib_file="calib_data.h5"
+    calib_file="../"+calib_filename,
+    create_calib=(not exists(calib_filename)),
 )
+
+# calib_config = dict(
+#     create_calib=True,
+#     calib_file="calib_data.h5"
+# )
 
 use_efficientnms = False # EfficientNMS doesn't work for some reason
