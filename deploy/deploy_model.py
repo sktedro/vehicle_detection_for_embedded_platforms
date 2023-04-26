@@ -165,14 +165,15 @@ def main(args):
     calib_filename = get_calib_filename(deploy_cfg)
     if calib_filename is not None:
         calib_path = osp.join(args.work_dir, calib_filename)
-        create_calib_input_data(
-            calib_path,
-            deploy_cfg,
-            model_config_filepath,
-            checkpoint_filepath,
-            dataset_cfg=args.calib_dataset_cfg,
-            dataset_type='val',
-            device=args.device)
+        if not os.path.exists(calib_path):
+            create_calib_input_data(
+                calib_path,
+                deploy_cfg,
+                model_config_filepath,
+                checkpoint_filepath,
+                dataset_cfg=args.calib_dataset_cfg,
+                dataset_type='val',
+                device=args.device)
 
     backend_files = ir_files
     # convert backend
