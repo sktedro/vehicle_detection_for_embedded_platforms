@@ -111,7 +111,7 @@ def main(args):
             "show": False,
             "interval": 0 if args.visualize != 0 else 1,
             "warmup": args.warmup,
-            "log_interval": 100, # Default
+            "log_interval": 50, # Default 100
             "batch_size": args.batch_size,
             "uri": "192.168.1.1:60000", # Default
         })

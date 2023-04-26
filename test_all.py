@@ -42,7 +42,6 @@ def get_all_tasks(args, logger):
         })
     deploy_tasks = deploy_all.get_all_tasks(deploy_all_args, logger)
 
-    # TODO use batch size in log file
     tasks = [ # Examples:
         {
             "deploy_cfg": ".../deploy/config_onnxruntime_static.py",
@@ -59,6 +58,8 @@ def get_all_tasks(args, logger):
     for working_dirname in deploy_tasks:
         for config in deploy_tasks[working_dirname]["configs"]:
             for batch_size in args.batch_sizes:
+                if batch_size != 1 and "dynamic" not in os.path.basename(config["config_filepath"]):
+                    continue
                 tasks.append({
                     "deploy_cfg": config["config_filepath"],
                     "work_dir": deploy_tasks[working_dirname]["working_dirpath"],
@@ -165,7 +166,7 @@ def parse_args():
     parser.add_argument("-r", "--replace-existing", action="store_true",
                         help="whether to test even if existing results are found (and overwrite them)")
     parser.add_argument("-s", "--batch-sizes",      type=int, action="append", default=[1],
-                        help="testing batch size(s). Use more with '-b 1 -b 2 -b 4'. Default 1")
+                        help="testing batch size(s). Only applicable to dynamic models. Use more with '-b 1 -b 2 -b 4'. Default 1")
     parser.add_argument("-v", "--visualize",        action="store_true",
                         help="visualize the test ouput to a directory (in the work dir)")
     parser.add_argument("-w", "--warmup",           type=int, default=10,
