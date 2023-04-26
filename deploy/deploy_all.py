@@ -12,7 +12,7 @@ import sys
 import time
 from datetime import datetime
 from pprint import pformat
-from concurrent.futures import ThreadPoolExecutor, wait
+from concurrent.futures import ThreadPoolExecutor
 
 import deploy_model
 
@@ -28,10 +28,11 @@ class dotdict(dict):
     __delattr__ = dict.__delitem__
 
 
-def run_task(args, logger):
-    logger.info("Executing:")
+def run_task(output_filepath, args, logger):
+    logger.info("Task begin:", output_filepath)
     logger.info(pformat(args))
     deploy_model.main(args)
+    logger.info("Task done:", output_filepath)
 
 
 def main(args):
@@ -176,7 +177,7 @@ def main(args):
                         "visualize": False,
                         "log_level": "WARNING",
                     })
-                futures.append(executor.submit(run_task, deploy_args, logger))
+                futures.append(executor.submit(run_task, config["output_filepath"], deploy_args, logger))
 
         try:
             for i in range(len(futures)):
