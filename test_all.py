@@ -7,7 +7,6 @@ import logging
 import os
 import subprocess
 import sys
-import time
 from datetime import datetime
 from pprint import pformat
 
@@ -26,9 +25,9 @@ class dotdict(dict):
     __delattr__ = dict.__delitem__
 
 
-def run_task(args, logger):
-    logger.info("Task begin: " + args["filepath"])
-    logger.info(pformat(args))
+def run_task(task, logger):
+    logger.info("Task begin: " + task["filepath"])
+    logger.info(pformat(task))
 
     def make_arg(arg):
         """ work_dir -> --work-dir """
@@ -36,20 +35,20 @@ def run_task(args, logger):
 
     cmd = ["python3"]
     cmd += [os.path.join(os.path.abspath(os.path.dirname(__file__)), 'test_deployed.py')]
-    cmd += [args["deploy_cfg"]]
-    cmd += [args["work_dir"]]
-    cmd += [args["filepath"]]
-    cmd += [args["device"]]
-    for key in args:
+    cmd += [task["deploy_cfg"]]
+    cmd += [task["work_dir"]]
+    cmd += [task["filepath"]]
+    cmd += [task["device"]]
+    for key in task:
         if key in ["deploy_cfg", "work_dir", "filepath", "device"]:
             continue
-        if isinstance(args[key], bool):
-            if args[key] == True:
+        if isinstance(task[key], bool):
+            if task[key] == True:
                 cmd += [make_arg(key)]
-        elif isinstance(args[key], str):
-            cmd += [make_arg(key), args[key]]
+        elif isinstance(task[key], str):
+            cmd += [make_arg(key), task[key]]
         else:
-            cmd += [make_arg(key), str(args[key])]
+            cmd += [make_arg(key), str(task[key])]
 
     logger.info("Executing: " + str(cmd))
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -58,12 +57,7 @@ def run_task(args, logger):
             logger.debug(line.decode("utf-8").strip())
     logger.info("Executed: " + str(cmd))
 
-    # p = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    # logger.info("Executed: " + str(cmd))
-    # logger.debug("Return code: " + str(p.returncode))
-    # logger.debug("Output: " + p.stdout.decode())
-
-    logger.info("Task done: " + args["filepath"])
+    logger.info("Task done: " + task["filepath"])
 
 
 def get_all_tasks(args, logger):
@@ -138,9 +132,6 @@ def get_logfile(task):
 
 
 def main(args):
-    print("If you also want to log everything the subprocesses output, please use bash redirection to your own file. Logger here only logs output from this file")
-    time.sleep(1)
-
     general_log_filepath = os.path.join(
         paths.proj_path,
         "test_all_log_" + datetime.today().strftime('%Y-%m-%d_%H-%M-%S') + ".txt")
@@ -179,9 +170,8 @@ def main(args):
 
     # Run all tasks
     for i in range(len(tasks)):
-        args = dotdict(tasks[i])
         try:
-            run_task(args, logger)
+            run_task(tasks[i], logger)
             logger.info(f"Task number {i + 1} of {len(tasks)} done")
         except KeyboardInterrupt:
             log_filepath = get_logfile(tasks[i])
