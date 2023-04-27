@@ -3,10 +3,8 @@ Runs tests (inference on testing data) on a deployed model.
 """
 import argparse
 import os
-
-# Import paths
 import sys
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
 import paths
 from dataset import common as dataset_common
 

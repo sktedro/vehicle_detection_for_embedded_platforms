@@ -10,12 +10,9 @@ import sys
 from datetime import datetime
 from pprint import pformat
 
+import paths
 import test_deployed
 from deploy import deploy_all
-
-repo_path = os.path.join(os.path.dirname(__file__), '..')
-sys.path.append(repo_path)
-import paths
 
 
 # Acts like a dictionary of arguments - to pass to the mmdeploy's test.py module
@@ -76,7 +73,7 @@ def get_all_tasks(args, logger):
             "filepath": "onnxruntime_static.onnx",
             "device": "cuda",
             "batch_size": 4,
-            "interval": 0,
+            "visualize": False,
             "warmup": 10,
             "speed_test": True,
         }
