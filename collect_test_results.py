@@ -1,13 +1,34 @@
 """
 Collects results of all tests of which logs are available
+
+Example output:
+```
+"jetson_nano": {
+    "yolov8_f": {
+        "352x192": {
+            "onnxruntime": {
+                "dynamic": {
+                    "1": {
+                        "bbox_mAP": "0.2590",
+                        "bbox_mAP_50": "0.4300",
+                        "bbox_mAP_75": "0.2750",
+                        "bbox_mAP_s": "0.0540",
+                        "bbox_mAP_m": "0.2270",
+                        "bbox_mAP_l": "0.3700"
+                        ...
+```
 """
 import os
 import json
 import re
+import sys
 from pprint import pprint
 
 
 def main():
+    assert len(sys.argv) > 1, "Please provide the test device as an argument to this script"
+    device = sys.argv[1]
+
     # Get all work dirs
     proj_path = os.path.dirname(os.path.abspath(__file__))
     work_dirpaths = []
@@ -80,6 +101,11 @@ def main():
         if shape not in results[model_name][input_size][backend]:
             results[model_name][input_size][backend][shape] = {}
         results[model_name][input_size][backend][shape][batch] = test_results
+
+    # Put the device name at the top
+    results = {
+        device: results,
+    }
 
     results_json = json.dumps(results, indent=2)
 
