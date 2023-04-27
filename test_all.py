@@ -5,13 +5,11 @@ automatically
 import argparse
 import logging
 import os
-import shutil
+import subprocess
 import sys
 import time
 from datetime import datetime
-from importlib import reload
 from pprint import pformat
-from types import ModuleType
 
 import test_deployed
 from deploy import deploy_all
@@ -19,39 +17,6 @@ from deploy import deploy_all
 repo_path = os.path.join(os.path.dirname(__file__), '..')
 sys.path.append(repo_path)
 import paths
-
-
-# TODO recursive reload
-#  def rreload(module):
-    #  """Recursively reload modules."""
-    #  reload(module)
-    #  for attribute_name in dir(module):
-        #  attribute = getattr(module, attribute_name)
-        #  if type(attribute) is ModuleType:
-            #  try:
-                #  rreload(attribute)
-            #  except RecursionError:
-                #  pass
-def rreload(module, paths=None, mdict=None):
-    """Recursively reload modules."""
-    if paths is None:
-        paths = ['']
-    if mdict is None:
-        mdict = {}
-    if module not in mdict:
-        # modules reloaded from this module
-        mdict[module] = []
-    reload(module)
-    for attribute_name in dir(module):
-        attribute = getattr(module, attribute_name)
-        if type(attribute) is ModuleType:
-            if attribute not in mdict[module]:
-                if attribute.__name__ not in sys.builtin_module_names:
-                    if os.path.dirname(attribute.__file__) in paths:
-                        mdict[module].append(attribute)
-                        rreload(attribute, paths, mdict)
-    reload(module)
-    #return mdict
 
 
 # Acts like a dictionary of arguments - to pass to the mmdeploy's test.py module
@@ -64,7 +29,40 @@ class dotdict(dict):
 def run_task(args, logger):
     logger.info("Task begin: " + args["filepath"])
     logger.info(pformat(args))
-    test_deployed.main(args)
+
+    def make_arg(arg):
+        """ work_dir -> --work-dir """
+        return "--" + arg.replace("_", "-")
+
+    cmd = ["python3"]
+    cmd += [os.path.join(os.path.abspath(os.path.dirname(__file__)), 'test_deployed.py')]
+    cmd += [args["deploy_cfg"]]
+    cmd += [args["work_dir"]]
+    cmd += [args["filepath"]]
+    cmd += [args["device"]]
+    for key in args:
+        if key in ["deploy_cfg", "work_dir", "filepath", "device"]:
+            continue
+        if isinstance(args[key], bool):
+            if args[key] == True:
+                cmd += [make_arg(key)]
+        elif isinstance(args[key], str):
+            cmd += [make_arg(key), args[key]]
+        else:
+            cmd += [make_arg(key), str(args[key])]
+
+    logger.info("Executing: " + str(cmd))
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    with p.stdout:
+        for line in iter(p.stdout.readline, b''):
+            logger.debug(line.decode("utf-8").strip())
+    logger.info("Executed: " + str(cmd))
+
+    # p = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    # logger.info("Executed: " + str(cmd))
+    # logger.debug("Return code: " + str(p.returncode))
+    # logger.debug("Output: " + p.stdout.decode())
+
     logger.info("Task done: " + args["filepath"])
 
 
@@ -180,20 +178,13 @@ def main(args):
     logger.info(f"Total: {len(tasks)} tasks")
 
     # Run all tasks
-    for task in tasks:
-        args = dotdict(task)
+    for i in range(len(tasks)):
+        args = dotdict(tasks[i])
         try:
-            # This might help since the FPS counts accumulate throughout runs:
-            rreload(test_deployed)
-            #  rreload(deploy_all)
-            #  rreload(paths)
-            # Or maybe even better: - no, throws notimplementederror
-            #  for module in sys.modules.values():
-                #  reload(module)
-                #  rreload(module)
             run_task(args, logger)
+            logger.info(f"Task number {i + 1} of {len(tasks)} done")
         except KeyboardInterrupt:
-            log_filepath = get_logfile(task)
+            log_filepath = get_logfile(tasks[i])
             logger.error(f"Task interrupted. Deleting log file at {log_filepath} and exiting")
             os.remove(log_filepath)
             logger.info(f"Log file at {log_filepath} removed")
