@@ -9,7 +9,9 @@ import shutil
 import sys
 import time
 from datetime import datetime
+from importlib import reload
 from pprint import pformat
+from types import ModuleType
 
 import test_deployed
 from deploy import deploy_all
@@ -17,6 +19,39 @@ from deploy import deploy_all
 repo_path = os.path.join(os.path.dirname(__file__), '..')
 sys.path.append(repo_path)
 import paths
+
+
+# TODO recursive reload
+#  def rreload(module):
+    #  """Recursively reload modules."""
+    #  reload(module)
+    #  for attribute_name in dir(module):
+        #  attribute = getattr(module, attribute_name)
+        #  if type(attribute) is ModuleType:
+            #  try:
+                #  rreload(attribute)
+            #  except RecursionError:
+                #  pass
+def rreload(module, paths=None, mdict=None):
+    """Recursively reload modules."""
+    if paths is None:
+        paths = ['']
+    if mdict is None:
+        mdict = {}
+    if module not in mdict:
+        # modules reloaded from this module
+        mdict[module] = []
+    reload(module)
+    for attribute_name in dir(module):
+        attribute = getattr(module, attribute_name)
+        if type(attribute) is ModuleType:
+            if attribute not in mdict[module]:
+                if attribute.__name__ not in sys.builtin_module_names:
+                    if os.path.dirname(attribute.__file__) in paths:
+                        mdict[module].append(attribute)
+                        rreload(attribute, paths, mdict)
+    reload(module)
+    #return mdict
 
 
 # Acts like a dictionary of arguments - to pass to the mmdeploy's test.py module
@@ -148,6 +183,14 @@ def main(args):
     for task in tasks:
         args = dotdict(task)
         try:
+            # This might help since the FPS counts accumulate throughout runs:
+            rreload(test_deployed)
+            #  rreload(deploy_all)
+            #  rreload(paths)
+            # Or maybe even better: - no, throws notimplementederror
+            #  for module in sys.modules.values():
+                #  reload(module)
+                #  rreload(module)
             run_task(args, logger)
         except KeyboardInterrupt:
             log_filepath = get_logfile(task)
