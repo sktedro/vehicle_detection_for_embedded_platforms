@@ -154,7 +154,7 @@ def main(args):
 
     logger.info("Tasks:")
     logger.info(pformat(tasks))
-    logger.info(f"Total: {sum(len(task['configs']) for task in tasks)} tasks")
+    logger.info(f"Total: {sum([len(tasks[key]['configs']) for key in tasks])} tasks")
 
     with ThreadPoolExecutor(args.deploy_jobs) as executor:
         futures = []
