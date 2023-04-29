@@ -38,10 +38,7 @@ max_keep_ckpts = 100
 pre_trained_model_batch_size_per_gpu = 16 # 16 for YOLOv8
 
 # Batch size (default 8)
-# train_batch_size_per_gpu = 11 # YOLOv8-m, P52. 12 -> Cuda out of memory
-# train_batch_size_per_gpu = 24 # YOLOv8-n, P52. 27 -> Cuda out of memory
 train_batch_size_per_gpu = 46 # YOLOv8-m, Sophie with 640x384. 48 -> Cuda out of memory after tens of epochs
-# train_batch_size_per_gpu = 26 # YOLOv8-m, Sophie with 640x640. 30 -> Cuda out of memory
 
 # Workers per gpu (default 4)
 # Tested 8, 12 and 16 on P52 and higher numbers actually made the training (ETA) longer
@@ -54,7 +51,7 @@ val_batch_size_per_gpu = 32
 val_num_workers = 16
 
 test_batch_size_per_gpu = 32
-test_num_workers = 16
+test_num_workers = 1
 
 lr_factor = 0.01
 
