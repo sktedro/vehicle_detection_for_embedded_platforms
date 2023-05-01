@@ -34,27 +34,27 @@ def parse_json(f, results):
             results[device_name] = {}
 
         for model_name in json[device_name]:
-            if model_name not in results:
+            if model_name not in results[device_name]:
                 results[device_name][model_name] = {}
 
             for input_shape in json[device_name][model_name]:
-                if input_shape not in results:
+                if input_shape not in results[device_name][model_name]:
                     results[device_name][model_name][input_shape] = {}
 
                 for backend in json[device_name][model_name][input_shape]:
-                    if backend not in results:
+                    if backend not in results[device_name][model_name][input_shape]:
                         results[device_name][model_name][input_shape][backend] = {}
 
                     for quant in json[device_name][model_name][input_shape][backend]:
-                        if quant not in results:
+                        if quant not in results[device_name][model_name][input_shape][backend]:
                             results[device_name][model_name][input_shape][backend][quant] = {}
 
                         for model_shape in json[device_name][model_name][input_shape][backend][quant]:
-                            if model_shape not in results:
+                            if model_shape not in results[device_name][model_name][input_shape][backend][quant]:
                                 results[device_name][model_name][input_shape][backend][quant][model_shape] = {}
 
                             for batch_size in json[device_name][model_name][input_shape][backend][quant][model_shape]:
-                                if batch_size not in results:
+                                if batch_size not in results[device_name][model_name][input_shape][backend][quant][model_shape]:
                                     results[device_name][model_name][input_shape][backend][quant][model_shape][batch_size] \
                                             = json[device_name][model_name][input_shape][backend][quant][model_shape][batch_size]
                                 else:
