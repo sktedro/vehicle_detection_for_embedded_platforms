@@ -147,6 +147,8 @@ def main(args):
 
     assert os.path.exists(paths.proj_path)
 
+    if args.batch_sizes == []:
+        args.batch_sizes = [1]
     args.batch_sizes = list(set(args.batch_sizes)) # Make them unique
     args.batch_sizes.sort()
 
@@ -186,7 +188,7 @@ def parse_args():
                         help="device to use for testing ('cpu' or 'cuda') if using onnxruntime backend. Default 'cpu'")
     parser.add_argument("-r", "--replace-existing", action="store_true",
                         help="whether to test even if existing results are found (and overwrite them)")
-    parser.add_argument("-s", "--batch-sizes",      type=int, action="append", default=[1],
+    parser.add_argument("-s", "--batch-sizes",      type=int, action="append",
                         help="testing batch size(s). Only applicable to dynamic models. Use more with '-b 1 -b 2 -b 4'. Default 1")
     parser.add_argument("-v", "--visualize",        action="store_true",
                         help="visualize the test ouput to a directory (in the work dir)")

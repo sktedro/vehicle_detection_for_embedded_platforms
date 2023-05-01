@@ -7,15 +7,16 @@ Example output:
     "yolov8_f": {
         "352x192": {
             "onnxruntime": {
-                "dynamic": {
-                    "1": {
-                        "bbox_mAP": "0.2590",
-                        "bbox_mAP_50": "0.4300",
-                        "bbox_mAP_75": "0.2750",
-                        "bbox_mAP_s": "0.0540",
-                        "bbox_mAP_m": "0.2270",
-                        "bbox_mAP_l": "0.3700"
-                        ...
+                "int8": {
+                    "dynamic": {
+                        "1": {
+                            "bbox_mAP": "0.2590",
+                            "bbox_mAP_50": "0.4300",
+                            "bbox_mAP_75": "0.2750",
+                            "bbox_mAP_s": "0.0540",
+                            "bbox_mAP_m": "0.2270",
+                            "bbox_mAP_l": "0.3700"
+                            ...
 ```
 """
 import os
@@ -39,6 +40,12 @@ def parse_file(f, results):
     backend = details[1]
     shape = details[2]
     batch = details[-1].replace("batch", "")
+    if "int8" in os.path.basename(f):
+        quant = "int8"
+    elif "fp16" in os.path.basename(f):
+        quant = "fp16"
+    else:
+        quant = "none"
 
     with open(f) as fd:
         content = fd.readlines()
@@ -55,7 +62,8 @@ def parse_file(f, results):
                 mAP_val = last_line[i+1]
                 test_results[mAP_name] = mAP_val
         for s in ["bbox_mAP", "bbox_mAP_50", "bbox_mAP_75", "bbox_mAP_s", "bbox_mAP_m", "bbox_mAP_l"]:
-            assert s in list(test_results.keys()), f"{s} missing in the last line of the file {f}"
+            if s not in list(test_results.keys()): 
+                print(f"WARNING: {s} missing in the last line of the file {f}")
 
         # Get average FPS from the last line containing "FPS" in the file
         for line in reversed(content):
@@ -63,18 +71,24 @@ def parse_file(f, results):
                 test_results["fps"] = re.match(fps_regex, line).groups()[0]
                 break
         else:
-            raise Exception(f"FPS not found in file {f}")
+            print(f"WARNING: FPS not found in file {f}")
 
     # Save the data
     if model_name not in results:
         results[model_name] = {}
     if input_size not in results[model_name]:
         results[model_name][input_size] = {}
-    if backend not in results[model_name][input_size]:
+    if backend    not in results[model_name][input_size]:
         results[model_name][input_size][backend] = {}
-    if shape not in results[model_name][input_size][backend]:
-        results[model_name][input_size][backend][shape] = {}
-    results[model_name][input_size][backend][shape][batch] = test_results
+    if quant      not in results[model_name][input_size][backend]:
+        results[model_name][input_size][backend][quant] = {}
+    if shape      not in results[model_name][input_size][backend][quant]:
+        results[model_name][input_size][backend][quant][shape] = {}
+
+    if batch in results[model_name][input_size][backend][quant][shape]:
+        print("WARNING: Duplicate entry found for:", model_name, input_size, backend, quant, shape, batch)
+
+    results[model_name][input_size][backend][quant][shape][batch] = test_results
 
 
 def main():
@@ -121,8 +135,8 @@ def main():
 
     results_json = json.dumps(results, indent=2)
 
-    print("Results:")
-    print(results_json)
+    # print("Results:")
+    # print(results_json)
 
     with open("test_all_results.json", "w") as f:
         f.write(results_json)
