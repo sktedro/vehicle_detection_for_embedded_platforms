@@ -10,9 +10,11 @@
 % TODO TODO vo fitthesis.cls nájsť riadok s tocdepth a zmeniť na 1
 % TODO prvé výskyty skratiek a iných neznámych slov vysvetliť
 
-% TODO mAP písať s '%'?
+% TODO mAP dávať v % a písať s '%'?
 
 % TODO písať že NMS IoU threshold je 0.7
+
+% TODO Správne písať et al.
 
 % TODO napísať aký confidence threshold som použil - že som použil prakticky
 % nula lebo to dávalo lepšie mAP aj keď viac false detections ale že na tom
@@ -26,6 +28,9 @@
 
 \newpage
 \chapter{Introduction}
+
+TODO TODO TODO
+
 % TODO malo by to asi byť viac o tom, čo budem v papieri písať
 
 % TODO povedať že sa zameriavam na detekciu zo surveillance-type snímkov či videí
@@ -248,7 +253,7 @@ automatically from raw image data instead of relying on pre-defined filters and
 transformations. \cite{Li2022}
 
 
-\subsection{Architectures of Convolutional Neural Networks}
+\subsection{Architecture of Convolutional Neural Networks}
 
 A typical CNN consists of several key components, including convolutional
 layers, pooling layers and fully connected layers. In this subsection, details
@@ -322,7 +327,7 @@ detection or semantic segmentation.
 
 LeNet-5 \cite{Lecun1998}, introduced by Yann LeCun and his team in 1998 is
 considered one of the first successful applications of convolutional neural
-networks.  Designed for handwritten digit recognition, LeNet-5 was the source of
+networks. Designed for handwritten digit recognition, LeNet-5 was the source of
 inspiration for modern CNNs with its combination of convolutional, pooling and
 fully connected layers.
 
@@ -374,21 +379,33 @@ model's small size and low computational requirements compared to previously
 discussed networks allowing for real-time use, of course by sacrificing some
 accuracy.
 
-\todo{Dať niekam MobileNetV2 keď ho už používam? Asi by som mohol tu dať ešte menší nadpis že mobilenetV2. Alebo celý mobilenet presunúť
-do real-time obj det pod niečo ako efficient model architectures alebo tak}
 
-\section{Real-Time Object Detection}
+\subsubsection{MobileNetV2}
 
-While the CNNs discussed in the previous section \autoref{CNNs} can be used for
-image classification\footnote{Image classification is the task of classifying an
-image into a class category\,--\,for example recognizing whether an image
-contains a cat or a dog.}, the object detection task also involves
+MobileNetV2 \cite{Sandler2018}, an evolution of the original MobileNet
+proposed by Mark Sandler and his team at Google in 2018. The architecture
+introduces the concept of \textit{Inverted Residuals} and \textit{Linear
+Bottlenecks}, aiming to enhance the network's representational capacity while
+maintaining low computational complexity. \textit{Inverted Residual} blocks
+leverage the idea of residual connections to mitigate the vanishing gradient
+problem and improve the training phase. \textit{Linear Bottlenecks}, on the
+other hand, reduce the computational cost of convolutional layers by decreasing
+the number of channels before applying a convolutional operation and restoring
+the original number of channels afterward. These advancements enable MobileNetV2
+to achieve superior accuracy and efficiency compared to its predecessor.
+
+
+\section{Object Detection}
+
+While the CNNs discussed in \autoref{CNNs} can be used for image
+classification\footnote{Image classification is the task of classifying an image
+into a class category\,--\,for example recognizing whether an image contains a
+cat or a dog.}, the object detection task also involves
 localization\,--\,marking all objects in the input image by a bounding box.
-Modern object detectors can be divided into two categories\,--\,one-stage
-detectors and two-stage detectors. \todo{Že sa tie architektúry vrátane
-mobilenetu dajú použiť ako backbone?}
-
-\todo{viac o tom že real-time potrebujú byť rýchle a tak}
+However, these CNNs can and often are used as backbones\footnote{The backbone of an object detector is responsible for extracting
+features from the input image.} to extract features from
+the input images. Modern object detectors can be divided into two
+categories\,--\,one-stage detectors and two-stage detectors.
 
 
 \subsection{Two-Stage Object Detectors}
@@ -406,19 +423,60 @@ one-stage object detectors and won't be discussed here in detail.
 
 
 \subsection{One-Stage Object Detectors}
-\todo{čerpať z Li2022}
-\todo{SSD a celá história YOLO?}
+
+When building a real-time object detector, most commonly a one-stage detector is
+selected. Although their accuracy is generally lower than that of two-stage
+detectors, their speed allows for real-time object detection even on
+resource-constrained devices.
+
+\subsubsection{Single Shot MultiBox Detector (SSD)}
+
+The Single Shot MultiBox Detector (SSD) is an object detection algorithm that
+aims to provide a balance between accuracy and computational efficiency.
+Proposed by Wei Liu \textit{et al.} in their 2015 paper \cite{Liu2015}, SSD
+addresses the challenge of detecting objects in images with varying scales and
+aspect ratios in real-time.
+
+Unlike the two-stage object detectors which consist of a region proposal stage
+followed by a classification stage, SSD directly predicts both the object
+locations and their corresponding class labels in a single forward pass of the
+network.
+
+Built upon a base network such as VGG-16, SSD adds a series of convolutional
+layers to capture information at different scales, allowing detection of various
+object sizes. It uses anchor boxes placed uniformly across feature maps to
+handle varying aspect ratios.
+
+\subsubsection{You Only Look Once (YOLO)}
+
+YOLO (You Only Look Once) is a family of one-stage object detectors that
+prioritize real-time performance. Introduced by Joseph Redmon \texttt{et al.} in
+2015 \cite{Redmon2015}, YOLO divides the input image into a grid, where each
+grid cell is responsible for predicting bounding boxes and class probabilities
+for objects located within that cell. YOLOv1 has undergone many iterations each
+improving upon the previous version's performance and efficiency\,--\,from
+YOLOv2 to YOLOv8 and including YOLOX, YOLOR and several more.
+
+In this work, we focus on the latest, YOLOv8 state-of-the-art object detector
+\cite{YOLOv8} developed by Ultralytics, which, at this time, doesn't have a
+paper released. However, information about the detector can be drawn from a post
+by OpenMMLab \cite{YOLOv8OpenMMLab}.
+
+Built upon the YOLOv5, the YOLOv8 detector updated the head\footnote{The head of
+an object detector predicts the object classes and bounding box coordinates
+using features input by the neck.} module to be a decoupled one, separating the
+classification and detection heads, while the new backbone and neck\footnote{The
+neck module of an object detector refines features input from the backbone.}
+modules are based on the YOLOv7 ELAN concept. In terms of training strategy,
+YOLOv8 extends the training epochs from 300 to 500 and the data augmentation
+process is modified during the final 10 epochs, with a reduction in the
+intensity of augmentations. Additionally, the loss function undergoes a
+revision, incorporating the TaskAlignedAssigner from TOOD and introducing
+Distribution Focal Loss for regression loss, which further enhances
+the detector's accuracy and efficiency.
 
 
-\subsubsection{TODO SSD}
-
-
-\subsubsection{YOLO}
-\todo{Čo všetko tu popísať? Všetky verzie YOLO? Alebo iba YOLOv8 + background o YOLO celkovo?}
-
-Každopádne napísať niečo o backbone, neck aj head. Že závisí od augmentácií a také
-
-dať tu samozrejme nejaké images, pokojne aj architektúru
+% dať tu samozrejme nejaké images, pokojne aj architektúru
 
 % \begin{itemize}
 %     \item \textbf{YOLOv1} \todo{cite} simultaneously detects all bounding boxes by dividing the input image into a grid and
@@ -429,109 +487,8 @@ dať tu samozrejme nejaké images, pokojne aj architektúru
 % \end{itemize}
 
 
-\subsubsection{Efficient Model Architectures}
-
-\todo{Hlavne MobileNetV2, ak som to nepopísal pri mobilenete; squeezenet a shufflenet?}
-
-
-
-
-\subsection{Evaluation Metrics}
-\label{EvaluationMetrics}
-
-Evaluation metrics are crucial for assessing the performance of different object
-detection models, enabling comparison between different architectures and
-tracking improvements during training. In this subsection, we provide a brief
-explanation and background of the mean Average Precision (mAP) metric, which
-will be used to evaluate the detectors trained in this project.
-
-
-\subsubsection{Average Precision}
-
-\todo{\cite{mAP}}
-
-The Average Precision (AP) is a widely used metric that calculates the
-performance of an object detector by measuring the area under the
-precision-recall curve.
-
-Precision is a measure of the proportion of true positive detections out of all
-detections (true positives and false positives), while recall measures the
-proportion of true positive detections out of all ground truth\footnote{Ground
-truth refers to the actual, true data used as a reference for comparison with a
-model's predictions.} objects (true positives and false negatives) in the
-dataset.
-
-To compute the AP, the precision and recall values are calculated at different
-confidence score\footnote{Confidence score is a number output from a detector
-for each detection stating the model's confidence that the detection is
-correct.} thresholds. By plotting precision against recall for these various
-thresholds, we obtain the precision-recall curve. The AP value is then equal to
-the area under the precision-recall curve and ranges from 0 to 1, where AP of 1
-indicates perfect precision and recall at all thresholds.
-
-
-
-
-\subsubsection{Mean Average Precision}
-
-\todo{\cite{mAP}}
-
-To evaluate multi-class object detectors, mean Average Precision (mAP) is used
-instead of the previously explained Average Precision. Computing the mAP
-involves finding the AP for each class and calculating the average over the
-number of classes.
-
-However, for object detection tasks, precision is typically calculated with
-different thresholds of the Intersection over Union (IoU) metric. The IoU metric
-measures the overlap between two bounding boxes\,--\,between the model's
-prediction and the ground truth bounding box, and represents the quality of the alignment
-between the two boxes. Calculating the IoU simply means dividing the
-intersection area of the two bounding boxes over their union. When calculating
-precision, the IoU metric is used to determine whether a predicted bounding box
-should be considered a true positive (IoU is higher than the defined IoU
-threshold) or a false positive (IoU is lower than the threshold). For
-visualization, see \autoref{IoU}.
-
-\begin{figure}[h]
-    \centering
-    \begin{subfigure}[b]{0.3125\textwidth}
-        \includegraphics[width=\textwidth]{iou_1.pdf}
-        \caption{$IoU = 0$}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{0.2272727\textwidth}
-        \includegraphics[width=\textwidth]{iou_2.pdf}
-        \caption{$IoU \approx 0.333$}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{0.15151515\textwidth}
-        \includegraphics[width=\textwidth]{iou_3.pdf}
-        \caption{$IoU = 1$}
-    \end{subfigure}
-
-    % \vspace{1cm}
-    % \begin{subfigure}[b]{0.5\textwidth}
-    %     \includegraphics[width=\textwidth]{iou_all.pdf}
-    %     % \caption{Visualization of the Intersection over Union calculation}
-    % \end{subfigure}
-    \caption{Visualization of the Intersection over Union calculation.}
-    \label{IoU}
-\end{figure}
-
-In this paper, we consider the COCO mAP specification and calculate the mAP as
-an average of AP calculated for all classes and over 10 IoU thresholds ranging
-from \num{0.50} to (and~including) \num{0.95} with step \num{0.05}. Similarly,
-values $\text{mAP}^{\text{IoU:0.50}}$ and $\text{mAP}^{\text{IoU:0.75}}$ denote
-mAP calculated with IoU thresholds equal to \num{0.50} and \num{0.75}
-respectively. Additionally, $\text{mAP}^{\text{small}}$ is only calculated for
-objects of area smaller than $32^2$ pixels, $\text{mAP}^{\text{medium}}$ for
-objects larger than $32^2$ px but smaller than $96^2$ px and finally,
-$\text{mAP}^{\text{large}}$ for objects larger than $96^2$ px.
-
-
-\subsection{Transfer Learning}
-\todo{Nedať to niekde inde? Kam? Alebo treba to vôbec? Asi by stačil footnote niekde v implementácii kde spomeniem že som
-trénoval pre-trained modely}
+% \subsubsection{Efficient Model Architectures}
+% \todo{Hlavne MobileNetV2, ak som to nepopísal pri mobilenete; squeezenet a shufflenet?}
 
 
 
@@ -546,7 +503,7 @@ and compression techniques that aim the reduce the computational cost and memory
 footprint while trying to maintain the model's accuracy. A brief overview of the
 most significant model optimization and compression techniques is given in this
 section. However, in this paper, only one of these techniques\,--\,weight
-quantization will be used \todo{due to limited resources?}.
+quantization will be used.
 
 
 \subsection{Network Pruning}
@@ -659,6 +616,96 @@ Ones relevant to this project will be discussed later in this chapter.
 
 
 
+\section{Evaluation Metrics}
+\label{EvaluationMetrics}
+
+Evaluation metrics are crucial for assessing the performance of different object
+detection models, enabling comparison between different architectures and
+tracking improvements during training. In this section, we provide a brief
+explanation and background of the mean Average Precision (mAP) metric, which
+will be used to evaluate the detectors trained in this project. The information
+in this section is derived from a blog post on the V7Labs website \cite{mAP}.
+
+\subsection*{Precision and Recall}
+
+Precision is a measure of the proportion of true positive detections out of all
+detections (true positives and false positives), while recall measures the
+proportion of true positive detections out of all ground truth\footnote{Ground
+truth refers to the actual, true data used as a reference for comparison with
+the model's predictions.} objects (true positives and false negatives) in the
+dataset. Therefore, precision represents how many predictions of the model are
+correct and recall measures how many of the ground truth objects were predicted
+by the model.
+
+If the precision and recall values are computed at different confidence
+score\footnote{Confidence score is a number output from a detector for each
+detection stating the model's confidence that the detection is correct.}
+thresholds, they can be plotted one against the other to obtain a
+precision-recall curve, which can be used to visually evaluate the overall
+accuracy of the model.
+
+\subsection*{Average Precision}
+
+The Average Precision (AP) is a metric widely used to represent the performance
+of an object detector. It is simply calculated as the area under the
+precision-recall curve and ranges from 0 to 1, where AP of 1 indicates perfect
+precision and recall at all thresholds.
+
+\subsection*{Mean Average Precision}
+
+To evaluate multi-class object detectors, mean Average Precision (mAP) is used
+instead of the previously explained Average Precision. Computing the mAP
+involves finding the AP for each class and calculating the average over the
+number of classes.
+
+However, for object detection tasks, precision is typically calculated with
+different thresholds of the Intersection over Union (IoU) metric. The IoU metric
+measures the overlap between two bounding boxes\,--\,between the model's
+prediction and the ground truth bounding box, and represents the quality of the
+alignment between the two boxes. Calculating the IoU simply means dividing the
+intersection area of the two bounding boxes over their union. When calculating
+precision, the IoU metric is used to determine whether a predicted bounding box
+should be considered a true positive (IoU is higher than the defined IoU
+threshold) or a false positive (IoU is lower than the threshold). For
+visualization, see \autoref{IoU}.
+
+\begin{figure}[h]
+    \centering
+    \begin{subfigure}[b]{0.3125\textwidth}
+        \includegraphics[width=\textwidth]{iou_1.pdf}
+        \caption{$IoU = 0$}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.2272727\textwidth}
+        \includegraphics[width=\textwidth]{iou_2.pdf}
+        \caption{$IoU \approx 0.333$}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.15151515\textwidth}
+        \includegraphics[width=\textwidth]{iou_3.pdf}
+        \caption{$IoU = 1$}
+    \end{subfigure}
+
+    % \vspace{1cm}
+    % \begin{subfigure}[b]{0.5\textwidth}
+    %     \includegraphics[width=\textwidth]{iou_all.pdf}
+    %     % \caption{Visualization of the Intersection over Union calculation}
+    % \end{subfigure}
+    \caption{Visualization of the Intersection over Union calculation.}
+    \label{IoU}
+\end{figure}
+
+In this paper, we consider the COCO mAP specification and calculate the mAP as
+an average of AP calculated for all classes and over 10 IoU thresholds ranging
+from \num{0.50} to (and~including) \num{0.95} with step \num{0.05}. Similarly,
+values $\text{mAP}^{\text{IoU:0.50}}$ and $\text{mAP}^{\text{IoU:0.75}}$ denote
+mAP calculated with IoU thresholds equal to \num{0.50} and \num{0.75}
+respectively. Additionally, $\text{mAP}^{\text{small}}$ is only calculated for
+objects of area smaller than $32^2$ pixels, $\text{mAP}^{\text{medium}}$ for
+objects larger than $32^2$ px but smaller than $96^2$ px and finally,
+$\text{mAP}^{\text{large}}$ for objects larger than $96^2$ px.
+
+
 
 
 \section{Vehicle Detection Based on Convolutional Neural Networks}
@@ -694,10 +741,13 @@ models to improve detection performance.
 
 In \cite{Wu2021}, the authors propose YOLOv5-Ghost\,--\,an improved neural
 network structure based on YOLOv5-small, to detect vehicles in the
-CARLA\todo{footnote} virtual environment. By replacing BottleneckCSP in the
-YOLOv5-small with Ghost Bottleneck, the detection speed is increased from 29 FPS
-(YOLOv5-small) to 47 FPS (YOLOv5-Ghost) while only reducing the mAP from
-\num{83.36} to \num{80.75} on their test dataset.
+CARLA\footnote{CARLA (Car Learning to Act) is an open-source, realistic urban
+environment simulator designed for the development, testing and validation of
+autonomous driving systems in various traffic scenarios and conditions.} virtual
+environment. By replacing BottleneckCSP in the YOLOv5-small with Ghost
+Bottleneck, the detection speed is increased from 29 FPS (YOLOv5-small) to 47
+FPS (YOLOv5-Ghost) while only reducing the mAP from \num{83.36} to \num{80.75}
+on their test dataset.
 
 
 \todo{my sa zameriavame na porovnanie yolov8 na embedded zariadeniach a nič viac k tomu relevantné sme nenašli}
@@ -714,8 +764,6 @@ YOLOv5-small with Ghost Bottleneck, the detection speed is increased from 29 FPS
 
 
 \section{Embedded Platforms for Machine Learning}
-\todo{RPI?}
-\todo{K jetpacku ešte verziu pythonu a tak?}
 
 Embedded platforms are a combination of hardware and software components that
 are designed to perform specific tasks. For object detection, or machine
@@ -733,12 +781,15 @@ more.
 
 \subsection{Google Coral}
 
-Designed for TensorFlow Lite \todo{footnote} models, the Google Coral platform
-offers an Edge TPU\,--\,a low-power, high-performance ASIC (application-specific
-integrated circuit) enabling on-device machine learning inference \todo{footnote
-inference ak som doteraz nevysvetlil}. Coral provides development boards, USB
-accelerators along with a variety of modules and peripherals for edge AI
-applications.
+Designed for TensorFlow Lite\footnote{TensorFlow Lite is a lightweight machine
+learning framework designed for running TensorFlow models efficiently on devices
+with limited computational resources.} models, the Google Coral platform offers
+an Edge TPU\,--\,a low-power, high-performance ASIC (application-specific
+integrated circuit) enabling on-device machine learning
+inference\footnote{Inference in machine learning is the process of using a
+trained model to make predictions on new data, previously unseen by the model.}.
+Coral provides development boards, USB accelerators along with a variety of
+modules and peripherals for edge AI applications.
 
 
 \subsection{Movidius Neural Compute Stick}
@@ -801,9 +852,9 @@ On all used NVIDIA Jetson platforms, JetPack SDK version \texttt{4.6.3} was
 used. It's important to note that using this version of the JetPack SDK means
 using older software versions, including Python version \texttt{3.6}, TensorRT
 version \texttt{8.2.1} and CUDA version \texttt{10.2}. The reason for not using
-a more recent JetPack SDK even though it was possible (on the Jetson AGX Xavier
-and Jetson Xavier NX), along with the complications it caused, will be discussed
-in \autoref{Experiments}.
+a more recent JetPack SDK (even though it supports the Jetson AGX Xavier and
+Jetson Xavier NX), along with the complications it caused, will be discussed in
+\autoref{Experiments}.
 
 
 \section{Tools and Libraries}
@@ -854,9 +905,10 @@ features of the library include:
     of the codebase.
     \item It includes pre-trained models and their configurations which makes
     training and comparing different models fast and simple, while making it
-    possible to use the transfer learning technique\todo{footnote ak som
-    nevysvetlil transfer learning skôr} which significantly speeds up the
-    process.
+    possible to use the transfer learning technique\footnote{Transfer learning
+    is a machine learning technique that leverages knowledge of a pre-trained
+    model to more efficiently train a new model, reducing training time and data
+    requirements.} which significantly speeds up the process.
 \end{itemize}
 
 
@@ -917,11 +969,6 @@ allowing developers to choose the best balance between accuracy and performance.
 
 
 
-\todo{Niekde popísať rozdiel medzi trénvacím, validačným a testovacím datasetom a na čo treba všetky?}
-
-
-
-
 
 \chapter{Datasets}
 
@@ -932,19 +979,23 @@ chosen dataset is then analyzed individually. Finally, a summary of all used
 datasets is provided along with details on how the dataset was split into
 training, validation and testing subsets.
 
+\todo{Niekde popísať rozdiel medzi trénovacím, validačným a testovacím datasetom a na čo treba všetky?}
+
 \section{Dataset Criteria}
+
+\todo{Nespísať to priamo do kapitoly? Zbytočný section je toto}
 
 Here, we briefly explain the most important criteria for selecting datasets to
 be used in a project like this.
 
-\subsection*{Camera Angle}
+\subsubsection*{Camera Angle}
 
 Since we're building a detector for a camera mounted on infrastructure, it is
 recommended to use datasets containing surveillance-type images. Datasets
 containing only images taken from, for example, a car dashboard camera, were
 therefore disregarded.
 
-\subsection*{Classes}
+\subsubsection*{Classes}
 \label{Classes}
 
 If we don't want to re-label the dataset manually, its classes must be mappable
@@ -963,13 +1014,14 @@ to \textit{our} classes. In this work, 8 object classes are considered:
 Many available datasets didn't annotate some of these classes or aggregated some of them into one
 and were therefore ignored.
 
-\subsection*{Diversity of Images}
+\subsubsection*{Diversity of Images}
 
-For the trained detector to generalize well, it's important for a dataset to
-contain images with different camera angles, lighting conditions, weather, etc.
-60 FPS continuous video does not bring much of an advantage.
+For the trained detector to generalize well, a dataset needs to
+contain images with diverse camera angles, lighting conditions, weather, and
+other factors. For example, a 60 FPS continuous video does not bring much of an
+advantage.
 
-\subsection*{Dataset Quality}
+\subsubsection*{Dataset Quality}
 
 We observed that many datasets contained incorrect annotations or
 classifications. It is important to check the dataset and either fix faulty
@@ -1236,24 +1288,23 @@ be easily mapped to our 8 \textit{internal} classes.
 
 \section{Dataset processing}
 
-\todo{v akom formáte sú datasety, do akého ich konvertujem, aké súbory vytváram a tak. Asi pokojne vcelku podrobne}
-
 Before training, all datasets used in this project must be converted to a
 unified format, object classes need to be mapped to be the same in each dataset.
 Additionally, some datasets include images with regions that should be masked
-out and certain subsets or images of some datasets need to be ignored.
+out, and certain subsets or images of some datasets need to be ignored.
 
-For this, a Python script was developed for each dataset. It first loads the
-annotations from the original format - COCO \footnote{The widely used COCO
+Therefore, a Python script was developed for each dataset. It first loads the
+annotations from the original format\,--\,COCO\footnote{The widely used COCO
 annotation format defines how a dataset (its categories, list of images,
 annotations and other metadata) should be stored in the JSON (JavaScript Object
 Notation) format as a file.} for AAU RainSnow, MTID
 and NDISPark, XML for DETRAC and different CSV formats for MIO-TCD and VisDrone.
-The script then maps the classes to ones shown in \autoref{Classes} and if needed,
-removes the ignored subsets or images before saving the labels in the COCO
-format. The processing script for NDISPark dataset also corrects the object
-classes before saving, and therefore does not modify the original dataset file
-(class corrections are defined in the script itself).
+The script then maps the classes to ones shown in \autoref{Classes} and if
+needed, removes the ignored subsets or images before saving the labels in the
+COCO format. The processing script for NDISPark dataset also corrects the object
+classes (since the original dataset annotates all objects with the same class)
+before saving, and therefore does not modify the original dataset file (class
+corrections are defined in the script itself).
 
 MMDetection's middle format was considered as it's a more efficient alternative
 to the COCO format, but the COCO format is more popular and is supported by most
@@ -1262,19 +1313,19 @@ format is saved as a pickle\footnote{The Python's pickle format refers to a
 binary serialization and deserialization method allowing for the conversion of
 Python objects into a byte stream.} file), and most importantly, MMYOLO and the
 most recent version of MMDetection at the time of preparing the datasets
-(\texttt{v3.0.0rc2}) does not seem to fully support datasets in the middle
-format to be used in all of their dataset wrappers.
+(\texttt{v0.4.0} and \texttt{v3.0.0rc2}) do not seem to fully support datasets
+in the middle format to be used in all of their dataset wrappers.
 
 Several other Python processing scripts were developed, to apply masks, combine
-all ground truth files into one and split the combined ground truth file into
-train, validation and test subsets. Additionally, scripts to review datasets
-manually were created - one to visualize a dataset by simply adding bounding
-boxes (with class labels) to the images and one to convert the visualized images
-to video (or videos).
+all ground truth files into one and to split the combined ground truth file into
+training, validation and testing subsets. Additionally, scripts to review
+individual datasets manually were created - one to visualize a dataset by simply
+adding bounding boxes (with class labels) to the images and one to convert the
+visualized images to video (or videos).
 
-A few more scripts were written, of which two are worth mentioning - one for
-uploading the DETRAC dataset to LabelBox for reannotation and one for
-downloading the reannotated labels.
+A few more scripts were created, of which two are worth mentioning\,--\,one for
+uploading the DETRAC dataset to the LabelBox application for reannotation and
+one for downloading the reannotated labels.
 
 
 \section{Summary of Datasets}
@@ -1392,12 +1443,9 @@ objects on \num{7990} images\,--\,\num{5500} images from the Miovision dataset a
 
 
 
-% TODO aké modely používam, aké rozlíšenia, ich porovnanie (možno aj RAM usage)
-% Konfigurácie modelov
-% Tréning
 \chapter{Object Detection Models}
 
-\todo{Nedať do k experimentom?}
+\todo{Nedať to k experimentom? Asi to nepotrebuje vlastnú kapitolu, no}
 
 % In this chapter, the reader will find all information about the used object
 % detection models, from their architecture to the deployment process to
@@ -1424,8 +1472,16 @@ several others were trained and evaluated in this work: YOLOv8-pico and
 YOLOv8-femto model versions, which are simply smaller versions of the same
 YOLOv8 model. Finally, a YOLOv8-large model with the CSP Darknet backbone
 replaced by a popular MobileNetV2 backbone is introduced (hereafter referred to
-as YOLOv8 MobileNetV2). \todo{použité indices alebo celkovo viac o tom. Môžem ale o tom písať v experimentoch, keďže
-som skúšal rôzne indices}
+as YOLOv8 MobileNetV2).
+
+In the YOLOv8 MobileNetV2 model, the output indices\footnote{Output indices
+enable the selection of specific layers in the architecture, from which the
+output feature maps should be used. In this case, only these feature maps are
+then used as inputs to the object detector's neck.} selected were $[2, 4, 6]$.
+Several models with different \texttt{out\_indices} settings were trained for
+just 75 epochs to compare their performance, however, none of the alternative
+settings led to improved performance (in terms of both inference speed and
+accuracy).
 
 Normally, a square resolution is used for the model's input, but standard traffic cameras
 output a video of a rectangular shape, usually with the aspect ratio being 16:9.
@@ -1434,19 +1490,21 @@ trained detectors. The aim was to use aspect ratios as close to 16:9 as
 possible, but the widths and heights of the input resolution have to be multiples of
 32, so some input resolutions are further from it than others.
 
-For smaller models, several input resolutions were tested to provide insights into
-how a vehicle detection model can be optimized by decreasing the resolution of
-the input image. Although the inference speed should be directly proportional to
-the number of pixels in the input image \todo{áno?}, we decided to test it.
+For smaller models, several input resolutions were tested to provide insights
+into how a vehicle detection model can be optimized by decreasing the resolution
+of the input image. Although the inference speed should be (approximately)
+directly proportional to the number of pixels in the input image, we decided to
+test it and also find the limit\,--\,how small can the model's input resolution
+be for it to start performing poorly on our datasets.
 
 For a summary of all used model architectures, their sizes, input resolutions and the
 amounts of their floating point operations (FLOPS) and parameters, see
-\autoref{ModelArchitectures}. Numbers of floating point operations and
+\autoref{ModelArchitectures}. Quantities of floating point operations and
 parameters were calculated using MMDetection's analysis script
-\verb|get_flops.py|. Although the script calculates the output using input resolution
-$720 \times 480$, simply multiplying the output by the difference between the
-input resolutions provides an accurate result. This can be explained by the following
-equation:
+\verb|get_flops.py|. Although the script calculates the output using input
+resolution $720 \times 480$, simply multiplying the output by the difference
+between the input resolutions provides an accurate result. This can be explained
+by the following equation:
 \begin{equation}
     N_{new} = N_{720 \times 480} \times \frac{new\_width \times new\_height}{720 \times 480}
 \end{equation}
@@ -1588,28 +1646,50 @@ factors of individual datasets are shown in \autoref{RepetitionFactors}.
 
 \subsection{Training Augmentation Pipeline}
 
-In this subsection, the augmentation pipeline used when training the chosen
-models is explained. Data augmentations are very important when training an
-object detector, especially for detectors of the YOLO family. An augmentation
-in this context refers to the process of applying a transformation to an
-image to artificially increase the size and diversity of the training dataset,
-which helps prevent overfitting and improves the generalization ability of the
-trained model. To a convolutional neural network, even a tiny rotation,
-translation, image flip, noise or color distortion makes an input image appear
-to be something completely different, so applying these transformations randomly
-to the input images is crucial to train a robust model. Following are the
-transformations in the main training augmentation pipeline:
+In this subsection, the training augmentation pipeline is explained. Data
+augmentations are important when training an object detector, especially
+detectors of the YOLO family. An augmentation in this context refers to the
+process of applying a transformation to an image to artificially increase the
+size and diversity of the training dataset, which helps prevent overfitting and
+improves the generalization ability of the trained model. To a convolutional
+neural network, even a tiny rotation, translation, image flip, noise or color
+distortion makes an input image appear to be something completely different, so
+applying these transformations randomly to the input images is crucial when
+training a robust model. Examples of images augmented by the training
+augmentation pipeline can be seen in \autoref{AugmentedExamples}. Following are
+the transformations in the main training augmentation pipeline:
 
-\todo{4 examples v gride že ako vyzerajú augmentované snímky?}
+\begin{figure}[t]
+    \centering
+    \begin{subfigure}[b]{0.49\textwidth}
+        \includegraphics[width=\textwidth]{augmented_detrac.jpg}
+        \caption{DETRAC-UA}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.49\textwidth}
+        \includegraphics[width=\textwidth]{augmented_mio-tcd.jpg}
+        \caption{MIO-TCD}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.49\textwidth}
+        \includegraphics[width=\textwidth]{augmented_mtid.jpg}
+        \caption{MTID}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.49\textwidth}
+        \includegraphics[width=\textwidth]{augmented_ndis.jpg}
+        \caption{NDISPark}
+    \end{subfigure}
+    \caption{Examples of images augmented by the training augmentation pipeline,
+    including the ground truth labels.}
+    \label{AugmentedExamples}
+\end{figure}
+
 
 \subsubsection*{Resize}
 
-First, the image is resized to fit in the model's input size while, of course,
-keeping the aspect ratio unchanged.
+First, the image is resized to fit the model's input resolution while, of
+course, keeping the aspect ratio unchanged.
 
 \subsubsection*{Pad}
 
-\label{PadTransformation}
 If the aspect ratio of the input image is not the same as the model's input, extra pixels around the input image must be added
 to adapt to the model input's aspect ratio. The \textbf{color value} of the padded pixels is set to RGB(114, 114, 114).
 
@@ -1726,7 +1806,6 @@ the color channels.
 As the last step in the pipeline, \texttt{FilterAnnotations} is called to remove
 bounding boxes with \textbf{width or height} lower than \num{8} pixels.
 
-
 \subsubsection{Fine-Tuning Augmentation Pipeline}
 
 Originally, MMYOLO's YOLOv8 models are configured to switch to a simplified
@@ -1740,8 +1819,8 @@ mean Average Precision (mAP) metric during the fine-tuning phase (last 10
 epochs).
 
 
-\todo{graf validačného mAP?}
-\todo{že ktorú epochu som vybral pre každý model??}
+
+\todo{že ktorú epochu som vybral pre každý model?? Aj grap validačného mAP? To asi nie}
 
 
 
@@ -1753,14 +1832,11 @@ epochs).
 
 \section{Devices Used in Experiments}
 
-\todo{písať technické parametre o MX150, i7 a ARM niekde v teórii?}
-
 While the main focus is on NVIDIA Jetson embedded devices, which were designed
 specifically for tasks like object detection, tests were run on several other
 devices for comparison of both ends of the performance gauge. In this section,
 details about each device that the models were evaluated on are provided,
 including details about the software and device configurations.
-
 
 % \subsection{NVIDIA RTX A5000} # Nedá sa spojazdniť, treba sudo
 
@@ -1782,10 +1858,10 @@ For all experiments, these power plans were chosen: \\
 To be able to compare inference speeds on these embedded devices to ones on a
 regular GPU, tests were also done on an NVIDIA GeForce MX150 GPU with 2 GB of
 memory on a DELL Latitude 5401 laptop. Because of the GPU memory constraint, not
-all models can be evaluated with all inference batch sizes, as will be discussed
-later in this chapter. Additionally, we were unable to perform tests on this
-device using the TensorRT library because some of the packages required could
-not be installed.
+all models can be evaluated with all inference batch sizes on this device, as
+will be pointed out in individual relevant experiments. Additionally, we were
+unable to perform any tests using the TensorRT library on this device because
+some of the packages required could not be installed on the system.
 
 
 \subsection{Intel Core i7-9850H}
@@ -1800,15 +1876,15 @@ while, when the CPU temperature rises above a certain threshold, the CPU
 frequency has to drop to avoid overheating. This is called dynamic frequency
 scaling, also known as CPU throttling. To make the performance measurements as
 accurate as possible, the number of warmup samples when testing is increased
-from 10 to 100. This means that the inference speed of these samples will not
-count into the final result.
+from 10 to 100. This means that the inference speed (FPS) of these first 100
+samples will be ignored when calculating the average FPS.
 
-However, the test results still not might be accurate enough and might depend on
-the underlying operating system, running applications and the environment.
+However, please note that the test results still not might be accurate enough
+and might depend on the underlying operating system, running applications and
+the environment.
 
-\todo{performance governor (throttling)?}
 
-\subsection{ARM Cortex-A72}
+\subsection{Raspberry PI 4B}
 
 Finally, the popular Raspberry PI 4B single-board computer with ARM Cortex-A72
 CPU with base frequency 1.8 GHz was used to test the trained models. Although it
@@ -1824,6 +1900,49 @@ found here. See \autoref{DevicesPackages} for a compact table displaying
 versions of relevant software. Following are the reasons behind some odd choices
 or compatibility issues.
 
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{|l|c|c|c|c|}
+    \hline
+    % \multirow{2}{*}{Name} & NVIDIA Jetson & NVIDIA Jetson & NVIDIA Jetson \\
+    %                       & AGX Xavier    & Xavier NX     & Nano          \\
+    % Name             & NVIDIA Jetson devices & NVIDIA MX150 & Intel Core i7-9850H & Raspberry PI \\
+    \multirow{2}{*}{Name} & All NVIDIA     & NVIDIA & Intel Core  & Raspberry \\
+                          & Jetson devices & MX150  & i7-9850H    & PI 4B \\
+    \hline
+    \multirow{2}{*}{Operating system} & Linux for Tegra             & \multicolumn{2}{c|}{Linux}     & Linux   \\
+                                      & (L4T OS \texttt{32.7.3}) & \multicolumn{2}{c|}{Debian 12} & Raspbian 11   \\
+    \hline
+    JetPack SDK      & \texttt{4.6.3}                     & \multicolumn{3}{c|}{-}  \\
+    \hline
+    Python           & \texttt{3.6.9}                     & \multicolumn{2}{c|}{\texttt{3.10.0}} & \texttt{3.7.0} \\
+    \hline
+    CUDA             & \texttt{10.2}                      & \texttt{11.8} & \multicolumn{2}{c|}{-} \\
+    \hline
+    TensorRT         & \texttt{8.2.1} & \multicolumn{3}{c|}{-}             \\
+    \hline
+    ONNX             & \multicolumn{3}{c|}{1.13.1} & \texttt{1.12.0}             \\
+    \hline
+    ONNX Runtime     & \texttt{1.11.0} (ver. GPU) & \texttt{1.12.0} (ver. GPU) & \texttt{1.12.0} & \texttt{1.11.0}            \\
+    \hline
+    PyTorch          & \texttt{1.10.0} & \multicolumn{2}{c|}{\texttt{2.0.0}} & \texttt{1.8.0} \\
+    \hline
+    MMCV             & \multicolumn{4}{c|}{\texttt{2.0.0}} \\
+    \hline
+    MMDeploy         & \multicolumn{3}{c|}{\texttt{1.0.0}} & \texttt{1.0.0rc3} \\
+    \hline
+    MMDetection      & \multicolumn{4}{c|}{\texttt{3.0.0}} \\
+    \hline
+    MMEngine         & \multicolumn{4}{c|}{\texttt{0.7.2}} \\
+    \hline
+    MMYOLO           & \multicolumn{4}{c|}{\texttt{0.4.0}} \\
+    \hline
+\end{tabular}
+\caption{Versions of relevant software installed on devices used to deploy and test the trained models.}
+\label{DevicesPackages}
+\end{table}
+
 
 \subsubsection*{JetPack SDK}
 
@@ -1831,7 +1950,7 @@ Despite both Jetson Xavier NX and Jetson AGX Xavier being supported by NVIDIA
 JetPack SDK version \texttt{5.1.1}, deploying YOLOv8 models using this version
 often led to an untraceable fatal error. The error originated from one of
 NVIDIA's proprietary libraries and provided limited information regarding its
-cause.  Fortunately, downgrading the JetPack version to \texttt{4.6.3} resolved
+cause. Fortunately, downgrading the JetPack version to \texttt{4.6.3} resolved
 this issue.
 
 Although the root cause of the error and the specific package (or library) that
@@ -1875,78 +1994,38 @@ specifically for Jetson devices and only support a certain Python
 version\,--\,the one pre-installed with the JetPack SDK.
 
 
-\begin{table}[h]
-\centering
-\small
-\begin{tabular}{|l|c|c|c|c|}
-    \hline
-    % \multirow{2}{*}{Name} & NVIDIA Jetson & NVIDIA Jetson & NVIDIA Jetson \\
-    %                       & AGX Xavier    & Xavier NX     & Nano          \\
-    % Name             & NVIDIA Jetson devices & NVIDIA MX150 & Intel Core i7-9850H & Raspberry PI \\
-    % TODO raspberry pi instead of ARM cortex?
-    \multirow{2}{*}{Name} & All NVIDIA     & NVIDIA & Intel Core  & ARM \\
-                          & Jetson devices & MX150  & i7-9850H    & Cortex-A72 \\
-    \hline
-    \multirow{2}{*}{Operating system} & Linux for Tegra             & \multicolumn{2}{c|}{Linux}     & Linux   \\
-                                      & (L4T OS \texttt{32.7.3}) & \multicolumn{2}{c|}{Debian 12} & Raspbian 11   \\
-    \hline
-    JetPack SDK      & \texttt{4.6.3}                     & \multicolumn{3}{c|}{-}  \\
-    \hline
-    Python           & \texttt{3.6.9}                     & \multicolumn{2}{c|}{\texttt{3.10.0}} & \texttt{3.7.0} \\
-    \hline
-    CUDA             & \texttt{10.2}                      & \texttt{11.8} & \multicolumn{2}{c|}{-} \\
-    \hline
-    TensorRT         & \texttt{8.2.1} & \multicolumn{3}{c|}{-}             \\
-    \hline
-    ONNX             & \multicolumn{3}{c|}{1.13.1} & \texttt{1.12.0}             \\
-    \hline
-    ONNX Runtime     & \texttt{1.11.0} (ver. GPU) & \texttt{1.12.0} (ver. GPU) & \texttt{1.12.0} & \texttt{1.11.0}            \\
-    \hline
-    PyTorch          & \texttt{1.10.0} & \multicolumn{2}{c|}{\texttt{2.0.0}} & \texttt{1.8.0} \\
-    \hline
-    MMCV             & \multicolumn{4}{c|}{\texttt{2.0.0}} \\
-    \hline
-    MMDeploy         & \multicolumn{3}{c|}{\texttt{1.0.0}} & \texttt{1.0.0rc3} \\
-    \hline
-    MMDetection      & \multicolumn{4}{c|}{\texttt{3.0.0}} \\
-    \hline
-    MMEngine         & \multicolumn{4}{c|}{\texttt{0.7.2}} \\
-    \hline
-    MMYOLO           & \multicolumn{4}{c|}{\texttt{0.4.0}} \\
-    \hline
-\end{tabular}
-\caption{Versions of relevant software installed on devices used to deploy and test the trained models.}
-\label{DevicesPackages}
-\end{table}
-
-
-
 \section{Model Deployment and Optimizations}
 
+\todo{niekde napísať ktoré epochy som nakoniec vybral pre evaluation a že to je čisto na základe validačných mAP?}
+
 For model deployment, we have created an automated script utilizing the MMDeploy
-library's deployment script. The script uses all available deploy
+library's deployment script. Our script uses all available deploy
 configurations\footnote{When deploying models using MMDeploy, deploy
-configurations are used to specify the parameters of the deployment process,
+configuration files are used to specify the parameters of the deployment process,
 including target backend or whether to apply post-training quantization} to
 deploy all trained PyTorch models to a specified backend (or backends).
 
 There are only two deploy configurations for the ONNX Runtime backend\,--\,one
-with a static model shape\todo{footnote čo je model shape} and one with a
-dynamic shape in the batch dimension\todo{footnote}. For the TensorRT backend,
-two additional deploy configurations were created, both for a model with a
-dynamic shape in the batch dimension\,--\,one for weight quantization to the
+with a static model shape\footnote{A model shape can be static or dynamic. A
+static model can only receive inputs of a certain shape specified when deploying
+(batch size and input resolution\,--\,width and height), whereas a dynamic model
+accepts various input shapes.} and one with a dynamic shape in the batch size
+dimension\footnote{A dynamic model shape in the batch size dimension means the
+model accepts different input shapes but still requires a fixed input image
+resolution.}. The dynamic models were deployed to accept a maximum batch size of
+32, but were optimized for a batch size of 1.  For the TensorRT backend, two
+additional deploy configurations were created, both for a model with a dynamic
+shape in the batch dimension\,--\,one for weight quantization to the
 \texttt{FP16} representation, and one for weight quantization to the
 \texttt{INT8} representation including weight calibration using the validation
 dataset.
 
-To optimize inference on the Raspberry PI, we aimed to use the NCNN inference
+To optimize inference on the Raspberry PI 4B, we aimed to use the NCNN inference
 framework designed for mobile and embedded devices with limited computing
 resources. However, deploying a YOLOv8 model to the NCNN format is not yet
 possible, as the YOLOv8 model contains operations that are not yet supported by
-the framework and the MMYOLO library does not yet support deploying its models
-to NCNN either.
-\todo{meaning it doesn't yet convert unsupported operations to
-supported ones when deploying to NCNN?}
+the framework and the MMYOLO library does not yet support converting the
+unsupported operations to supported ones.
 
 
 \subsection*{Devices Used for Deployment}
@@ -1964,9 +2043,6 @@ recommended.
 % version of the Python package was used. The TensorRT library, on the other hand, was
 % only used for experiments on NVIDIA Jetson devices.
 
-
-
-
 % For the rest of the devices, the popular ONNX (Open Neural Network Exchange)
 % model format was selected. It was designed to represent models in a portable and
 % efficient way, enabling them to be run on a variety of hardware platforms. To
@@ -1974,9 +2050,6 @@ recommended.
 % can be used. It was designed to optimize the inference of ONNX models across
 % different hardware platforms and operating systems, including CPUs, GPUs, FPGAs
 % and ASICs.
-
-% \todo{compare onnxruntime and tensorrt on a single device with the same model}
-
 
 
 \subsection*{Weight Quantization}
@@ -2038,25 +2111,20 @@ folder, the name of the folder cannot be specified and is named after the test
 start time (eg. \texttt{20230429\_043829/}), so reading the data from the log file
 is simpler and less error-prone.
 
-\todo{Toto dať k results ako important things to note alebo tak?}
 When testing models on CPUs in the ONNX format using the MMDeploy library, the
 library doesn't control how many processes the ONNX Runtime library uses to run
 inference. To provide accurate results, the source code was modified to create
 the ONNX Runtime inference session with the option of only running in a single
 thread. This means that the inference speeds on CPUs are not the highest
 possible. However, simply multiplying the FPS metric by the number of CPU cores
-to get the maximum inference speed possible on the device is incorrect, because
-running a multi-threaded inference is not as efficient as running it on a single
-thread.
-\todo{dať tu výsledky z RPI? Otestovať aj väčší batch?}
+to get the maximum inference speed possible on the device is generally
+incorrect, because running a multi-threaded inference is not as efficient as
+running it on a single thread. On the other hand, if running $n$ separate
+inference processes on a CPU with $n$ cores, it is theoretically possible to
+achieve inference speeds $n$ times higher than with a single-threaded inference,
+although the inference duration would remain the same.
 
-
-Možno tabuľka všetkých testov alebo tak
-
-
-
-
-
+\todo{Možno tabuľka všetkých testov alebo tak? Alebo, ako na začiatku sľubujem, napísať že testujem všetky modely atď.}
 
 
 
@@ -2081,33 +2149,32 @@ povedať krátko že v akom poradí to budem evaluovať a napr. že graf FPS/mAP
 \section{Precision-Recall Curves of Major Models}
 
 % python3 pr_curve.py working_dir_yolov8_m_640x384_lr0.00125/ working_dir_yolov8_l_mobilenet_v2_512x288_indices_246/ working_dir_yolov8_n_512x288/ working_dir_yolov8_f_352x192/
-
-% Tu dať len pár, asi 4 krivky. Medium, MobileNetV2, Nano 512x288 lebo také
-% rozlíšenie má aj mobilenet a nakoniec najmenšie Femto. Kvantizované tu netreba
-
-\todo{Zvyšné PR krivky do príloh. Aj kvantizované?}
-
-\todo{niekde PR krivky vysvetliť. Asi ideálne pred mAP v teórii, no}
-
-
+% A pre appendix:
+% python3 pr_curve.py working_dir_yolov8_s_640x384/ working_dir_yolov8_n_640x384/ working_dir_yolov8_n_448x256/ working_dir_yolov8_p_512x288/ working_dir_yolov8_p_448x256/ working_dir_yolov8_p_384x224/ working_dir_yolov8_f_512x288/ working_dir_yolov8_f_448x256/ working_dir_yolov8_f_384x224/
 
 In this experiment, we measured the precision and recall values of four of the
 trained models on the test dataset to plot the precision-recall (PR) curves in
-\autoref{PRCurveMajor}.  We could not show the curves of all the models because
+\autoref{PRCurveMajor}. We could not show the curves of all the models because
 the figure would simply not fit on a single page, so instead, only the four most
 representative models were selected. A more complete figure with PR curves for
-all models can be seen in \todo{autoref appendix + upraviť vetu ak som to urobil
-inak...}.
+the rest of the models can be seen in \autoref{PRCurvesAdditional}. The
+precision and recall values were calculated by MMDeploy's test script, to which
+we have inserted a few lines of code to save the values to a file.
 
-povedať že mAP bude inde?
+In the plots, the performance for the bus class appears abnormally high. We
+hypothesize that the reason behind it is the presence of a few
+easily-detectable, large buses in numerous images from the DETRAC-UA dataset
+within the testing set. Additionally, the low performance of models in detecting
+vehicles belonging to the \textit{unknown} category should not be a major
+concern, as the diversity of the vehicles in this category makes it difficult to
+accurately detect and classify them.
 
-to že mAP autobusov je vysoké je asi kvôli tomu, že je autobus v detracu a ten dataset je ľahký
-
-povedať že unknown netreba brať vážne (nezáleží až tak, ako detektor klasifikuje objekt ktorý sám anotátor nevedel klasifikovať)
-
-\todo{napísať že sme urobili skript ktorý to počíta? Nech si nemyslia že to je
-100\% správne. Kam to ale napísať? Do results sa to asi nehodí, tak skôr do
-experimentov. Napísať aj že som IoU thresholdy priemeroval}
+As could be expected, the YOLOv8-medium model demonstrated superior performance,
+achieving the highest precision and recall values. Furthermore, the performance
+of the YOLOv8 MobileNetV2 model is comparable to that of the YOLOv8-nano,
+although slightly superior. In contrast, the YOLOv8-femto with an input
+resolution of $352 \times 192$ could be an example of a model with considerably
+lower performance.
 
 \begin{figure}[H]
     \begin{framed}
@@ -2140,7 +2207,12 @@ We expect that the reduction in the number of pixels in a model's input resoluti
 should be directly proportional to the increase in its inference speed (FPS).
 For example, we anticipate that a detector with the input resolution of $640 \times
 320$ would be twice as fast compared to a detector with the input resolution $640
-\times 640$. However, this hypothesis needed to be tested to be proven correct
+\times 640$. However, this hypothesis needed to be tested to bIn this experiment, we measured the precision and recall values of four of the
+trained models on the test dataset to plot the precision-recall (PR) curves in
+\autoref{PRCurveMajor}. We could not show the curves of all the models because
+the figure would simply not fit on a single page, so instead, only the four most
+representative models were selected. A more complete figure with PR curves for
+the rest of the models can be seen in \autoref{PRCurvesAdditional}.e proven correct
 In \autoref{InputResolutionVSFPS}, we compare the inference speed of models with
 different input resolutions. The biggest input resolution is selected as the base to which
 other input resolutions will be compared to, and expected FPS is calculated using
@@ -2176,81 +2248,27 @@ concise.
 
 
 
-
-\section{Effect of Model's Shape on Inference Speed}
-
-While a model with a static shape has a fixed input resolution and a
-fixed batch size, it can be set to accept input images of different resolutions
-and different batch sizes. In this paper, we used the MMDeploy library to deploy
-the trained models into both static and dynamic shapes. However, the deployment
-process was configured so that dynamic models would only be flexible in the
-batch size dimension while the model's input resolution stays static. Anyways, we
-will call these models dynamic.
-
-In this experiment, we compare inference speeds achieved by static models and
-dynamic models to learn whether deploying a model to a dynamic shape (in the
-batch size dimension) decreases the inference speed. Only the most
-representative models were selected for comparison to keep the plots concise.
-Naturally, all tests were conducted with a batch size of a single image. Tests
-were conducted on the NVIDIA Jetson Nano with the TensorRT inference backend and
-on the Raspberry PI with ONNX Runtime to make the measurements as accurate as
-possible by using the least-performing devices for both inference backends. The
-comparison of inference speeds on all model architectures is presented in
-\autoref{StaticDynamicModelShape}.
-
-Because the inference speed is not consistently faster for static models, we
-conclude that it does not significantly decrease if a dynamic shape is used for
-the model's input in the batch size dimension. Therefore, we will only evaluate
-dynamic models in future experiments.
-
-
-
-\todo{nechcem testovať ort na jetsonoch takže by bolo fajn keby pred týmto
-experimentom bolo porovnanie ort vs trt na jetsonoch. Ak sa nedá, tak tu napísať
-že because trt is expected to perform generally better, ort was not tested...}
-
-
-\begin{figure}[h]
-    \begin{framed}
-        \centering
-        \includegraphics[width=\textwidth]{static_dynamic_comparison.pdf}
-        % \caption{na konci pripomenúť že dynamic je iba batch size dimension}
-        \caption{Comparison of inference speeds between models with static and
-        dynamic shapes in the batch size dimension. Only the most representative
-        models were selected for comparison, as the rest of the data do not
-        provide additional insights.}
-        \label{StaticDynamicModelShape}
-    \end{framed}
-\end{figure}
-
-
-
-
-
-
-
-
 \section{Inference Speeds: ONNX Runtime vs. TensorRT}
 
 In this experiment, we compare how the inference speed is increased by using the
 TensorRT backend for inference on NVIDIA Jetson devices instead of the ONNX
-Runtime backend. We provide FPS measured by our test script for each model.
-However, for each model architecture, only the biggest input resolution is selected
-for testing, following the insights gained by the experiment in
-\autoref{InputResolutionVSFPSExperiment}.
-
-The inference speeds (FPS) are compared on both the lowest and highest
-performing NVIDIA Jetson devices with different batch sizes to be able to draw
-general conclusions from the results.
+Runtime backend. The inference speeds (FPS) measured by our test script are
+compared on both the lowest and the highest-performing NVIDIA Jetson devices
+with different batch sizes to be able to draw general conclusions from the
+results. For each model architecture, only the biggest input resolution is
+selected for testing, following the insights gained by the experiment in
+\autoref{InputResolutionVSFPSExperiment}. Additionally, all tested models were
+dynamic in shape.
 
 The results in \autoref{OrtVsTrtFPS} clearly show the superiority of the
 TensorRT inference backend on NVIDIA Jetson devices for all tested models and
 different batch sizes. Naturally, the choice of the inference backend has no
-effect on the mean Average Precision of the tested models.
+effect on the mean Average Precision of the tested models. Therefore, none of
+the following experiments will feature the ONNX Runtime backend on NVIDIA Jetson
+devices.
 
-% že femto a pico sú tak malé modely že tie FPS asi netreba brať príliš
-% vážne? Do caption: Please note that the inference speeds for tiny models, such
-% as the YOLOv8-pico and YOLOv8-femto, might not be accurate due to them being so
+% Please note that the on these devices, inference speeds of tiny models, such as
+% the YOLOv8-pico and YOLOv8-femto, might not be accurate due to them being so
 % small.
 
 \begin{figure}[t]
@@ -2271,12 +2289,52 @@ effect on the mean Average Precision of the tested models.
 
 
 
+\section{Effect of Model's Shape on Inference Speed}
+
+While a model with a static shape has a fixed input resolution and a
+fixed batch size, it can be set to accept input images of different resolutions
+and different batch sizes. In this paper, we used the MMDeploy library to deploy
+the trained models into both static and dynamic shapes. However, the deployment
+process was configured so that dynamic models would only be flexible in the
+batch size dimension while the model's input resolution stays static. Anyways, we
+will call these models dynamic.
+
+In this experiment, we compare inference speeds achieved by static models and
+dynamic models to learn whether deploying a model to a dynamic shape (in the
+batch size dimension) decreases the inference speed. Only the most
+representative models were selected for comparison to keep the plots concise.
+Naturally, all tests were conducted with a batch size of a single image. Tests
+were conducted on the NVIDIA Jetson Nano with the TensorRT inference backend and
+on the Raspberry PI 4B with ONNX Runtime to make the measurements as accurate as
+possible by using the least-performing devices for both inference backends. The
+comparison of inference speeds on all model architectures is presented in
+\autoref{StaticDynamicModelShape}.
+
+Because the inference speed is not consistently faster for static models, we
+conclude that it does not significantly decrease if a dynamic shape is used for
+the model's input in the batch size dimension. Therefore, we will only evaluate
+dynamic models in future experiments.
+
+\begin{figure}[h]
+    \begin{framed}
+        \centering
+        \includegraphics[width=\textwidth]{static_dynamic_comparison.pdf}
+        % \caption{na konci pripomenúť že dynamic je iba batch size dimension}
+        \caption{Comparison of inference speeds between models with static and
+        dynamic shapes in the batch size dimension. Only the most representative
+        models were selected for comparison, as the rest of the data do not
+        provide additional insights.}
+        \label{StaticDynamicModelShape}
+    \end{framed}
+\end{figure}
 
 
 
 
 
-\section{Effect of Inference Batch Size on Inference Speed}
+
+
+\section{Effect of Batch Size on Inference Speed}
 \label{BatchSizeComparisonSection}
 
 An object detector can achieve higher inference speeds (FPS) if a larger batch
@@ -2288,7 +2346,7 @@ increases with larger batch sizes used when performing inference with different
 models and on different devices.
 
 In \autoref{BatchSizeComparison} (please note the logarithmic horizontal axis),
-results of tests on Raspberry PI, NVIDIA Jetson Nano and NVIDIA Jetson AGX
+results of tests on Raspberry PI 4B, NVIDIA Jetson Nano and NVIDIA Jetson AGX
 Xavier are shown. Although tests were run with six different batch sizes, to
 make the figure more compact, only batch sizes 1, 2, 8 and 32 were selected for
 comparison.
@@ -2305,18 +2363,17 @@ larger batch sizes is generally only suitable in cases where high inference
 speeds (higher than real-time) are desired, for example in a multi-camera
 real-time vehicle detection system.
 
-
-\todo{napísať že je v poriadku že sme skončili pri 32 lebo z grafu vidno že už
-ten rozdiel medzi 16 a 32 nie je taký veľký ako medzi 8 a 16. A teda batch 64
-by pravdepodobne ani na AGX s najmenším femtom už príliš nepomohol}
+% Napísať že je v poriadku že sme skončili pri 32 lebo z grafu vidno že už ten
+% rozdiel medzi 16 a 32 nie je taký veľký ako medzi 8 a 16? A teda batch 64 by
+% pravdepodobne ani na AGX s najmenším femtom už príliš nepomohol
 
 \begin{figure}[t]
     \begin{framed}
         \centering
         \includegraphics[width=\textwidth]{batch_size_comparison.pdf}
         \caption{Inference speeds achieved by using different batch sizes. Tests
-        were conducted on Raspberry PI, NVIDIA Jetson Nano and NVIDIA Jetson AGX
-        Xavier and only the most representative models were selected for
+        were conducted on Raspberry PI 4B, NVIDIA Jetson Nano and NVIDIA Jetson
+        AGX Xavier and only the most representative models were selected for
         comparison to keep the figure compact. Please note that the horizontal
         axes are logarithmic to better present the differences in inference
         speeds. Additionally, inference speed of YOLOv8-medium $640 \times 384$
@@ -2335,12 +2392,12 @@ by pravdepodobne ani na AGX s najmenším femtom už príliš nepomohol}
 \section{Mean Average Precision and Inference Speed Benchmark}
 \label{FPSvsmAPComparison}
 
-In this experiment, we compare all the trained models (including quantized ones)
-in terms of their mAP metric (mean Average Precision) and their inference speed in FPS.
+In this experiment, we compare the trained and models in terms of their mAP
+metric (mean Average Precision) and their inference speed in FPS.
 
 For the tests, we wanted to choose two least-performing devices, with the
-Raspberry PI being an obvious choice. Additionally, the NVIDIA Jetson Nano would
-be a great choice, but since the device is not optimized for \texttt{INT8}
+Raspberry PI 4B being an obvious choice. Additionally, the NVIDIA Jetson Nano
+would be a great choice, but since the device is not optimized for \texttt{INT8}
 precision and the models were therefore not quantized on this device, NVIDIA
 Jetson Xavier NX was selected instead. For the tests to be as representative as
 possible even for the smallest models, tests on Jetson Xavier NX were run with a
@@ -2352,13 +2409,13 @@ We therefore present two plots, comparing the mAP and FPS of all models. On the
 Raspberry PI, ONNX Runtime backend was used to test the models on the CPU. For
 the NVIDIA Jetson Xavier NX with TensorRT backend, the plot also features
 results of models quantized to both \texttt{FP16} and \texttt{INT8} precisions
-and models quantized to different precisions were connected in the plot.
-The mAP and FPS comparison for the Raspberry PI can be found in
+and individual models with different precisions were connected in the plot. The
+mAP and FPS comparison for the Raspberry PI can be found in
 \autoref{FPSvsmAPComparisonRPI}, while the corresponding results for the NVIDIA
 Jetson Xavier NX are shown in \autoref{FPSvsmAPComparisonNX}. Please note that
 in both plots, a logarithmic scale was chosen for the X-axis (FPS) to include
-all models (large and tiny) in the figure. However, additional plots with linear
-scales are provided in \todo{autoref appendix mAPvsFPS linear - asi 4 grafy}.
+all models (large and tiny) in the figure. For a complete benchmark of all
+trained and quantized models on all devices, see \autoref{mAPvsFPS}.
 
 An important thing to notice is the effect of quantization on the mAP and FPS.
 Although quantization to \texttt{INT8} precision seems to rarely result in
@@ -2372,9 +2429,8 @@ MobileNetV2 backbone compared to the YOLOv8-nano models. However, tests
 conducted on the NVIDIA Jetson Xavier NX with the TensorRT backend show that the
 opposite is true and the MobileNetV2 brings little to no advantage when compared
 to YOLOv8-small or YOLOv8-nano models on this device. To draw further
-conclusions about this matter, the reader is encouraged to look at
-\todo{autoref appendix - tabuľka mAP a FPS pre každý model (aj kvantizovaný) na
-každom zariadení} which presents the complete mAP and FPS values. Additionally,
+conclusions about this matter, the reader is encouraged to look at the tables in
+\autoref{mAPvsFPS}, which present the complete mAP and FPS values. Additionally,
 all 6 COCO mAP metrics of different models are compared in the next experiment.
 
 In both plots resulting from this experiment, a strange phenomenon can be seen
@@ -2389,29 +2445,18 @@ problem, mainly by double-checking the results and training configurations of
 these models, but could not find the root cause and did not have enough
 resources to conduct further experiments to provide more insights into this
 phenomenon.
-
-
 % We suppose the reason behind it is the use of bilinear interpolation when resizing?
-
-\todo{Všade kde je to vhodné, zmeniť Raspberry PI na Raspberry PI 4B alebo tak}
-
-\todo{Namely znamená že tam vypíšem všetky! Skontrolovať to všade a opraviť}
-
-\todo{Tak do appendixu pridať viac grafov (asi 4) s lineárnou osou X}
-
-\todo{Do appendixu dať tiež dlhú tabuľku - mAP pre každý model, aj kvantizovaný}
-
-\todo{mAP je mean Average Precision - mean je s malým!}
 
 \begin{figure}[H]
     \begin{framed}
         \centering
         \includegraphics[width=\textwidth]{fps_vs_map_comparison_log_rpi.pdf}
         \caption{Performance comparison of all YOLOv8 models in terms of mAP
-        (mean Average Precision) and inference speed (FPS) on a Raspberry PI
+        (mean Average Precision) and inference speed (FPS) on a Raspberry PI 4B
         with ONNX Runtime inference backend and the batch size of 1. Please note
         that the X-axis is logarithmic to be able to display all models in a
-        single plot for easier analysis.}
+        single plot for easier analysis. We also remind the reader that only a
+        single CPU thread was used when testing models on this device.}
         \label{FPSvsmAPComparisonRPI}
     \end{framed}
 \end{figure}
@@ -2442,14 +2487,14 @@ In other experiments, we compare the performance of models just by
 using a single metric\,--\,the mean Average Precision (mAP) for objects of all
 sizes and over ten IoU thresholds ranging from \num{0.50} to \num{0.95}.
 However, models can also be compared using five additional, more specific mAP
-metrics as explained in \todo{autoref kde vysvetľujem mAP}\,--\,mAP with the IoU
-threshold equal to \num{0.50}, with IoU threshold \num{0.75}, or mAP for small,
+metrics as explained in \autoref{EvaluationMetrics}\,--\,mAP with the IoU
+threshold equal to \num{0.50}, with IoU threshold \num{0.75}, and mAP for small,
 medium-sized or large objects.
 
 In \autoref{mAPTableSmall}, we display these metrics for all trained models.
 However, we omit the quantized models from the table because the mAP values tend
 to stay the same after reducing precision to \texttt{FP16} and quantizing to
-\texttt{INT8} is usually unbeneficial, as illustrated by the experiment in
+\texttt{INT8} is rarely beneficial, as illustrated by the experiment in
 \autoref{FPSvsmAPComparison}. For the complete table featuring all precisions of
 all models, see \autoref{mAPTableBig}.
 
@@ -2510,14 +2555,9 @@ dramatically faster.
     % a large object is a one with an area higher than $96 \times 96$.}
     \caption{Comparison of multiple mean Average Precision metrics for each
     trained model and input resolution. The mAP metrics displayed in this table
-    are explained in \autoref{EvaluationMetrics}. \todo{Don't reference a subsection!}}
+    are explained in \autoref{EvaluationMetrics}.}
     \label{mAPTableSmall}
 \end{table}
-
-
-\todo{niekde napísať ktoré epochy som nakoniec vybral pre evaluation a že to je čisto na základe validačných mAP?}
-
-
 
 
 
@@ -2584,11 +2624,9 @@ difference is even higher for YOLOv8-medium, where the quantization to
 However, it's important to note that for smaller models, these gains are lower
 and more comparable between the two devices.
 
-For a complete table of inference speeds of all models (including all
-quantized models) with a batch size of 1, please see \todo{do appendixu tabuľku
-že model, resolution, kvantizácia a potom FPS hodnoty s batch size 1 podľa
-zariadenia (device bude column)? aj mAP? To by som potom nemusel robiť tabuľku
-pre 'FPSvsmAPComparison'}.
+For a complete table of inference speeds of all models (including all quantized
+models) on all devices with a batch size of 1, please see \autoref{mAPvsFPS1} in
+\autoref{mAPvsFPS}.
 
 % IF: Two separate figures
 % \begin{figure}[H]
@@ -2613,13 +2651,14 @@ pre 'FPSvsmAPComparison'}.
 %         \centering
 %         \includegraphics[width=\textwidth]{devices_benchmark_FP16.pdf}
 %         \caption{Benchmark of inference speeds (FPS) on NVIDIA Jetson devices
-%         featuring all model architectures. Please note the logarithmic X-axis
-%         and that for comparison, YOLOv8-nano model with $512 \times 288$ input
-%         resolution and YOLOv8-femto model with $352 \times 192$ input resolution
-%         were selected. A batch size of 8 was selected for tests featuring larger
+%         featuring all model architectures. Models were quantized to
+%         \texttt{FP16} precision. Please note the logarithmic X-axis and that for
+%         comparison, YOLOv8-nano model with $512 \times 288$ input resolution and
+%         YOLOv8-femto model with $352 \times 192$ input resolution were selected.
+%         A batch size of 8 was selected for tests featuring larger
 %         models\,--\,YOLOv8-medium, YOLOv8-small and YOLOv8 MobileNetV2, and for
 %         the rest of the models, a batch size of 32 was used. For these tests,
-%         the TensorRT inference backend was utilized. TODO doplniť že modely sú FP16}
+%         the TensorRT inference backend was utilized.}
 %         \label{DevicesBenchmarkFP16}
 %     \end{framed}
 % \end{figure}
@@ -2640,7 +2679,9 @@ pre 'FPSvsmAPComparison'}.
         models\,--\,YOLOv8-medium, YOLOv8-small and YOLOv8 MobileNetV2, and for
         the rest of the models, a batch size of 32 was used. The TensorRT
         inference backend was utilized when testing on NVIDIA Jetson devices,
-        while the ONNX Runtime backend was used on the rest of the devices.}
+        while the ONNX Runtime backend was used on the rest of the devices.
+        Additionally, we remind the reader that for the tests on CPUs, only a
+        single thread was used, utilizing just one of the CPU's cores.}
         \label{DevicesBenchmark}
     \end{framed}
 \end{figure}
@@ -2653,17 +2694,16 @@ pre 'FPSvsmAPComparison'}.
 
 
 
-\section{Confusion matrix?}
+\section{TODO Confusion matrix?}
 
 Asi netreba keď mám PR krivky. Možno v prílohách ak bude čas
 
 
 
 
+\section{TODO DETRAC vs MIO-TCD?}
 
-\section{DETRAC vs MIO-TCD}
-
-\todo{NEDÔLEŽITÉ}
+NEDÔLEŽITÉ!
 
 porovnať mAP niektorých, možno všetkých detektorov, medzi dvoma test subsetmi. Nedôležité!
 
@@ -2680,6 +2720,8 @@ ako graf, vľavo modely a resolution, x os mAP a pre každý model tri bary - al
 
 \chapter{Future Work}
 
+TODO TODO TODO
+
 knowledge distillation, pruning,... kvantizácia onnx
 
 Porovnať onnxruntime a tensorRT na bežnej GPU
@@ -2688,12 +2730,14 @@ NCNN alebo ARM NN pre RPI
 
 SSD porovnať tiež
 
+TFLite
+
 
 
 % Tu nemá byť nič nové - iba zhrnutie
 \chapter{Conclusion}
 
-
+TODO TODO TODO
 
 
 
@@ -2708,33 +2752,224 @@ SSD porovnať tiež
 \begin{appendices}
 
 
+\chapter{Additional Precision-Recall Curves}
+\label{PRCurvesAdditional}
+\begin{figure}[H]
+    \begin{framed}
+        \centering
+        \includegraphics[width=\textwidth]{pr_curve_additional.pdf}
+        \caption{Precision-Recall curves for the rest of the models (which were
+        not included in \autoref{PRCurveMajor}).}
+    \end{framed}
+\end{figure}
 
 
-\chapter{TODO}
+
+
+
+
+\chapter{Complete Benchmark of All Models on All Devices}
+\label{mAPvsFPS}
+
+\todo{pripomenúť že CPU len na jednom threade}
+
+% Batch 1
+\begin{table}[h]
+    \footnotesize
+    \centering
+    \begin{tabular}{|c|c|c|c|rrrrrr|}
+        \hline
+        \multirow{4}{*}{\parbox{1.6cm}{\centering Model\\(YOLOv8)}} &
+          \multirow{4}{*}{\parbox{1.5cm}{\centering Input\\Resolution}} &
+            \multirow{4}{*}{\parbox{0.9cm}{\centering Preci-\\sion}} &
+              \multirow{4}{*}{mAP} &
+                \multicolumn{6}{c|}{Inference Speed with a batch size of 1 (FPS)} \\
+        \cline{5-10}
+        & & & & Rasp- & Intel   &\multirow{3}{*}{\parbox{1.2cm}{\raggedleft NVIDIA\\MX150}} & \multicolumn{3}{|c|}{NVIDIA Jetson} \\
+        \cline{8-10}
+        & & & & berry & Core i7 &                                                           & \multicolumn{1}{|c}{\multirow{2}{*}{Nano}} & Xavier & AGX \\
+        & & & & PI    & 9850H   &                                                           & \multicolumn{1}{|c}{}                      & NX     & Xavier \\
+        \hline
+        \hline
+        \multirow{3}{*}{medium}                                   & \multirow{3}{*}{$640 \times 384$} & FP32 & 0.603 &  0.12 &   1.62 &  4.04 &  4.15 & 16.36 &  17.48 \\
+                                                                  &                                   & FP16 & 0.603 &     - &      - &     - &  6.82 & 47.49 &  49.29 \\
+                                                                  &                                   & INT8 & 0.471 &     - &      - &     - &     - & 48.62 &  53.37 \\
+        \hline
+        \multirow{3}{*}{small}                                    & \multirow{3}{*}{$640 \times 384$} & FP32 & 0.578 &  0.34 &   5.12 &  9.54 & 10.91 & 39.48 &  46.18 \\
+                                                                  &                                   & FP16 & 0.578 &     - &      - &     - & 16.27 & 52.01 &  57.44 \\
+                                                                  &                                   & INT8 & 0.544 &     - &      - &     - &     - & 70.68 &  64.25 \\
+        \hline
+        \multirow{3}{*}{\parbox{1.6cm}{\centering MobileNet\\V2}} & \multirow{3}{*}{$512 \times 288$} & FP32 & 0.548 &  1.19 &  15.82 & 15.34 & 18.55 & 51.59 &  66.72 \\
+                                                                  &                                   & FP16 & 0.548 &     - &      - &     - & 19.93 & 53.30 &  58.66 \\
+                                                                  &                                   & INT8 & 0.459 &     - &      - &     - &     - & 69.95 &  55.24 \\
+        \hline
+        \multirow{9}{*}{nano}                                     & \multirow{3}{*}{$640 \times 384$} & FP32 & 0.530 &  1.02 &  14.78 & 20.40 & 25.08 & 54.30 &  57.50 \\
+                                                                  &                                   & FP16 & 0.530 &     - &      - &     - & 31.90 & 63.13 &  55.33 \\
+                                                                  &                                   & INT8 & 0.430 &     - &      - &     - &     - & 59.78 &  64.21 \\
+        \cline{2-10}
+                                                                  & \multirow{3}{*}{$512 \times 288$} & FP32 & 0.492 &  1.70 &  23.67 & 30.58 & 37.56 & 57.25 &  63.53 \\
+                                                                  &                                   & FP16 & 0.492 &     - &      - &     - & 48.29 & 70.01 &  71.38 \\
+                                                                  &                                   & INT8 & 0.356 &     - &      - &     - &     - & 81.91 &  83.87 \\
+        \cline{2-10}
+                                                                  & \multirow{3}{*}{$448 \times 256$} & FP32 & 0.511 &  2.18 &  29.55 & 36.21 & 49.25 & 67.73 &  58.17 \\
+                                                                  &                                   & FP16 & 0.511 &     - &      - &     - & 54.04 & 77.80 &  83.35 \\
+                                                                  &                                   & INT8 & 0.372 &     - &      - &     - &     - & 61.81 &  91.60 \\
+        \hline
+        \multirow{9}{*}{pico}                                     & \multirow{3}{*}{$512 \times 288$} & FP32 & 0.454 &  4.23 &  50.48 & 43.96 & 54.02 & 69.78 &  71.11 \\
+                                                                  &                                   & FP16 & 0.454 &     - &      - &     - & 57.14 & 59.80 &  87.29 \\
+                                                                  &                                   & INT8 & 0.297 &     - &      - &     - &     - & 64.16 &  94.32 \\
+        \cline{2-10}
+                                                                  & \multirow{3}{*}{$448 \times 256$} & FP32 & 0.415 &  5.39 &  61.38 & 52.89 & 57.37 & 78.47 &  81.29 \\
+                                                                  &                                   & FP16 & 0.415 &     - &      - &     - & 59.12 & 66.16 &  98.80 \\
+                                                                  &                                   & INT8 & 0.356 &     - &      - &     - &     - & 71.28 & 101.98 \\
+        \cline{2-10}
+                                                                  & \multirow{3}{*}{$384 \times 224$} & FP32 & 0.417 &  7.07 &  77.38 & 59.04 & 60.39 & 62.16 &  88.68 \\
+                                                                  &                                   & FP16 & 0.418 &     - &      - &     - & 61.85 & 77.94 & 108.55 \\
+                                                                  &                                   & INT8 & 0.325 &     - &      - &     - &     - & 80.42 & 113.24 \\
+        \hline
+        \multirow{12}{*}{femto}                                   & \multirow{3}{*}{$512 \times 288$} & FP32 & 0.318 &  7.11 &  62.40 & 55.16 & 58.78 & 55.81 &  84.13 \\
+                                                                  &                                   & FP16 & 0.318 &     - &      - &     - & 60.28 & 91.62 &  93.83 \\
+                                                                  &                                   & INT8 & 0.300 &     - &      - &     - &     - & 65.07 &  97.91 \\
+        \cline{2-10}
+                                                                  & \multirow{3}{*}{$448 \times 256$} & FP32 & 0.300 &  9.03 &  81.19 & 63.29 & 61.44 & 62.33 &  95.11 \\
+                                                                  &                                   & FP16 & 0.300 &     - &      - &     - & 58.12 & 70.06 & 104.58 \\
+                                                                  &                                   & INT8 & 0.264 &     - &      - &     - &     - & 72.38 & 107.26 \\
+        \cline{2-10}
+                                                                  & \multirow{3}{*}{$384 \times 224$} & FP32 & 0.281 & 11.87 & 103.49 & 76.33 & 66.01 & 72.29 & 103.47 \\
+                                                                  &                                   & FP16 & 0.281 &     - &      - &     - & 57.66 & 82.98 & 113.06 \\
+                                                                  &                                   & INT8 & 0.235 &     - &      - &     - &     - & 83.54 & 115.56 \\
+        \cline{2-10}
+                                                                  & \multirow{3}{*}{$352 \times 192$} & FP32 & 0.259 & 14.82 & 121.83 & 84.24 & 64.84 & 78.18 & 109.02 \\
+                                                                  &                                   & FP16 & 0.259 &     - &      - &     - & 65.91 & 89.41 & 120.63 \\
+                                                                  &                                   & INT8 & 0.214 &     - &      - &     - &     - & 88.15 & 123.08 \\
+        \hline
+    \end{tabular}
+    \caption{Benchmark of all trained and quantized YOLOv8 models on all
+    available devices. For these tests, a batch size of 1 was used and all
+    models were of a dynamic shape in the batch size dimension. Additionally,
+    the TensorRT inference backend was used on NVIDIA Jetson devices, while the
+    ONNX Runtime backend was used for tests on the rest of the devices. Models
+    were only quantized to \texttt{FP16} precision on NVIDIA Jetson devices and
+    \texttt{INT8} precision was only used on Jetson Xavier NX and Jetson AGX
+    Xavier.}
+    \label{mAPvsFPS1}
+    \normalsize
+\end{table}
+
+% Batch 32
+\begin{table}
+    \footnotesize
+    \centering
+    \begin{tabular}{|c|c|c|c|rrrrrr|}
+        \hline
+        \multirow{4}{*}{\parbox{1.6cm}{\centering Model\\(YOLOv8)}} &
+          \multirow{4}{*}{\parbox{1.5cm}{\centering Input\\Resolution}} &
+            \multirow{4}{*}{\parbox{0.9cm}{\centering Preci-\\sion}} &
+              \multirow{4}{*}{mAP} &
+                \multicolumn{6}{c|}{Inference Speed with a batch size of 32* (FPS)} \\
+        \cline{5-10}
+        & & & & Rasp- & Intel   &\multirow{3}{*}{\parbox{1.2cm}{\raggedleft NVIDIA\\MX150}} & \multicolumn{3}{|c|}{NVIDIA Jetson} \\
+        \cline{8-10}
+        & & & & berry & Core i7 &                                                           & \multicolumn{1}{|c}{\multirow{2}{*}{Nano}} & Xavier & AGX \\
+        & & & & PI    & 9850H   &                                                           & \multicolumn{1}{|c}{}                      & NX     & Xavier \\
+        \hline
+        \hline
+        \multirow{3}{*}{medium}                                   & \multirow{3}{*}{$640 \times 384$} & FP32 & 0.603 & 0.12  &   1.57 &  4.68* &  4.15* &   16.97 &   19.11 \\
+                                                                  &                                   & FP16 & 0.603 &    -  &      - &      - &   6.96 &   58.20 &   63.91 \\
+                                                                  &                                   & INT8 & 0.471 &    -  &      - &      - &      - &   86.30 &  102.17 \\
+        \hline
+        \multirow{3}{*}{small}                                    & \multirow{3}{*}{$640 \times 384$} & FP32 & 0.578 & 0.34  &   4.98 & 10.70* &  11.23 &   44.73 &   54.78 \\
+                                                                  &                                   & FP16 & 0.578 &    -  &      - &      - &  16.79 &  121.36 &  140.62 \\
+                                                                  &                                   & INT8 & 0.544 &    -  &      - &      - &      - &  191.18 &  206.82 \\
+        \hline
+        \multirow{3}{*}{\parbox{1.6cm}{\centering MobileNet\\V2}} & \multirow{3}{*}{$512 \times 288$} & FP32 & 0.548 &  1.19 &  15.46 &  17.17 &  20.36 &   89.98 &  108.48 \\
+                                                                  &                                   & FP16 & 0.548 &     - &      - &      - &  22.00 &  159.10 &  185.10 \\
+                                                                  &                                   & INT8 & 0.459 &     - &      - &      - &      - &  261.10 &  290.35 \\
+        \hline
+        \multirow{9}{*}{nano}                                     & \multirow{3}{*}{$640 \times 384$} & FP32 & 0.530 &  1.03 &  14.38 &  21.22 &  26.30 &  115.28 &  139.49 \\
+                                                                  &                                   & FP16 & 0.530 &     - &      - &      - &  33.69 &  205.36 &  251.42 \\
+                                                                  &                                   & INT8 & 0.430 &     - &      - &      - &      - &  264.79 &  305.43 \\
+        \cline{2-10}
+                                                                  & \multirow{3}{*}{$512 \times 288$} & FP32 & 0.492 &  1.70 &  23.71 &  40.13 &  41.86 &  192.31 &  219.17 \\
+                                                                  &                                   & FP16 & 0.492 &     - &      - &      - &  54.16 &  328.51 &  390.02 \\
+                                                                  &                                   & INT8 & 0.356 &     - &      - &      - &      - &  416.75 &  466.65 \\
+        \cline{2-10}
+                                                                  & \multirow{3}{*}{$448 \times 256$} & FP32 & 0.511 &  2.21 &  30.16 &  51.74 &  55.73 &  246.03 &  283.35 \\
+                                                                  &                                   & FP16 & 0.511 &     - &      - &      - &  71.49 &  409.57 &  483.80 \\
+                                                                  &                                   & INT8 & 0.372 &     - &      - &      - &      - &  524.52 &  575.99 \\
+        \hline
+        \multirow{9}{*}{pico}                                     & \multirow{3}{*}{$512 \times 288$} & FP32 & 0.454 &  4.30 &  53.92 &  67.29 &  70.51 &  338.69 &  378.36 \\
+                                                                  &                                   & FP16 & 0.454 &     - &      - &      - &  83.02 &  457.63 &  523.29 \\
+                                                                  &                                   & INT8 & 0.297 &     - &      - &      - &      - &  511.57 &  596.65 \\
+        \cline{2-10}
+                                                                  & \multirow{3}{*}{$448 \times 256$} & FP32 & 0.415 &  5.48 &  68.66 &  83.70 &  92.82 &  432.56 &  484.74 \\
+                                                                  &                                   & FP16 & 0.415 &     - &      - &      - & 107.79 &  563.96 &  641.45 \\
+                                                                  &                                   & INT8 & 0.356 &     - &      - &      - &      - &  631.91 &  740.18 \\
+        \cline{2-10}
+                                                                  & \multirow{3}{*}{$384 \times 224$} & FP32 & 0.417 &  7.18 &  89.89 & 105.58 & 118.47 &  564.88 &  648.23 \\
+                                                                  &                                   & FP16 & 0.418 &     - &      - &      - & 138.83 &  763.25 &  888.08 \\
+                                                                  &                                   & INT8 & 0.325 &     - &      - &      - &      - &  878.58 & 1016.77 \\
+        \hline
+        \multirow{12}{*}{femto}                                   & \multirow{3}{*}{$512 \times 288$} & FP32 & 0.318 &  7.10 &  70.84 &  85.43 &  87.42 &  440.21 &  474.64 \\
+                                                                  &                                   & FP16 & 0.318 &     - &      - &      - &  98.72 &  527.16 &  579.90 \\
+                                                                  &                                   & INT8 & 0.300 &     - &      - &      - &      - &  582.56 &  589.16 \\
+        \cline{2-10}
+                                                                  & \multirow{3}{*}{$448 \times 256$} & FP32 & 0.300 &  9.04 &  93.97 & 106.62 & 113.09 &  556.71 &  600.81 \\
+                                                                  &                                   & FP16 & 0.300 &    -  &      - &      - & 127.27 &  656.74 &  682.84 \\
+                                                                  &                                   & INT8 & 0.264 &    -  &      - &      - &      - &  679.27 &  726.82 \\
+        \cline{2-10}
+                                                                  & \multirow{3}{*}{$384 \times 224$} & FP32 & 0.281 & 11.92 & 125.96 & 133.62 & 145.79 &  732.24 &  813.68 \\
+                                                                  &                                   & FP16 & 0.281 &    -  &      - &      - & 158.38 &  843.47 & 1004.03 \\
+                                                                  &                                   & INT8 & 0.235 &    -  &      - &      - &      - & 1009.65 & 1034.69 \\
+        \cline{2-10}
+                                                                  & \multirow{3}{*}{$352 \times 192$} & FP32 & 0.259 & 14.80 & 145.94 & 158.72 & 175.98 &  878.53 &  968.72 \\
+                                                                  &                                   & FP16 & 0.259 &    -  &      - &      - & 197.29 & 1040.57 & 1152.97 \\
+                                                                  &                                   & INT8 & 0.214 &    -  &      - &      - &      - & 1117.36 & 1237.66 \\
+        \hline
+        \end{tabular}
+    % \caption{s hviezdičami sú s batch 8 lebo sa nevošli do memory}
+    \caption{Benchmark of all trained and quantized YOLOv8 models on all
+    available devices. For these tests, a batch size of 32 was used. However,
+    for special cases marked by \texttt{*}, where the model did not fit into the
+    device's memory with the large batch size, a batch size of 8 was used
+    instead. Models tested were of a dynamic shape in the batch size dimension.
+    Additionally, the TensorRT inference backend was used on NVIDIA Jetson
+    devices, while the ONNX Runtime backend was used for tests on the rest of
+    the devices. Models were only quantized to \texttt{FP16} precision on NVIDIA
+    Jetson devices and \texttt{INT8} precision was only used on Jetson Xavier NX
+    and Jetson AGX Xavier.}
+    \label{mAPvsFPS32}
+    \normalsize
+\end{table}
+
+
+
+
+\chapter{Complete Mean Average Precision Metrics for YOLOv8 Models}
 \label{mAPTableBig}
-\begin{table}[H]
+\begin{table}[t]
     \centering
     \small
     \begin{tabular}{|c|c|c|rrrrrr|}
         \hline
         Model & Input & \multirow{2}{*}{Precision} &  \multicolumn{6}{c|}{mAP} \\
         \cline{4-9}
-        (YOLOv8)                     & resolution                       &      & mAP   & IoU:50& IoU:75& small & medium& large \\
+        (YOLOv8)                     & resolution                      &      & mAP   & IoU:50& IoU:75& small & medium& large \\
         \hline
         \hline
-        \multirow{3}{*}{medium}      & \multirow{3}{*}{$640\times384$}  & FP32 & 0.603 & 0.805 & 0.695 & 0.316 & 0.606 & 0.770 \\
+        \multirow{3}{*}{medium}     & \multirow{3}{*}{$640\times384$}  & FP32 & 0.603 & 0.805 & 0.695 & 0.316 & 0.606 & 0.770 \\
                                     &                                  & FP16 & 0.603 & 0.805 & 0.693 & 0.316 & 0.607 & 0.770 \\
                                     &                                  & INT8 & 0.471 & 0.672 & 0.556 & 0.164 & 0.476 & 0.663 \\
         \hline                                                           
-        \multirow{3}{*}{small}       & \multirow{3}{*}{$640\times384$}  & FP32 & 0.578 & 0.786 & 0.660 & 0.273 & 0.585 & 0.744 \\
+        \multirow{3}{*}{small}      & \multirow{3}{*}{$640\times384$}  & FP32 & 0.578 & 0.786 & 0.660 & 0.273 & 0.585 & 0.744 \\
                                     &                                  & FP16 & 0.578 & 0.786 & 0.660 & 0.274 & 0.585 & 0.742 \\
                                     &                                  & INT8 & 0.544 & 0.763 & 0.625 & 0.245 & 0.549 & 0.703 \\
         \hline
-        \multirow{3}{*}{MobileNetV2} & \multirow{3}{*}{$512\times288$}  & FP32 & 0.548 & 0.759 & 0.618 & 0.235 & 0.550 & 0.715 \\
+        \multirow{3}{*}{MobileNetV2}& \multirow{3}{*}{$512\times288$}  & FP32 & 0.548 & 0.759 & 0.618 & 0.235 & 0.550 & 0.715 \\
                                     &                                  & FP16 & 0.548 & 0.759 & 0.619 & 0.236 & 0.549 & 0.718 \\
                                     &                                  & INT8 & 0.459 & 0.655 & 0.523 & 0.212 & 0.453 & 0.607 \\
         \hline                      
-        \multirow{9}{*}{nano}        & \multirow{3}{*}{$640\times384$}  & FP32 & 0.530 & 0.749 & 0.608 & 0.229 & 0.529 & 0.685 \\
+        \multirow{9}{*}{nano}       & \multirow{3}{*}{$640\times384$}  & FP32 & 0.530 & 0.749 & 0.608 & 0.229 & 0.529 & 0.685 \\
                                     &                                  & FP16 & 0.530 & 0.749 & 0.607 & 0.230 & 0.529 & 0.683 \\
                                     &                                  & INT8 & 0.430 & 0.650 & 0.484 & 0.182 & 0.453 & 0.530 \\
         \cline{2-9}
@@ -2746,7 +2981,7 @@ SSD porovnať tiež
                                     &                                  & FP16 & 0.511 & 0.723 & 0.592 & 0.205 & 0.508 & 0.683 \\
                                     &                                  & INT8 & 0.372 & 0.555 & 0.417 & 0.140 & 0.371 & 0.516 \\
         \hline
-        \multirow{9}{*}{pico}        & \multirow{3}{*}{$512\times288$}  & FP32 & 0.454 & 0.664 & 0.502 & 0.151 & 0.448 & 0.614 \\
+        \multirow{9}{*}{pico}       & \multirow{3}{*}{$512\times288$}  & FP32 & 0.454 & 0.664 & 0.502 & 0.151 & 0.448 & 0.614 \\
                                     &                                  & FP16 & 0.454 & 0.664 & 0.500 & 0.151 & 0.448 & 0.612 \\
                                     &                                  & INT8 & 0.297 & 0.446 & 0.329 & 0.065 & 0.260 & 0.497 \\
         \cline{2-9}
@@ -2758,7 +2993,7 @@ SSD porovnať tiež
                                     &                                  & FP16 & 0.418 & 0.615 & 0.465 & 0.128 & 0.405 & 0.588 \\
                                     &                                  & INT8 & 0.325 & 0.490 & 0.361 & 0.101 & 0.308 & 0.486 \\
         \hline
-        \multirow{12}{*}{femto}      & \multirow{3}{*}{$512\times288$}  & FP32 & 0.318 & 0.488 & 0.351 & 0.072 & 0.298 & 0.416 \\
+        \multirow{12}{*}{femto}     & \multirow{3}{*}{$512\times288$}  & FP32 & 0.318 & 0.488 & 0.351 & 0.072 & 0.298 & 0.416 \\
                                     &                                  & FP16 & 0.318 & 0.488 & 0.350 & 0.072 & 0.298 & 0.417 \\
                                     &                                  & INT8 & 0.300 & 0.466 & 0.326 & 0.071 & 0.270 & 0.420 \\
         \cline{2-9}
@@ -2776,8 +3011,12 @@ SSD porovnať tiež
         \hline
     \end{tabular}
     \normalsize
-    \caption{TODO}
+    \caption{Comparison of multiple mean Average Precision metrics for each
+    trained model and input resolution, including models quantized to
+    \texttt{FP16} and \texttt{INT8}.}
 \end{table}
+
+
 
 
 
