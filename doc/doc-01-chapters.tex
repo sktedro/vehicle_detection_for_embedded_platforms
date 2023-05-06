@@ -179,8 +179,8 @@ experiments, outlining the methodologies employed, providing an overview of the
 devices used for testing and discussing the important aspects to consider when
 interpreting the results. These results are then presented in detail in
 \autoref{Results}, where we share our findings and insights gained from the
-experiments. Finally, we suggest potential areas for future work that were
-beyond the scope of this paper.
+experiments. Finally, in \autoref{FutureWork}, we suggest potential areas for
+future work that were beyond the scope of this paper.
 
 
 
@@ -484,7 +484,7 @@ tasks and has inspired many subsequent architectures.
 \subsubsection{MobileNet}
 
 MobileNet \cite{Howard2017}, developed by Andrew G. Howard and his team at
-Google in 2017, is a popular light-weight convolutional neural network
+Google in 2017, is a popular lightweight convolutional neural network
 architecture that has been widely used on mobile and embedded devices with
 limited computational resources. One of its key features is its use of depthwise
 separable convolutions. Traditional convolutional layers perform a full
@@ -2002,9 +2002,9 @@ and might depend on the underlying operating system, running applications and
 the environment.
 
 
-\subsection{Raspberry PI 4B}
+\subsection{Raspberry Pi 4B}
 
-Finally, the popular Raspberry PI 4B single-board computer with ARM Cortex-A72
+Finally, the popular Raspberry Pi 4B single-board computer with ARM Cortex-A72
 CPU with base frequency 1.8 GHz was used to test the trained models. Although it
 was not developed to run object detection models, it is perfect to test the
 smallest models and see how far go the possibilities of the real-time YOLOv8
@@ -2025,9 +2025,9 @@ or compatibility issues.
     \hline
     % \multirow{2}{*}{Name} & NVIDIA Jetson & NVIDIA Jetson & NVIDIA Jetson \\
     %                       & AGX Xavier    & Xavier NX     & Nano          \\
-    % Name             & NVIDIA Jetson devices & NVIDIA MX150 & Intel Core i7-9850H & Raspberry PI \\
+    % Name             & NVIDIA Jetson devices & NVIDIA MX150 & Intel Core i7-9850H & Raspberry Pi \\
     \multirow{2}{*}{Name} & All NVIDIA     & NVIDIA & Intel Core  & Raspberry \\
-                          & Jetson devices & MX150  & i7-9850H    & PI 4B \\
+                          & Jetson devices & MX150  & i7-9850H    & Pi 4B \\
     \hline
     \multirow{2}{*}{Operating system} & Linux for Tegra             & \multicolumn{2}{c|}{Linux}     & Linux   \\
                                       & (L4T OS \texttt{32.7.3}) & \multicolumn{2}{c|}{Debian 12} & Raspbian 11   \\
@@ -2138,7 +2138,7 @@ shape in the batch dimension\,--\,one for weight quantization to the
 \texttt{INT8} representation including weight calibration using the validation
 dataset.
 
-To optimize inference on the Raspberry PI 4B, we aimed to use the NCNN inference
+To optimize inference on the Raspberry Pi 4B, we aimed to use the NCNN inference
 framework designed for mobile and embedded devices with limited computing
 resources. However, deploying a YOLOv8 model to the NCNN format is not yet
 possible, as the YOLOv8 model contains operations that are not yet supported by
@@ -2255,13 +2255,25 @@ although the inference duration would remain the same.
 
 \chapter{Results}
 \label{Results}
-povedať krátko že v akom poradí to budem evaluovať a napr. že graf FPS/mAP bude až na konci alebo tak
 
+In this chapter, we present the results of the conducted experiments and provide
+a detailed analysis to explain the insights that can be gained from these
+findings. Thanks to the extensive data collected from the tested devices, we can
+identify trends, strengths, and limitations of each model and hardware
+combination, as well as highlight potential areas for future research. Of
+course, complete data can be rarely displayed in a single figure, so in these
+experiments, we typically only focus the most important or representative sets
+of data, but include additional data in the appendix, which will also be
+referenced from individual experiments.
 
-
-
-
-
+We begin by evaluating the trained models in terms of precision and recall
+through precision-recall curves. We then examine several factors that could
+potentially impact the performance of the tested models, namely input
+resolution, inference backends, model shape (static or dynamic), and batch sizes
+during inference. Subsequently, we benchmark the models in terms of their
+inference speeds and various mean Average Precision metrics. Lastly, we present
+the inference speeds of some of the trained models for comparison across all six
+tested devices.
 
 
 \section{Precision-Recall Curves of Major Models}
@@ -2423,7 +2435,7 @@ batch size dimension) decreases the inference speed. Only the most
 representative models were selected for comparison to keep the plots concise.
 Naturally, all tests were conducted with a batch size of a single image. Tests
 were conducted on the NVIDIA Jetson Nano with the TensorRT inference backend and
-on the Raspberry PI 4B with ONNX Runtime to make the measurements as accurate as
+on the Raspberry Pi 4B with ONNX Runtime to make the measurements as accurate as
 possible by using the least-performing devices for both inference backends. The
 comparison of inference speeds on all model architectures is presented in
 \autoref{StaticDynamicModelShape}.
@@ -2464,7 +2476,7 @@ increases with larger batch sizes used when performing inference with different
 models and on different devices.
 
 In \autoref{BatchSizeComparison} (please note the logarithmic horizontal axis),
-results of tests on Raspberry PI 4B, NVIDIA Jetson Nano and NVIDIA Jetson AGX
+results of tests on Raspberry Pi 4B, NVIDIA Jetson Nano and NVIDIA Jetson AGX
 Xavier are shown. Although tests were run with six different batch sizes, to
 make the figure more compact, only batch sizes 1, 2, 8 and 32 were selected for
 comparison.
@@ -2490,7 +2502,7 @@ real-time vehicle detection system.
         \centering
         \includegraphics[width=\textwidth]{batch_size_comparison.pdf}
         \caption{Inference speeds achieved by using different batch sizes. Tests
-        were conducted on Raspberry PI 4B, NVIDIA Jetson Nano and NVIDIA Jetson
+        were conducted on Raspberry Pi 4B, NVIDIA Jetson Nano and NVIDIA Jetson
         AGX Xavier and only the most representative models were selected for
         comparison to keep the figure compact. Please note that the horizontal
         axes are logarithmic to better present the differences in inference
@@ -2514,22 +2526,22 @@ In this experiment, we compare the trained and models in terms of their mAP
 metric (mean Average Precision) and their inference speed in FPS.
 
 For the tests, we wanted to choose two least-performing devices, with the
-Raspberry PI 4B being an obvious choice. Additionally, the NVIDIA Jetson Nano
+Raspberry Pi 4B being an obvious choice. Additionally, the NVIDIA Jetson Nano
 would be a great choice, but since the device is not optimized for \texttt{INT8}
 precision and the models were therefore not quantized on this device, NVIDIA
 Jetson Xavier NX was selected instead. For the tests to be as representative as
 possible even for the smallest models, tests on Jetson Xavier NX were run with a
-large batch size of 32, while on the Raspberry PI, where the batch size doesn't
+large batch size of 32, while on the Raspberry Pi, where the batch size doesn't
 really matter, a batch size of 1 was used instead. Naturally, ONNX Runtime
-backend was used on the Raspberry PI and TensorRT on the Jetson Xavier NX.
+backend was used on the Raspberry Pi and TensorRT on the Jetson Xavier NX.
 
 We therefore present two plots, comparing the mAP and FPS of all models. On the
-Raspberry PI, ONNX Runtime backend was used to test the models on the CPU. For
+Raspberry Pi, ONNX Runtime backend was used to test the models on the CPU. For
 the NVIDIA Jetson Xavier NX with TensorRT backend, the plot also features
 results of models quantized to both \texttt{FP16} and \texttt{INT8} precisions
 and individual models with different precisions were connected in the plot. The
-mAP and FPS comparison for the Raspberry PI can be found in
-\autoref{FPSvsmAPComparisonRPI}, while the corresponding results for the NVIDIA
+mAP and FPS comparison for the Raspberry Pi can be found in
+\autoref{FPSvsmAPComparisonRPi}, while the corresponding results for the NVIDIA
 Jetson Xavier NX are shown in \autoref{FPSvsmAPComparisonNX}. Please note that
 in both plots, a logarithmic scale was chosen for the X-axis (FPS) to include
 all models (large and tiny) in the figure. For a complete benchmark of all
@@ -2542,7 +2554,7 @@ better performance than training a smaller model, it is clear that quantizing to
 no decrease in the mAP.
 
 The performance of the YOLOv8 MobileNetV2 model can also be discussed here, as
-tests on the Raspberry PI show the superiority of the YOLOv8 model with the
+tests on the Raspberry Pi show the superiority of the YOLOv8 model with the
 MobileNetV2 backbone compared to the YOLOv8-nano models. However, tests
 conducted on the NVIDIA Jetson Xavier NX with the TensorRT backend show that the
 opposite is true and the MobileNetV2 brings little to no advantage when compared
@@ -2570,12 +2582,12 @@ phenomenon.
         \centering
         \includegraphics[width=\textwidth]{fps_vs_map_comparison_log_rpi.pdf}
         \caption{Performance comparison of all YOLOv8 models in terms of mAP
-        (mean Average Precision) and inference speed (FPS) on a Raspberry PI 4B
+        (mean Average Precision) and inference speed (FPS) on a Raspberry Pi 4B
         with ONNX Runtime inference backend and the batch size of 1. Please note
         that the X-axis is logarithmic to be able to display all models in a
         single plot for easier analysis. We also remind the reader that only a
         single CPU thread was used when testing models on this device.}
-        \label{FPSvsmAPComparisonRPI}
+        \label{FPSvsmAPComparisonRPi}
     \end{framed}
 \end{figure}
 
@@ -2836,38 +2848,235 @@ ako graf, vľavo modely a resolution, x os mAP a pre každý model tri bary - al
 
 
 
-\chapter{Future Work}
-
-TODO TODO TODO
-
-knowledge distillation, pruning,... kvantizácia onnx
-
-Porovnať onnxruntime a tensorRT na bežnej GPU
-
-NCNN alebo ARM NN pre RPI
-
-SSD porovnať tiež
-
-TFLite
-
-
-
 % Tu nemá byť nič nové - iba zhrnutie
 \chapter{Conclusion}
+% V podstate tu môžem písať veci ktoré sľubujem v úvode, akurát sa zamerať na
+% ciele v zadaní
 
-TODO TODO TODO
+% ===== MOCKUP:
+
+% we benchmark various YOLOv8 detectors on different devices, including three NVIDIA Jetsons but also RPI.
+% we show that accurate object detectors can run in real time on jetson nano,
+% while even the larger like YOLOv8-medium can run in real time on xavier nx or agx xavier.
+% Additionally, we show that although it is theoretically possible to run the smallest detectors in real time on raspberry pi,
+% the accuracy of these detectors is too small and they are only useful when detecting large objects
+
+% We also show that on jetsons, tensorrt is superior and onnxruntime brings no advantage.
+% Batch size helps with high FPS but does almost nothing usually
+% decreasing model's input resolution goes approximately hand in hand with inference speed
+
+% mobilenet performs better than nano on CPU (TODO pravda že všeobecne? alebo len na RPI?) but doesn't perform much better on GPU? Or just Jetsons?
+
+
+% ===== V1:
+
+% In this paper, we benchmarked various sizes of the YOLOv8 object detector on
+% different devices to show how far go the possibilities of modern,
+% state-of-the-art models in the field of vehicle detection. Along with the
+% inference speed (FPS), six mean Average Precision (mAP) metrics were measured
+% for each model.
+
+% Six different datasets were collected to provide a large amount of data
+% necessary to train a robust vehicle detector, featuring a total of \num{1204795}
+% object instances in \num{218821} images.
+
+% Tests were conducted on three NVIDIA Jetson embedded devices designed
+% specifically for machine learning algorithms. We show that on these devices, the
+% use of the TensorRT inference backend results in significantly higher inference
+% speeds than when using the popular ONNX Runtime backend. Using the TensorRT
+% backend, models were also quantized to \texttt{FP16} and \texttt{INT8}
+% precisions and it is shown that quantizing to \texttt{FP16} results in higher
+% inference speeds with little to no decrease in accuracy.
+
+% More importantly, we show that accurate vehicle detectors can run in real-time
+% on these devices\,--\, the YOLOv8-nano with mAP of \num{0.53} quantized to
+% \texttt{FP16} runs at 31.9 FPS, while even the largest trained model,
+% YOLOv8-medium with mAP of \num{0.603} also in \texttt{FP16} precision can be
+% used for inference on NVIDIA Jetson Xavier NX and NVIDIA Jetson AGX Xavier with
+% speeds of \num{47.49} and \num{49.29} respectively. Of course, the inference
+% speeds can be increased further by sacrificing a bit of accuracy by decreasing
+% the models' input resolutions or using larger batch sizes.
+
+% On the other hand, the Raspberry Pi 4B, not designed for machine learning, can run
+% the smallest YOLOv8-femto model with the input resolution of just $352 \times
+% 192$ at \num{14.82} FPS or the YOLOv8-pico with input resolution of $384 \times
+% 224$ at around 7 FPS on a single CPU core. These models are however tiny and
+% very bad at detecting smaller objects, while also not being very good generally,
+% so we're far from any accurate object detection on devices like this in
+% real-time.  However, even this device could be used to detect large vehicles in
+% an image if a high accuracy is not necessary.
+
+% To compare these embedded devices with processing units commonly found in
+% laptops or desktop computers, we also benchmarked the models on the Intel Core
+% i7-9850H CPU and the NVIDIA MX150 GPU.
+
+% From the collected data, we can draw additional conclusions about other factors
+% that influence the accuracy and inference speed of the evaluated models. For
+% example, we confirmed that the decrease in model's input shape is approximately
+% directly proportional to the increase in inference speed. We also show that
+% using a larger batch size rarely results in a more efficient inference and is
+% only significant when small models are inferenced on powerful devices.
+
+% Finally, the YOLOv8 with MobileNetV2 backbone performs generally better than
+% similar-sized YOLOv8-nano on CPUs, these models are generally comparable on GPUs
+% but our tests indicate that this highly depends on the specific device
+
+% All data from our experiments is also displayed in appendices to allow the reader
+% to draw conclusions important to them... Alebo čo
+
+% We therefore consider this paper successful in showing how accurate are vehicle
+% detectors that are able to run in real-time on various embedded devices,
+% including the popular NVIDIA Jetson Nano or the low-performance Raspberry Pi 4B.
+
+
+% ===== V2:
+
+% In this paper, we benchmarked various sizes of the YOLOv8 object detector on
+% different devices to show how far go the possibilities of modern,
+% state-of-the-art models in the field of vehicle detection. Along with the
+% inference speed (FPS), six mean Average Precision (mAP) metrics were measured
+% for each model. The models were trained on a large, diverse dataset.
+
+% Three embedded devices from the NVIDIA Jetson family were evaluated in this
+% paper. We show that on the entry-level Jetson Nano, reasonably accurate vehicle
+% detectors like the YOLOv8-nano can run in real-time, while on higher-performing
+% Jetson Xavier NX or Jetson AGX Xavier, even the largest trained model
+% YOLOv8-medium can run at almost 50 FPS when quantized to \texttt{FP16}
+% precision. We show that on these devices, quantizing models to \texttt{FP16}
+% precision results in higher inference speeds with no real decrease in accuracy.
+
+% On the other hand, we show that the Raspberry Pi 4B could indeed run inference
+% of the smallest models in real-time, as it achieved almost 15 FPS with the
+% smallest YOLOv8-femto model with the lowest input resolution of just $352 \times
+% 192$. However, these tiny models perform poorly when detecting small objects and
+% should only be used in special cases where the accuracy requirements are not as
+% high and the vehicles are large in the input images.
+
+% To compare these embedded devices with processing units commonly found in
+% laptops or desktop computers, we also benchmarked the models on the Intel Core
+% i7-9850H CPU and the NVIDIA MX150 GPU. Additionally, we study the effects of
+% other factors that influence the accuracy and inference speed of the models,
+% including the use of different input resolutions or various batch sizes during
+% inference.
+
+% We therefore consider this paper successful in showing how accurate are vehicle
+% detectors that are able to run in real-time on various embedded devices,
+% including the popular NVIDIA Jetson Nano or the low-performance Raspberry Pi 4B.
+
+
+% ===== V3:
+
+% In this paper, we have demonstrated the potential of the state-of-the-art YOLOv8
+% object detector for vehicle detection on various embedded devices, with a focus
+% on achieving real-time performance. Our experiments involved training several
+% models of different sizes on a large, diverse dataset of surveillance-type
+% images.
+
+% We have shown that the entry-level NVIDIA Jetson Nano can run reasonably
+% accurate vehicle detectors like the YOLOv8-nano in real-time. On
+% higher-performing devices, namely the Jetson Xavier NX or Jetson AGX Xavier,
+% even the largest of the trained models\,--\, YOLOv8-medium, operated at higher
+% than real-time speeds when quantized to \texttt{FP16} precision. We found that
+% on these devices, quantizing models to \texttt{FP16} precision results in higher
+% inference speeds with no real impact on accuracy, while quantizing to
+% \texttt{INT8} precision rarely brings an advantage over smaller models.
+
+% In contrast, the Raspberry Pi 4B can only run real-time inference of the
+% smallest models, which perform very poorly, particularly when detecting small
+% objects.  Therefore, vehicle detection on this device is only viable in special
+% cases where the accuracy requirements are not as high and the vehicles are large
+% in the input images.
+
+% To compare these embedded devices with processing units commonly found in
+% laptops or desktop computers, we also benchmarked the models on the Intel Core
+% i7-9850H CPU and the NVIDIA MX150 GPU. Additionally, we study the effects of
+% other factors that influence the accuracy and inference speed of the models,
+% including the use of different input resolutions or various batch sizes during
+% inference, or whether the ONNX Runtime inference backend has any advantage over
+% TensorRT on NVIDIA Jetson devices.
+
+% We therefore consider this paper successful in showing how accurate are vehicle
+% detectors that are able to run in real-time on various embedded devices,
+% including the popular NVIDIA Jetson Nano or the low-performance Raspberry Pi 4B.
+
+% In conclusion, our study successfully demonstrates the real-time capabilities of
+% state-of-the-art vehicle detectors on various embedded devices, including the popular
+% NVIDIA Jetson Nano and the low-performance Raspberry Pi 4B. Our research
+% provides valuable insights for practical applications in the field of vehicle
+% detection and establishes a foundation for future work aimed at refining object
+% detector models to run on embedded systems.
+
+
+% ===== V4:
+
+In this paper, we have demonstrated the potential of the state-of-the-art YOLOv8
+object detector for vehicle detection on various embedded devices, with a focus
+on optimizing the models for real-time performance. Our experiments involved
+training several models of different sizes on a large, diverse dataset of
+surveillance-type images.
+
+We have shown that the entry-level embedded device NVIDIA Jetson Nano can run
+reasonably accurate vehicle detectors like the YOLOv8-nano in real-time. On
+higher-performing devices, namely the Jetson Xavier NX or Jetson AGX Xavier,
+even the largest of the trained models\,--\,YOLOv8-medium, operated at high
+frame rates when quantized to \texttt{FP16} precision. We found that on these
+devices, quantizing models to \texttt{FP16} precision results in higher
+inference speeds with no real impact on accuracy, while quantizing to
+\texttt{INT8} precision rarely brings an advantage over using a smaller model.
+
+In contrast, the Raspberry Pi 4B can only run real-time inference of the
+smallest models, which exhibit inferior performance, particularly when detecting
+small objects. Therefore, vehicle detection on this device is only viable in
+special cases where the accuracy requirements are not as high and the vehicles
+present in the input images have a large area.
+
+To compare these embedded devices with processing units commonly found in
+laptops or desktop computers, we also benchmarked the models on the Intel Core
+i7-9850H CPU and the NVIDIA MX150 GPU. Additionally, we studied the effects of
+other factors that influence the accuracy and inference speed of the models,
+including different input resolutions, batch sizes during inference, and the
+differences between the ONNX Runtime and TensorRT inference backends on NVIDIA
+Jetson devices.
+
+In conclusion, our study successfully demonstrates the real-time capabilities of
+state-of-the-art vehicle detectors on various embedded devices, including the
+popular NVIDIA Jetson Nano and the low-performance Raspberry Pi 4B. Our research
+provides valuable insights for practical applications in the field of vehicle
+detection and establishes a foundation for future work aimed at refining object
+detection models to run on embedded systems.
 
 
 
 
+\chapter{Future Work}
+\label{FutureWork}
+% knowledge distillation, pruning,.. kvantizácia pre CPU; NCNN, ARM NN, TFLite; SSD alebo YOLOX alebo tak
 
+In future studies, we suggest experimenting with additional network optimization
+and compression techniques, such as knowledge distillation and network pruning.
+These methods have the potential to improve the efficiency and accuracy of
+object detection models when deployed on low-performance devices.
 
+Additionally, since this paper focuses on embedded devices specifically designed
+for machine learning, it is essential to investigate further optimizations to
+draw more comprehensive conclusions about vehicle detection on devices like the
+Raspberry Pi 4B. This includes examining the effect of weight quantization on
+CPU inference times and exploring the use of specialized inference frameworks
+such as NCNN, ARM NN, or TensorFlow Lite.
+
+Furthermore, to enable a more extensive comparison with related research papers
+in the field, future studies may also consider benchmarking other object
+detection models, such as the Single Shot MultiBox Detector (SSD) and earlier
+YOLO versions like the YOLOX. This would also demonstrate how the recent
+advances in object detection contribute to the development of more efficient and
+accurate vehicle detection systems.
 
 
 
 
 
 \begin{appendices}
+\label{Appendix}
 
 
 \chapter{Additional Precision-Recall Curves}
@@ -2906,7 +3115,7 @@ TODO TODO TODO
         & & & & Rasp- & Intel   &\multirow{3}{*}{\parbox{1.2cm}{\raggedleft NVIDIA\\MX150}} & \multicolumn{3}{|c|}{NVIDIA Jetson} \\
         \cline{8-10}
         & & & & berry & Core i7 &                                                           & \multicolumn{1}{|c}{\multirow{2}{*}{Nano}} & Xavier & AGX \\
-        & & & & PI    & 9850H   &                                                           & \multicolumn{1}{|c}{}                      & NX     & Xavier \\
+        & & & & Pi    & 9850H   &                                                           & \multicolumn{1}{|c}{}                      & NX     & Xavier \\
         \hline
         \hline
         \multirow{3}{*}{medium}                                   & \multirow{3}{*}{$640 \times 384$} & FP32 & 0.603 &  0.12 &   1.62 &  4.04 &  4.15 & 16.36 &  17.48 \\
@@ -2989,7 +3198,7 @@ TODO TODO TODO
         & & & & Rasp- & Intel   &\multirow{3}{*}{\parbox{1.2cm}{\raggedleft NVIDIA\\MX150}} & \multicolumn{3}{|c|}{NVIDIA Jetson} \\
         \cline{8-10}
         & & & & berry & Core i7 &                                                           & \multicolumn{1}{|c}{\multirow{2}{*}{Nano}} & Xavier & AGX \\
-        & & & & PI    & 9850H   &                                                           & \multicolumn{1}{|c}{}                      & NX     & Xavier \\
+        & & & & Pi    & 9850H   &                                                           & \multicolumn{1}{|c}{}                      & NX     & Xavier \\
         \hline
         \hline
         \multirow{3}{*}{medium}                                   & \multirow{3}{*}{$640 \times 384$} & FP32 & 0.603 & 0.12  &   1.57 &  4.68* &  4.15* &   16.97 &   19.11 \\
