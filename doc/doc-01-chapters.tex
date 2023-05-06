@@ -7,14 +7,24 @@
 %   a congestion reduction, lebo tam netreba veľkú presnosť, a napr. jetson na
 %   detekciu wrong-way a takých, a možno napr. colar na niečo medzi 
 
+% TODO Rozšírený abstrakt!
+
 % TODO TODO vo fitthesis.cls nájsť riadok s tocdepth a zmeniť na 1
 % TODO prvé výskyty skratiek a iných neznámych slov vysvetliť
 
 % TODO mAP dávať v % a písať s '%'?
 
-% TODO písať že NMS IoU threshold je 0.7
+% TODO tildy pred cite a také
 
-% TODO Správne písať et al.
+% TODO opraviť spojovníky
+
+% TODO Správne písať et al. v textit
+
+% TODO malú medzierku medzi číslo a jednotku (\,)
+
+% TODO neodkazovať na subsection - buď kapitola alebo section
+
+% TODO zoznam obrázkov vymazať
 
 % TODO napísať aký confidence threshold som použil - že som použil prakticky
 % nula lebo to dávalo lepšie mAP aj keď viac false detections ale že na tom
@@ -28,48 +38,154 @@
 
 \newpage
 \chapter{Introduction}
+% TODO Ešte si to znovu prečítať neskôr a možno upraviť, ale inak sa mi to páči
 
-TODO TODO TODO
+% Len naozajstné info, nie hlúposti. A musí byť do jednej strany, pokojne aj pol strany
+% Má tomu rozumieť aj neodborník v oblasti!
 
-% TODO malo by to asi byť viac o tom, čo budem v papieri písať
+% Že vehicle detection je dôležitý, bolo by fajn keby bežal na slabých
+% zariadeniach aby sme mohli mať veľa kamier a netrebalo ďalšie mochovce.
 
-% TODO povedať že sa zameriavam na detekciu zo surveillance-type snímkov či videí
+% Chceme teda vyskúšať najnovšie real-time YOLOv8 detektory a porovnať ich na
+% rôznych zariadeniach. Skúšam aj Mobilenetv2 backbone. Aj na troch jetsonoch.
 
-% Vehicle detection in real-time is crucial for enhancing traffic safety and flow.
-% It can be used to manage traffic at an intersection using traffic lights, spot
-% speeding or wrong-way drivers, enhance route planning to ease congestion, alert
-% drivers to potentially dangerous situations, and offer insightful information
-% about driving behavior.
+% Spomenúť aj experimenty ktoré budem robiť. Spomenúť aj OpenMMLabs
 
-% There are various methods for detecting vehicles, each of which has
-% its advantages and limitations. In this paper, we focus on detection using a
-% camera-based traffic surveillance system. This approach was chosen because of
-% its low price, versatility, and ease of installation.
+% Nakoniec krátko vysvetliť štruktúru - v ktorej kapitole čo
 
-% There are two main techniques for vehicle detection using a camera: image
-% processing and convolutional neural networks (CNNs). Both approaches are based
-% on analyzing images to identify patterns and features to detect vehicles. Image
-% processing techniques involve applying a series of pre-defined filters and
-% transformations to an image to extract relevant information. CNNs, on the other
-% hand, are a type of machine learning algorithm that learns to recognize patterns
-% and features through training. CNNs are generally more effective than image
-% processing techniques for vehicle detection, as they can learn to recognize
-% complex patterns and features that may be difficult to extract using pre-defined
-% filters and transformations, but they have traditionally required a significant
-% amount of computing power, commonly provided by a graphical processing
-% unit (GPU). However, recent developments suggest that it may now be possible to
-% perform CNN-based tasks in real time with reduced processing requirements. 
 
-% In this paper, we attempt to train a CNN with a smaller architecture that is
-% able to run on a single central processing unit (CPU) instead of a GPU. This
-% would allow the system to process the camera feed on-site, rather than relying
-% on its transmission over the internet and remote processing. This would reduce
-% the cost of the system and the amount of network bandwidth required, as well as
-% expand the range of purposes for which the system can be utilized.
+% Vehicle detection systems are an important tool for improving road safety, and
+% with the rise of convolutional neural networks and the recent advancements in
+% object detection, these systems have become more affordable and accurate. However,
+% accurate object detectors still require significant computational resources and
+% sacrifices must be made to perform this task in real-time on embedded devices or
+% those with limited computational resources.
+% =====
+% TODO treba lepšie povedať čo sa snažím urobiť a dokázať:
+% Napr. aim of this paper is to compare the SOTA detectors on embedded devices
+% to see how the best models perform on computationally restricted devices
+Vehicle detection systems are an important tool for enhancing road safety, and
+with the rise of convolutional neural networks and the recent advancements in
+object detection, these systems have become more affordable and accurate.
+However, high-performange object detectors still require significant
+computational resources and sacrifices must be made to perform this task in
+real-time on embedded devices or those with limited computational resources.
+This paper aims to evaluate the performance trade-offs of state-of-the-art
+object detectors on low-performance devices and to explore various strategies
+for improving their efficiency.
+
+% In this paper, state-of-the-art real-time YOLOv8 object detectors of different sizes are
+% benchmarked on six different devices, including three NVIDIA Jetson embedded
+% platforms.
+% =====
+% A popular group of real-time object detectors is the YOLO (You Only Look Once)
+% family, of which the latest, state-of-the-art YOLOv8 model architecture will be
+% evaluated in this paper. Several models of different sizes were trained to be
+% benchmarked on six different devices, including three NVIDIA Jetson embedded
+% platforms.
+% % Additionally, the CSP Darknet backbone of one of the models was replaced by MobileNetV2 to 
+% \todo{
+% Additionally, one of the models was trained with the MobileNetV2 backbone to
+% compare the base YOLOv8 models to this popular architecture.
+% }
+% =====
+% A popular family of real-time object detectors is the YOLO (You Only Look Once)
+% series, with the latest, state-of-the-art YOLOv8 model architecture being the
+% primary focus of this paper. To thoroughly evaluate its performance, several
+% YOLOv8 models of different sizes, including one trained with the lightweight
+% MobileNetV2 backbone, will be benchmarked across six different devices,
+% including three NVIDIA Jetson embedded platforms. To accelerate the process of
+% training, deploying and testing different models, this paper utilized
+% PyTorch-based libraries from the OpenMMLab project, including MMYOLO and
+% MMDeploy.
+% =====
+A popular family of real-time object detectors is the YOLO (You Only Look Once)
+series, with the latest, state-of-the-art YOLOv8 model architecture being the
+primary focus of this paper. To thoroughly evaluate its performance, we
+benchmark several YOLOv8 models of different sizes, including one trained with
+the lightweight MobileNetV2 backbone. These models are tested across six
+different devices, including three NVIDIA Jetson embedded platforms. To
+accelerate the process of training, deploying and testing different models, this
+paper utilized PyTorch-based libraries from the OpenMMLab project, including
+MMYOLO and MMDeploy.
+
+The models were trained on several different datasets that consist of
+surveillance-type images, most commonly captured by traffic-monitoring cameras
+mounted on existing infrastructure. The datasets combined contain a total of
+\num{1204795} object instances in \num{218821} images.
+% =====
+
+
+% In addition to benchmarking the trained models on all devices, several different
+% experiments were conducted, including weight quantization and comparison of
+% inference speeds using different inference backends, batch sizes or input
+% resolutions of the models.
+% =====
+% In addition to benchmarking the trained models on all devices in terms of their
+% inference speeds (FPS) and mAP (mean Average Precision) metrics, we also aim to
+% study the effects of weight quantization, usage of different inference backends,
+% batch sizes or input resolutions of the models.
+% =====
+% In addition to benchmarking the trained models on all devices in terms of their
+% inference speeds (FPS) and mAP (mean Average Precision) metrics, we also aim to
+% explore various factors impacting performance, including weight quantization,
+% various input resolutions of the models or different inference backends and
+% batch sizes.
+% =====
+% ! treba tam napríklad 'including', nech je jasné že toho bude viac:
+% In addition to benchmarking the trained models on all devices in terms of their
+% inference speeds (FPS) and mAP (mean Average Precision) metrics, we also aim to
+% study the effects of weight quantization, usage of different inference backends,
+% inference batch sizes or input resolutions of the models.
+% =====
+In addition to benchmarking the trained models on all devices in terms of their
+inference speeds (FPS) and mean Average Precision (mAP) metrics, we also aim to
+explore additional factors that can influence their performance, including
+weight quantization and the usage of different inference backends, inference
+batch sizes and input resolutions of the models.
+
+% In \autoref{BackgroundAndRelatedWork}, we begin by providing an overview of the
+% essential concepts, tools and libraries relevant to our study. Following this,
+% we present a detailed review of the used datasets (\autoref{DatasetsChapter})
+% and discuss the object detectors that were evaluated (\autoref{ModelsChapter}),
+% including information about the training process. Next, in \autoref{Experiments}
+% we delve into the specifics of our experiments, explaining how they were
+% conducted and including important things to note before drawing conclusions from
+% the results in \autoref{Results}, where we report our findings in detail and
+% offer insights gained. Lastly, we suggest potential areas for future work that
+% couldn't be researched in this paper.
+% =====
+% In \autoref{BackgroundAndRelatedWork}, we begin by providing an overview of the
+% essential concepts, tools and libraries relevant to our study. We then proceed
+% with a detailed review of the datasets employed in our research in
+% \autoref{DatasetsChapter}, followed by a discussion on the evaluated object
+% detectors and their training process in \autoref{ModelsChapter}. In
+% \autoref{Experiments}, we delve into the specifics of our experiments, outlining
+% the methodologies employed, providing an overview of the devices used for
+% testing and discussing the important aspects to consider when interpreting the
+% results. These results are then presented in detail in \autoref{Results}, where
+% we share our findings and discuss the insights gained from the experiments.
+% Finally, we suggest potential areas for future work that couldn't be researched
+% in this paper.
+% =====
+In \autoref{BackgroundAndRelatedWork}, we begin by explaining essential
+concepts, tools and libraries relevant to our study. We then proceed with a
+detailed review of the datasets employed in our research in
+\autoref{DatasetsChapter}, followed by a discussion on the evaluated object
+detector models and their training process in \autoref{ModelsChapter}.
+
+Subsequently, in \autoref{Experiments}, we delve into the specifics of our
+experiments, outlining the methodologies employed, providing an overview of the
+devices used for testing and discussing the important aspects to consider when
+interpreting the results. These results are then presented in detail in
+\autoref{Results}, where we share our findings and insights gained from the
+experiments. Finally, we suggest potential areas for future work that were
+beyond the scope of this paper.
 
 
 
 \chapter{Background and Related Work}
+\label{BackgroundAndRelatedWork}
 
 
 \section{Common Approaches to Vehicle Detection}
@@ -111,7 +227,7 @@ accurate data with simpler sensor installation, but the idea stays the same.
 \subsubsection*{Ultrasonic Sensors}
 
 Another type of inexpensive and simple detector is an ultrasonic
-sensor.\cite{UltrasonicSensors} These sensors can operate in a variety of
+sensor. \cite{UltrasonicSensors} These sensors can operate in a variety of
 conditions and are typically mounted on existing infrastructure. These distance
 measurement sensors are usually used to detect the presence and distance of nearby
 vehicles and their speed, but they can be utilized in many different ways to
@@ -122,7 +238,7 @@ even provide a simple shape of a vehicle to classify it.
 
 Radars (Radio Detection and Ranging), which can also be mounted on existing
 infrastructure above ground, work similarly to ultrasonic sensors, but a single
-radar can oversee a much wider area of a road.\cite{RadarSensors} They are
+radar can oversee a much wider area of a road. \cite{RadarSensors} They are
 usually used to detect the presence, speed, heading and shape of a vehicle. The
 shape can then be used to predict a class of the vehicle. Lidars (Light
 Detection and Ranging) can be used in a similar way, but are far more accurate,
@@ -971,6 +1087,7 @@ allowing developers to choose the best balance between accuracy and performance.
 
 
 \chapter{Datasets}
+\label{DatasetsChapter}
 
 Big and high-quality datasets are very important when training a CNN-based
 detector. In this section, used datasets are listed and analyzed. First, the
@@ -1444,6 +1561,7 @@ objects on \num{7990} images\,--\,\num{5500} images from the Miovision dataset a
 
 
 \chapter{Object Detection Models}
+\label{ModelsChapter}
 
 \todo{Nedať to k experimentom? Asi to nepotrebuje vlastnú kapitolu, no}
 
