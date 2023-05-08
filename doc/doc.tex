@@ -71,7 +71,6 @@
 \csdoublequotesoff
 
 \usepackage{url}
-\usepackage{siunitx}
 \usepackage{multirow}
 \usepackage{subcaption}
 \usepackage{framed}
@@ -79,6 +78,27 @@
 \usepackage{booktabs}
 % TODO remove?
 % \usepackage{changepage}
+
+\usepackage{siunitx}
+\sisetup{
+  group-minimum-digits=1,
+}
+
+% To fit the table of contents...
+\usepackage{tocloft}
+\setlength{\cftaftertoctitleskip}{18pt}
+\setlength{\cftbeforetoctitleskip}{0pt}
+\setlength{\cftbeforechapskip}{6pt}
+% \renewcommand{\cftsecfont}{\small}
+% \setlength{\cftbeforesecskip}{1pt}
+% \setlength{\cftbeforesubsecskip}{6pt}
+% \setlength{\cftbeforesubsubsecskip}{6pt}
+% \renewcommand{\cfttoctitlefont}{\Large}
+% \renewcommand{\cftsubsecfont}{\normalsize}
+% \renewcommand{\cftsubsubsecfont}{\small}
+
+
+\usepackage{threeparttable}
 
 
 % =======================================================================
@@ -122,6 +142,16 @@
 % This solves the problems with links which leads after the picture
 \usepackage[all]{hypcap}
 
+% Hyperref tedro:
+\addto\extrasenglish{
+  \def\chapterautorefname{Chapter}
+  \def\sectionautorefname{Section}
+  \def\subsectionautorefname{Subsection}
+  \def\subsubsectionautorefname{Subsubsection}
+  \def\paragraphautorefname{Paragraph}
+  \def\subparagraphautorefname{Subparagraph}
+}
+
 % TODO (nie tu) vloženie zadania (čítaj "moje záverečné práce" v studise)
 
 % Informace o práci/projektu / Information about the thesis
@@ -150,16 +180,57 @@
   supervisor.title.p={Ing.},   %titul před jménem (nepovinné) / title before the name (optional)
   % supervisor.title.a={},    %titul za jménem (nepovinné) / title after the name (optional)
   % keywords anglicky TODO
-  keywords.en={Here, individual keywords separated by commas will be written in English.},
+  keywords.en={vehicle detection, traffic surveillance, object detection,
+  convolutional neural networks, real-time, trade-offs, embedded devices,
+  low-performance devices, YOLO, YOLOv8, NVIDIA Jetson, Raspberry Pi, OpenMMLab,
+  MMYOLO, quantization, ONNX Runtime, TensorRT},
+  % keywords slovensky TODO
+  keywords.cs={detekcia vozidiel, monitorovanie dopravy, detekcia objektov,
+  konvolučné neurónové siete, detekcia v reálnom čase, kompromisy, vstavané
+  zariadenia, nízkovýkonné zariadenia, YOLO, YOLOv8, NVIDIA Jetson, Raspberry
+  Pi, OpenMMLab, MMYOLO, kvantizácia, ONNX Runtime, TensorRT},
   % Abstrakt anglicky TODO
-  abstract.en={An abstract of the work in English will be written in this paragraph.},
+  abstract.en={
+    This paper evaluates the performance trade-offs of state-of-the-art YOLOv8
+    object detectors for vehicle detection in surveillance-type images on
+    embedded and low-performance devices. YOLOv8 models of varying sizes,
+    including one with the lightweight MobileNetV2 backbone and YOLOv8-femto
+    with fewer than \num{60000} parameters, were benchmarked across six devices,
+    including three NVIDIA Jetson embedded platforms and the low-performance
+    Raspberry Pi 4B. Various factors influencing performance were considered,
+    such as weight quantization, input resolutions, inference backends, and
+    batch sizes during inference. This study provides valuable insights into the
+    development and deployment of vehicle detectors on a diverse range of
+    devices, including low-performance CPUs and specialized embedded platforms.
+  },
+  abstract.cs={
+    Táto práca hodnotí kompromisy rýchlosti a presnosti najmodernejších
+    detektorov objektov YOLOv8 pre detekciu vozidiel v snímkoch z monitorovacích
+    kamier na vstatných a nízkovýkonných zariadeniach. Modely YOLOv8 rôznych
+    veľkostí, vrátane jedného s efektívnou sieťou MobileNetV2 na extrakciu
+    príznakov a modelu YOLOv8-femto s menej ako \num{60000} parametrami, boli
+    testované na šiestich zariadeniach, vrátane troch vstavaných platforiem z
+    rodiny NVIDIA Jetson a počítačom Raspberry Pi 4B s nízkou výpočtovou silou.
+    V práci boli zohľadnené rôzne faktory ovplyvňujúce výkonnosť modelov, ako
+    napríklad ich kvantizácia, rozlíšenia vstupu, inferenčné knižnice a veľkosti
+    dávok počas inferencie. Táto štúdia poskytuje užitočné informácie k vývoju a
+    nasadeniu detektorov vozidiel na širokú škálu zariadení, od nízkovýkonných
+    procesorov po špecializované vstavané platformy.
+  },
   % Prohlášení TODO u anglicky psané práce anglicky
-  declaration={I hereby declare that this Bachelor's thesis was prepared as an original work by the author under the supervision of Mr. X
-  The supplementary information was provided by Mr. Y
-  I have listed all the literary sources, publications and other sources, which were used during the preparation of this thesis.},
+  declaration={
+    I hereby declare that this Bachelor's thesis was prepared as an
+    original work by the author under the supervision of Ing. Jakub Špaňhel. I
+    have listed all the literary sources, publications and other sources, which
+    were used during the preparation of this thesis.
+  },
   % Poděkování TODO (nepovinné, nejlépe v jazyce práce; nechcete-li, zakomentujte pro skrytí nadpisu) / Acknowledgement (optional, ideally in the language of the thesis; comment out for hiding including heading)
-  acknowledgment={Here it is possible to express thanks to the supervisor and to the people which provided professional help
-  (external submitter, consultant, etc.).},
+  acknowledgment={I would like to express my gratitude to my supervisor, Ing.
+  Jakub Špaňhel, for his valuable advice throughout the course of this
+  research. His guidance and expertise helped me overcome difficult challenges
+  and enabled me to focus on the important aspects of this work to successfully
+  complete this thesis.
+  },
   faculty={FIT} % FIT/FEKT/FSI/FA/FCH/FP/FAST/FAVU/USI/DEF
   % TODO REMOVE faculty.cs={Fakulta informačních technologií}, % Fakulta v češtině - pro využití této položky výše zvolte fakultu DEF / Faculty in Czech - for use of this entry select DEF above
   % TODO REMOVE faculty.en={Faculty of Information Technology}, % Fakulta v angličtině - pro využití této položky výše zvolte fakultu DEF / Faculty in English - for use of this entry select DEF above
@@ -167,13 +238,15 @@
   % TODO REMOVE department.en={Department of Computer Graphics and Multimedia} % Ústav v angličtině - pro využití této položky výše zvolte ústav DEF nebo jej zakomentujte / Department in English - for use of this entry select DEF above or comment it out
 }
 
-% Rozšířený abstrakt (cca 3 normostrany) - lze definovat zde nebo výše / Extended abstract (approximately 3 standard pages) - can be defined here or above
-%\extendedabstract{Do tohoto odstavce bude zapsán výtah (abstrakt) práce v českém (slovenském) jazyce.}
+% Rozšířený abstrakt (cca 3 normostrany) - lze definovat zde nebo výše /
+% Extended abstract (approximately 3 standard pages) - can be defined here or
+% above
+% \extendedabstract{Do tohoto odstavce bude zapsán výtah (abstrakt) práce v českém (slovenském) jazyce.}
 % Začít rozšířený abstrakt na liché stránce? / Should extended abstract start on the odd page?
 %\extabstractodd{true}
 
 % nastavení délky bloku s titulkem pro úpravu zalomení řádku - lze definovat zde nebo výše / setting the length of a block with a thesis title for adjusting a line break - can be defined here or above
-%\titlelength{14.5cm}
+\titlelength{14.5cm}
 % nastavení délky bloku s druhým titulkem pro úpravu zalomení řádku - lze definovat zde nebo výše / setting the length of a block with a second thesis title for adjusting a line break - can be defined here or above
 %\sectitlelength{14.5cm}
 % nastavení délky bloku s titulkem nad prohlášením pro úpravu zalomení řádku - lze definovat zde nebo výše / setting the length of a block with a thesis title above declaration for adjusting a line break - can be defined here or above
