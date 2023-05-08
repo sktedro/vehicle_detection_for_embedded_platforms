@@ -4,7 +4,7 @@ from copy import deepcopy
 
 # No way to find out the path of this file since mmdetection does shady things
 # with it, so we need an absolute filepath of the repository
-repo_path = "/home/xskalo01/bp/proj/"
+repo_path = "/home/tedro/Desktop/d_projekty/bp/proj/"
 # repo_path = "/home/tedro/Desktop/d_projekty/bp/proj/"
 sys.path.append(repo_path)
 import paths
