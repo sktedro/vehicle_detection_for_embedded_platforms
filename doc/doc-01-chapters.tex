@@ -2,10 +2,6 @@
 % \documentclass[../projekt.tex]{subfiles}
 % \begin{document}
 
-% todo Rozšírený abstrakt. Netreba ak nebude čas
-
-% TODO viac related work, ak sa dá. Pozrieť poznámku od Špaňhela
-
 % TODO plagát dať do textu?
 
 % TODO prvé výskyty skratiek a iných neznámych slov vysvetliť
@@ -71,7 +67,7 @@ before the introduction of Convolutional Neural Networks (CNNs). This is
 followed by an~exploration of the problem of object detection using CNNs,
 network optimization, and network compression techniques. The chapter also
 covers evaluation metrics for assessing a~model's performance, a~review of
-existing literature on this subject, an~overview of embedded platforms for
+existing literature on this subject, an~overview of embedded platforms
 designed for machine learning applications and finally, a~review of various
 tools and libraries utilized in this paper.
 
@@ -105,7 +101,7 @@ loop~\cite{MagneticSensors}. The sensor, composed of a~single wire, can be burie
 in concrete to detect the presence of metal objects passing by. With
 a~controller, induction loops typically provide data about vehicle presence, but
 using more advanced algorithms, vehicle speed, length and much more
-can be determined from this simple sensor. Although the design is very simple,
+can be determined using this simple sensor. Although the design is very simple,
 installation is not and induction loops can even get damaged over time, while
 repairs call for temporary shutdowns of roads. It is worth noting that there
 are many other types of magnetic sensors, which can provide more detailed and
@@ -193,10 +189,10 @@ architecture is illustrated in \autoref{CNNFig}.
     \centering
     \includegraphics[width=0.75\textwidth]{cnn.pdf}
     \captionsetup{width=0.75\textwidth}
-    \caption{An~example architecture of a~CNN with five layers~\cite{OShea2015}
-    for hand-written digit recognition.  ReLu (Rectified Linear Unit) is
-    a~commonly used activation function in neural networks, but won't be
-    discussed here in detail.}
+    \caption{An~example architecture of a~CNN for hand-written digit
+    recognition~\cite{OShea2015}. ReLu (Rectified Linear Unit) is a~commonly
+    used activation function in neural networks, but won't be discussed here in
+    detail.}
     \label{CNNFig}
 \end{figure}
 
@@ -277,8 +273,8 @@ fully connected layers. Its simple architecture is illustrated in
     \includegraphics[width=\textwidth]{lenet.pdf}
     \captionsetup{width=\textwidth}
     \caption{Architecture of the LeNet-5 convolutional neural network designed
-    for the recognition of hand-written digits. In this figure the planes represent
-    feature maps.~\cite{Lecun1998}}
+    for the recognition of hand-written digits. In this figure, the planes
+    represent feature maps.~\cite{Lecun1998}}
     \label{LenetFig}
 \end{figure}
 
@@ -332,7 +328,7 @@ accuracy.
 
 \subsubsection{MobileNetV2}
 
-MobileNetV2~\cite{Sandler2018}, an~evolution of the original MobileNet was
+MobileNetV2~\cite{Sandler2018}, an~evolution of the original MobileNet, was
 proposed by Mark Sandler and his team at Google in 2018. The architecture
 introduces the concept of \textit{Inverted Residuals} and \textit{Linear
 Bottlenecks}, aiming to enhance the network's representational capacity while
@@ -387,7 +383,7 @@ resource-constrained devices.
 
 The Single Shot MultiBox Detector (SSD) is an~object detection algorithm that
 aims to provide a~balance between accuracy and computational efficiency.
-Proposed by Wei Liu \textit{et al.} in their 2015 paper~\cite{Liu2015}, SSD
+Proposed by Wei Liu \textit{et~al.} in their 2015 paper~\cite{Liu2015}, SSD
 addresses the challenge of detecting objects in images with varying scales and
 aspect ratios in real time.
 
@@ -408,11 +404,11 @@ many iterations each improving upon the previous version's performance and
 efficiency: from YOLOv2 to YOLOv8 and including YOLOX, YOLOR and several more.
 
 This work is focused on the latest, state-of-the-art object detector
-YOLOv8~\cite{YOLOv8} developed by Ultralytics, which, at this time, doesn't have
+YOLOv8~\cite{YOLOv8} developed by Ultralytics, which, at this time, does not have
 a~paper released. However, information about the detector can be drawn from
 a~post by OpenMMLab~\cite{YOLOv8OpenMMLab}.
 
-Built upon the YOLOv5, the YOLOv8 detector updated the head\footnote{The head of
+Built upon YOLOv5, the YOLOv8 detector updated the head\footnote{The head of
 an~object detector predicts the object classes and bounding box coordinates
 using features input by the neck.} module to be a~decoupled one, separating the
 classification and detection heads, while the new backbone and neck\footnote{The
@@ -432,7 +428,7 @@ As CNNs have grown deeper and more complex to improve accuracy, the
 computational and memory requirements have increased significantly. This makes
 it difficult to deploy CNNs on embedded devices with limited resources. To
 address this challenge, researchers have developed various model optimization
-and compression techniques that aim the reduce the computational cost and memory
+and compression techniques that aim to reduce the computational cost and memory
 footprint while trying to maintain the model's accuracy. A~brief overview of the
 most significant model optimization and compression techniques is provided in
 this section. However, in this paper, only one of these techniques\,---\,weight
@@ -444,7 +440,7 @@ quantization\,---\,will be used.
 As explained by Tejalal Choudhary \textit{et al.} in their
 paper~\cite{Choudhary2020}, there are typically many parameters in a~CNN which
 are not utilized during the training phase and do not contribute to the
-network's performance. The pruning model optimization technique aims to simply
+network's performance. The pruning optimization technique aims to
 remove these redundant parameters from the model while maintaining accuracy. Of
 course, more aggressive pruning can be performed, removing even more parameters,
 including not just redundant, but also less important ones, although
@@ -486,7 +482,7 @@ essential factors when developing a~real-time object detector.
 
 Most commonly, the parameters of models are quantized to either a~16-bit
 floating-point (\texttt{FP16}) representation or an~8-bit integer
-(\texttt{INT8}) representation. Quantizing to \texttt{FP16} usually doesn't
+(\texttt{INT8}) representation. Quantizing to \texttt{FP16} usually does not
 require any post-quantization steps. However, quantizing to the integer
 representation (also called precision in this context), such as \texttt{INT8},
 is a~different process. Because of the limitations of the integer representation
@@ -500,10 +496,10 @@ after it is recommended to maintain the highest possible prediction accuracy.
 This, of course, only applies to post-training quantization (PTQ) while several
 other quantization techniques are available\,---\,mainly training the model with
 weights in the desired representation from the beginning (quantization-aware
-training, QAT). Furthermore, a~more advanced technique called the
+training, QAT). Furthermore, a~more advanced technique called
 mixed-precision quantization (MPQ) can be used to quantize parameters in a~more
 nuanced manner by assigning different precisions to individual parameters or
-parameter groups depending on their sensitivity to numerical
+parameter groups, depending on their sensitivity to numerical
 errors~\cite{Tang2022}.
 
 Most deep learning libraries which can be used for model deployment or inference
@@ -536,7 +532,7 @@ by the model.
 If the precision and recall values are computed at different confidence
 score\footnote{Confidence score is a~number output from a~detector for each
 detection stating the model's confidence that the detection is correct.}
-thresholds, they can be plotted one against the other to obtain
+thresholds, they can be plotted against each other to obtain
 a~precision-recall curve, which can be used to visually evaluate the overall
 accuracy of the model.
 
@@ -595,14 +591,15 @@ visualization, see \autoref{IoU}.
 
 In this paper, we consider the COCO mAP specification and calculate the mAP as
 the average of AP calculated for all classes and over ten IoU thresholds ranging
-from \num{0.50} to (and~including) \num{0.95} with step \num{0.05}. Similarly,
-values $\text{mAP}^{\text{IoU:0.50}}$ and $\text{mAP}^{\text{IoU:0.75}}$ denote
-mAP calculated with IoU thresholds equal to \num{0.50} and \num{0.75}
-respectively. Additionally, $\text{mAP}^{\text{small}}$ is only calculated for
-objects of area smaller than $32^2$ pixels, $\text{mAP}^{\text{medium}}$ for
-objects larger than $32^2$ px but smaller than $96^2$ px and finally,
-$\text{mAP}^{\text{large}}$ for objects larger than $96^2$ px. The mAP values
-in this paper will be presented as percentages.
+from \num{0.50} to (and~including) \num{0.95} with a step of \num{0.05}.
+Similarly, values $\text{mAP}^{\text{IoU:0.50}}$ and
+$\text{mAP}^{\text{IoU:0.75}}$ denote mAP calculated with IoU thresholds equal
+to \num{0.50} and \num{0.75} respectively. Additionally,
+$\text{mAP}^{\text{small}}$ is only calculated for objects of area smaller than
+$32^2$ pixels, $\text{mAP}^{\text{medium}}$ for objects larger than $32^2$ px
+but smaller than $96^2$ px and finally, $\text{mAP}^{\text{large}}$ for objects
+larger than $96^2$ px. The mAP values in this paper will be presented as
+percentages.
 
 
 \section{Vehicle Detection Based on Convolutional Neural Networks}
@@ -610,7 +607,7 @@ in this paper will be presented as percentages.
 This section delves into the existing literature on vehicle detection using deep
 learning and convolutional neural networks. We advise the reader to be cautious
 when comparing their results because they vary based on the selected evaluation
-metrics, used datasets and devices used to evaluate the models.
+metrics, datasets used, and devices used to evaluate the models.
 
 Deep learning has revolutionized vehicle detection by significantly improving
 accuracy and robustness. In a~study from 2019~\cite{Wang2019}, the authors
@@ -627,15 +624,21 @@ highlighting their advantages over traditional vehicle detection methods. The
 authors also discuss several vehicle detection methods featuring modified YOLO
 models to improve detection performance.
 
-In~\cite{Wu2021}, the authors propose YOLOv5-Ghost\,---\,an~improved neural
-network structure based on YOLOv5-small\,---\,to detect vehicles in the
-CARLA\footnote{CARLA (Car Learning to Act) is an~open-source, realistic urban
-environment simulator designed for the development, testing and validation of
-autonomous driving systems in various traffic scenarios and conditions.} virtual
-environment. By replacing BottleneckCSP in the YOLOv5-small with Ghost
-Bottleneck, the detection speed is increased from 29\,FPS (YOLOv5-small) to 47\,FPS
-(YOLOv5-Ghost) while only reducing the mAP from \num{83.3}\,\% to \num{80.7}\,\%
-on their test dataset.
+In their paper, Kai Han \textit{et al.} propose a Ghost module~\cite{Han2019},
+which focuses on generating more feature maps utilizing computationally cheap
+operations. Using this, in their 2021 paper~\cite{Wu2021}, the authors
+propose YOLOv5-Ghost\,---\,an~improved neural network structure based on
+YOLOv5-small\,---\,to detect vehicles in the CARLA\footnote{CARLA (Car Learning
+to Act) is an~open-source, realistic urban environment simulator designed for
+the development, testing and validation of autonomous driving systems in various
+traffic scenarios and conditions.} virtual environment. By replacing
+BottleneckCSP in the YOLOv5-small with Ghost Bottleneck, the detection speed is
+increased from 29\,FPS (YOLOv5-small) to 47\,FPS (YOLOv5-Ghost) while only
+reducing the mAP from \num{83.3}\,\% to \num{80.7}\,\% on their test dataset.
+Similarly, in their 2022 paper~\cite{Xiong2022}, the authors propose a
+lightweight architecture of the YOLOX object detector based on the Ghost module
+for vehicle detection. They then compare its results to YOLOv5 and YOLOX to show
+the superiority of the proposed model in both speed and accuracy.
 
 Based on the literature reviewed, the main focus of this paper is placed on
 object detectors of the YOLO family, with the understanding that these models
@@ -650,8 +653,8 @@ are designed to perform specific tasks. For object detection, or machine
 learning in general, these systems are optimized to be power efficient while
 providing significant processing capabilities for the development, deployment
 and execution of machine learning algorithms. The focus of this section is on
-discussing some of the most popular embedded devices and platforms used for
-machine learning, including object detection.
+discussing some of the most popular embedded devices and platforms for machine
+learning, including object detection.
 
 These embedded devices typically incorporate custom processors, microcontrollers
 or specialized accelerators specifically engineered for an~efficient execution of
@@ -727,13 +730,13 @@ GPUs, the TensorRT library used for optimizing deep learning models to achieve
 higher inference speeds on NVIDIA GPUs, along with various multimedia and
 computer vision libraries.
 
-On all used NVIDIA Jetson platforms, JetPack SDK version \texttt{4.6.3} was
-used. It's important to note that using this version of the JetPack SDK means
-using older software versions, including Python version \texttt{3.6}, TensorRT
-version \texttt{8.2.1} and CUDA version \texttt{10.2}. The reason for not using
-a~more recent JetPack SDK (even though it supports the Jetson AGX Xavier and
-Jetson Xavier NX), along with the complications it caused, will be discussed in
-\autoref{Experiments}.
+On all the NVIDIA Jetson platforms utilized in this paper, JetPack SDK version
+\texttt{4.6.3} was used. It is important to note that using this version of the
+JetPack SDK means using older software versions, including Python version
+\texttt{3.6}, TensorRT version \texttt{8.2.1} and CUDA version \texttt{10.2}.
+The reason for not using a~more recent JetPack SDK, despite its support for the
+Jetson AGX Xavier and Jetson Xavier NX, as well as the complications it caused,
+will be discussed in \autoref{Experiments}.
 
 
 \section{Tools and Libraries}
@@ -745,8 +748,8 @@ libraries utilized throughout the project.
 \subsection{LabelBox}
 
 LabelBox~\cite{LabelBox} is a~web-based application and data labeling platform
-widely used when training machine models. It provides an~easy-to-use interface
-and a~suite of tools to manage and annotate datasets efficiently. With the
+widely used when training machine models. It offers an~intuitive interface and
+a~suite of tools for efficient management and annotations of datasets. With the
 option of importing data, the application was used to reannotate one of the
 datasets.
 
@@ -794,7 +797,7 @@ features of the library include:
 
 \subsection{MMYOLO}
 
-Although the MMDetection library doesn't include the latest detectors of the
+Although the MMDetection library does not include the latest detectors of the
 YOLO family, such as the YOLOv8 detector which will be used in this project, the
 OpenMMLab project features a~different library called
 MMYOLO~\cite{MMYOLO}\,---\,an~extension of the MMDetection library\,---\,which
@@ -853,7 +856,7 @@ allowing developers to choose the best balance between accuracy and performance.
 
 In this chapter, each of the used datasets is first thoroughly analyzed and at
 the end, a~summary of all used datasets is provided along with details on how
-the dataset was split into training, validation and testing
+the processed dataset was split into training, validation and testing
 subsets\footnote{Developing an~object detector includes training it on the
 training dataset while regularly evaluating its progress by testing it on the
 validation dataset. Finally, the trained model is evaluated on the testing
@@ -972,7 +975,7 @@ not annotated. The part used contains objects of the following classes:
     \item Bicycle
     \item Motorcycle
     \item Car
-    \item Pickup truck (mapped to \textit{transporter})
+    \item Pick-up truck (mapped to \textit{transporter})
     \item Work van (mapped to \textit{transporter})
     \item Bus
     \item Articulated truck (mapped to \textit{truck})
@@ -1073,8 +1076,8 @@ When processing this dataset, two other problems were encountered:
     be masked out. This is not as easy for the drone video because the camera is
     moving, but it is still simple enough.
     \item Many frames of the drone footage lack some or all labels and have to
-    be ignored. Ranges of images numbers that are ignored: $[1,31]$,
-    $[659,659]$, $[1001,1318]$ and $[3301,3327]$.
+    be ignored. Ranges of image numbers that are ignored when processing the
+    dataset: $[1,31]$, $[659,659]$, $[1001,1318]$ and $[3301,3327]$.
 \end{itemize}
 The processed dataset contains \num{64979} objects in \num{5399} frames.
 
@@ -1086,7 +1089,7 @@ dataset~\cite{Luca2022} (hereafter referred to as NDISPark), which contains
 images of parked vehicles taken by a~camera mounted on infrastructure. Although
 the annotated part of the dataset only contains \num{142} frames after
 processing, there are \num{3302} objects annotated in total. This still makes it
-a~tiny dataset, but it provides images of vehicles from many different points of
+a~small dataset, but it provides images of vehicles from many different points of
 view and also contains many occluded vehicles. See \autoref{NDISDatasetExample}
 for an~example image from this dataset. Additionally, all frames are \num{2400}
 px in width and within \num{908} px and \num{1808} px in height.
@@ -1107,7 +1110,7 @@ trailers were manually classified.
 \subsection{VisDrone Dataset}
 
 The VisDrone dataset~\cite{Zhu2022} is very different from all the previous
-datasets since it doesn't just contain traffic surveillance images. Images are
+datasets since it does not just contain traffic surveillance images. Images are
 taken by a~camera mounted on a~drone, from many different points of view. In the
 test subset of the object detection part of this dataset after processing, there
 are \num{47720} annotated objects in \num{1610} frames, which will be used in
@@ -1122,7 +1125,7 @@ this paper. An~example is displayed in \autoref{VisDroneDatasetExample}.
 
 We consider it to be a~helpful addition to our datasets as it contains useful
 negative images, many pedestrians and new points of view, and it often captures
-vehicles from a~bid's-eye view. Additionally, objects in this dataset are
+vehicles from a~bird's-eye view. Additionally, objects in this dataset are
 classified into 12 classes, which can be easily mapped to the 8
 internal classes.
 
@@ -1147,9 +1150,9 @@ classes (since the original dataset annotates all objects with a~single class)
 before saving, and therefore does not modify the original dataset file (class
 corrections are defined in the script itself).
 
-MMDetection's middle format was considered as it's a~more efficient alternative
+MMDetection's middle format was considered as it is a~more efficient alternative
 to the COCO format, but the COCO format is more popular and is supported by most
-relevant application, while also being human-readable (the MMDetection's middle
+relevant applications, while also being human-readable (the MMDetection's middle
 format is saved as a~pickle\footnote{The Python's pickle format refers to
 a~binary serialization and deserialization method allowing for the conversion of
 Python objects into a~byte stream.} file), and most importantly, MMYOLO and the
@@ -1340,7 +1343,7 @@ into how a~vehicle detection model can be optimized by decreasing the resolution
 of the input image. Although the inference speed should be (approximately)
 directly proportional to the number of pixels in the input image, we decided to
 test it and also find the limit\,---\,how small can the model's input resolution
-be for it to start performing poorly on our datasets.
+be for it to start performing poorly on our test dataset.
 
 For a~summary of all used model architectures, their sizes, input resolutions and the
 amounts of their floating point operations (FLOPS) and parameters, see
@@ -1406,7 +1409,7 @@ Most of the YOLOv8 parameters are left unchanged from the default configuration
 of YOLOv8-medium\footnote{The default YOLOv8-medium configuration used,
 \texttt{yolov8\_m\_syncbn\_fast\_8xb16-500e\_coco.py}, can be found at
 \url{https://github.com/open-mmlab/mmyolo/tree/v0.4.0/configs/yolov8}}, like: \\
-\textbf{Optimizer:} Stochastic Gradient Descent with momentum \num{0.937} and weight decay \num{0.0005} \\
+\textbf{Optimizer:} Stochastic Gradient Descent with momentum \num{0.937} and weight decay 0.0005 \\
 \textbf{Parameter scheduler:} Linear \verb|YOLOv5ParamScheduler| with learning rate factor of \num{0.01}
 
 However, many parameters related to datasets and augmentations were adjusted and
@@ -1468,9 +1471,10 @@ created. Because the datasets used in this project were in the COCO format, the
 
 To compensate for some datasets being smaller than others while being important
 and of high quality, a~dataset wrapper \texttt{RepeatDataset} is used, which
-makes the underlying dataset $n$-times more frequent when training. All datasets are finally
-concatenated into one by the \texttt{ConcatDataset} wrapper. The repetition
-factors of individual datasets are shown in \autoref{RepetitionFactors}.
+makes the underlying dataset $n$-times more frequent during training. All
+datasets are finally concatenated into one by the \texttt{ConcatDataset}
+wrapper. The repetition factors of individual datasets are shown in
+\autoref{RepetitionFactors}.
 
 \begin{table}[t]
     \centering
@@ -1630,7 +1634,7 @@ interval $[5\,\%, 35\,\%]$.
 \subsubsection*{Albumentations}
 
 Albumentations~\cite{Albumentations} is a~popular open-source library for data
-augmentation. The MMYOLO library provides the option to use its transformations
+augmentation. The MMYOLO library provides the option to use these transformations
 in the data augmentation pipeline. Settings are left unchanged from the original
 YOLOv8-medium configuration: \\
 \textbf{Blur probability:} 0.01 \\
@@ -1677,7 +1681,7 @@ Originally, MMYOLO's YOLOv8 models are configured to switch to a~simplified
 augmentation pipeline for the last 10 training epochs. This model fine-tuning
 strategy is kept in the augmentation pipeline and for the last 10 training
 epochs, cut-out augmentations are omitted and affine transformations are changed
-so that no rotation, translation or shear is applied to a~sample.
+so that no rotation, translation or shear is applied to the samples.
 
 However, this setting seemed to cause a~consistent decrease in the validation
 mean Average Precision (mAP) metric during the fine-tuning phase (last 10
@@ -1815,12 +1819,12 @@ or compatibility issues.
 
 \subsubsection*{JetPack SDK}
 
-Despite both Jetson Xavier NX and Jetson AGX Xavier being supported by NVIDIA
-JetPack SDK version \texttt{5.1.1}, deploying YOLOv8 models using this version
-often led to an~untraceable fatal error. The error originated from one of
-NVIDIA's proprietary libraries, and provided limited information regarding its
-cause. Fortunately, downgrading the JetPack version to \texttt{4.6.3} resolved
-this issue.
+Despite both Jetson Xavier NX and Jetson AGX Xavier being supported by the
+NVIDIA JetPack SDK version \texttt{5.1.1}, deploying YOLOv8 models using this
+version often led to an~untraceable fatal error. The error originated from one
+of NVIDIA's proprietary libraries, and provided limited information regarding
+its cause. Fortunately, downgrading the JetPack version to \texttt{4.6.3}
+resolved this issue.
 
 Although the root cause of the error and the specific package (or library) that
 required downgrading was not fully determined, it is suspected that the problem
@@ -1987,14 +1991,14 @@ weight calibration was done using the validation dataset.
 
 Although the ONNX Runtime framework also supports quantization (to both
 \texttt{FP16} and \texttt{INT8}), the process is not as straightforward and
-doesn't seem to be supported by the MMDeploy library. Although evaluating models
+does not seem to be supported by the MMDeploy library. Although evaluating models
 quantized to \texttt{INT8} would be beneficial, the quantization to
 \texttt{FP16} would probably have a~little effect on performance on CPUs as they
 do not usually support operations between numbers in this representation and
 calculate them using the same operators as numbers in the \texttt{FP32}
 representation.
 
-Additionally, TensorRT on the NVIDIA Jetson Nano with Maxwell GPU doesn't
+Additionally, TensorRT on the NVIDIA Jetson Nano with Maxwell GPU does not
 support fast inference of models quantized to \texttt{INT8}, so quantization to
 \texttt{INT8} was not performed on this device.
 
@@ -2035,7 +2039,7 @@ the log file is simpler and less error-prone.
 
 \subsubsection*{Number of Threads When Performing Inference on CPUs}
 
-When testing models in the ONNX format on CPUs, the MMDeploy library doesn't
+When testing models in the ONNX format on CPUs, the MMDeploy library does not
 control how many processes the ONNX Runtime backend uses to run inference. To
 provide accurate and reproducible results, the source code of the library was
 modified to create the ONNX Runtime inference session with the option of only
@@ -2075,13 +2079,14 @@ the inference speeds of some of the trained models for comparison across all six
 tested devices.
 
 It is important to note that the mAP values measured on NVIDIA Jetson platforms
-(where the models were deployed individually on each device) exhibit minor
-differences. Out of 930 metrics collected from each device, 276 varied across
-the platforms. To analyze whether these deviations were significant, we
-calculated the median, mean and maximum values of the deviations. The median was
-found to be 0.1\,\%, the mean was calculated to be 0.1413\,\% and the maximum,
-with a~total of 12 occurrences, was 0.4\,\%. We therefore consider these
-deviations insignificant and don't consider them in the following experiments.
+using the TensorRT backend (where the models were deployed individually on each
+device) exhibit minor differences. Out of 930 metrics collected from each
+device, 276 varied across the platforms. To analyze whether these deviations
+were significant, we calculated the median, mean and maximum values of the
+deviations. The median was found to be 0.1\,\%, the mean was calculated to be
+0.1413\,\% and the maximum, with a~total of 12 occurrences, was 0.4\,\%. We
+therefore consider these deviations insignificant and don't consider them in the
+following experiments.
 
 
 \section{Precision-Recall Curves of Major Models}
@@ -2247,7 +2252,7 @@ comparison of inference speeds on all model architectures is presented in
     % \end{framed}
 \end{figure}
 
-Because the inference speed is not consistently faster for static models, we
+Because the inference speed is not consistently higher for static models, we
 conclude that it does not significantly decrease if a~dynamic shape is used for
 the model's input in the batch size dimension. Therefore, we will only evaluate
 dynamic models in future experiments.
@@ -2305,7 +2310,7 @@ real-time vehicle detection system.
 \label{FPSvsmAPComparison}
 
 In this experiment, we compare the trained and quantized models in terms of
-their mAP metric (mean Average Precision) and their inference speed in FPS.
+their mAP metrics (mean Average Precision) and their inference speeds in FPS.
 
 For the tests, we wanted to choose two least-performing devices, with the
 Raspberry Pi 4B being an~obvious choice. Additionally, the NVIDIA Jetson Nano
@@ -2313,7 +2318,7 @@ would be a~great choice, but since the device is not optimized for operations
 with numbers in the \texttt{INT8} representation, NVIDIA Jetson Xavier NX was
 selected instead. For the tests to be as representative as possible even for the
 smallest models, tests on Jetson Xavier NX were run with a~large batch size of
-32, while on the Raspberry Pi, where the batch size doesn't matter,
+32, while on the Raspberry Pi, where the batch size does not matter,
 a~batch size of 1 was used instead.
 
 Therefore two plots are presented, both comparing the mAP and FPS of all models.
@@ -2380,7 +2385,7 @@ resolution (YOLOv8-nano $512 \times 288$) is lower than the one of a~model
 with a~lower input resolution (YOLOv8-nano $448 \times 256$). The same seems to apply for
 YOLOv8-pico models, where the mAP with input resolution $448 \times 256$ is
 lower (although not as significantly) than with $384 \times 224$, instead of
-being higher. However, this problem doesn't seem to affect the YOLOv8-femto
+being higher. However, this problem does not seem to affect the YOLOv8-femto
 models, of which the mAP and FPS values are as expected. We tried examining the
 problem, mainly by double-checking the results and training configurations of
 these models, but could not find the root cause and did not have enough
@@ -2400,7 +2405,7 @@ medium-sized or large objects.
 
 In \autoref{mAPTableSmall}, we display these metrics for all trained models.
 However, we omit the quantized models from the table because the mAP values tend
-to stay the same after reducing precision to \texttt{FP16} and quantizing to
+to stay the same after reducing precision to \texttt{FP16}, and quantizing to
 \texttt{INT8} is rarely beneficial, as illustrated by the experiment in
 \autoref{FPSvsmAPComparison}. For the complete table featuring all precisions of
 all models, see \autoref{mAPTableBig}.
@@ -2500,19 +2505,19 @@ experiment.
 What's interesting to see from the first plot is that the NVIDIA Jetson Nano is
 comparable to the NVIDIA MX150, while consuming just a~fraction of the power.
 Additionally, there is a~significant difference between the performance of the
-Jetson Nano compared to the Jetson Xavier NX, while the inference speed measured
-on the Jetson AGX Xavier is only slightly higher than on the Jetson Xavier NX.
+Jetson Nano compared to the Jetson Xavier NX, while the inference speeds measured
+on the Jetson AGX Xavier are only slightly higher than on the Jetson Xavier NX.
 
 Another notable difference lies in how weight quantization to the \texttt{FP16}
 number representation increases the inference speeds on NVIDIA Jetson devices.
 The highest difference in FPS between \texttt{FP32} and \texttt{FP16} on Jetson
-nano was for the YOLOv8-small model, where the inference speed after
+Nano was for the YOLOv8-small model, where the inference speed after
 quantization increased by \num{50.13} \% from \num{11.19} FPS to \num{16.79}
-FPS. On the other hand, the inference speed for the same model on Jetson Xavier
+FPS. On the other hand, the inference speed of the same model on Jetson Xavier
 NX increased by \num{165.84} \% from \num{44.12} FPS to \num{117.29} FPS.
 Furthermore, the difference is even higher for YOLOv8-medium, where the
 quantization to \texttt{FP16} resulted in a~\num{228.33} \% increase in
-inference speed. However, it's important to note that for smaller models, these
+inference speed. However, it is important to note that for smaller models, these
 gains are lower and more comparable between the two devices.
 
 For a~complete table of inference speeds of all models (including quantized
@@ -2597,7 +2602,7 @@ Additionally, since this paper focuses on embedded devices specifically designed
 for machine learning, it is essential to investigate further optimizations to
 draw more comprehensive conclusions about vehicle detection on devices like the
 Raspberry Pi 4B. This includes examining the effect of weight quantization on
-CPU inference times and exploring the use of specialized inference frameworks
+inference speeds on CPUs and exploring the use of specialized inference frameworks
 such as NCNN, ARM NN, or TensorFlow Lite.
 
 Furthermore, to enable a~more extensive comparison with related research papers
