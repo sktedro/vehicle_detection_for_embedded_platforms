@@ -45,7 +45,7 @@ def parse_file(f, results):
     elif "fp16" in os.path.basename(f):
         quant = "fp16"
     else:
-        quant = "none"
+        quant = "none" # TODO replace by fp32
 
     with open(f) as fd:
         content = fd.readlines()
@@ -95,13 +95,18 @@ def main():
     assert len(sys.argv) > 1, "Please provide the test device as an argument to this script"
     device = sys.argv[1]
 
+    if len(sys.argv) == 3:
+        root_dir = sys.argv[2]
+        print(f"Using {root_dir} as root dir")
+    else:
+        root_dir = os.path.dirname(os.path.abspath(__file__))
+
     # Get all work dirs
-    proj_path = os.path.dirname(os.path.abspath(__file__))
     work_dirpaths = []
-    for f in os.listdir(proj_path):
+    for f in os.listdir(root_dir):
         if os.path.isdir(f):
             if f.startswith("working_dir"):
-                work_dirpaths.append(os.path.join(proj_path, f))
+                work_dirpaths.append(os.path.join(root_dir, f))
     work_dirpaths.sort()
 
     print(f"{len(work_dirpaths)} working dirs found to read")
@@ -138,7 +143,7 @@ def main():
     # print("Results:")
     # print(results_json)
 
-    with open("test_all_results.json", "w") as f:
+    with open(os.path.join(root_dir, "test_all_results.json"), "w") as f:
         f.write(results_json)
 
     if exceptions == []:

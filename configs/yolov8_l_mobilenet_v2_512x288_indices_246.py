@@ -33,7 +33,7 @@ model = dict(
         act_cfg=dict(type='LeakyReLU', negative_slope=0.1),
         init_cfg=dict(
             type='Pretrained',
-            checkpoint='/home/xskalo01/bp/proj/checkpoints/mobilenet_v2_batch256_imagenet_20200708-3b2dc3af.pth'
+            checkpoint='/home/tedro/Desktop/d_projekty/bp/proj/checkpoints/mobilenet_v2_batch256_imagenet_20200708-3b2dc3af.pth'
             )
         ),
     neck=dict(

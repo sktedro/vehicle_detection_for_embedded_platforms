@@ -16,52 +16,64 @@ Example input and output:
                             "bbox_mAP_75": "0.2750",
                             "bbox_mAP_s": "0.0540",
                             "bbox_mAP_m": "0.2270",
-                            "bbox_mAP_l": "0.3700"
+                            "bbox_mAP_l": "0.3700",
+                            "fps": "30.5"
                             ...
     ```
+
+
+Better explaination of the format:
+```
+data = {
+    "device": {
+        "model": {
+            "input_shape": {
+                "backend": {
+                    "quantization": {
+                        "model_shape": {
+                            "batch_size": {
+                                "bbox_mAP": float number in a string,
+                                "bbox_mAP_50": float number in a string,
+                                "bbox_mAP_75": float number in a string,
+                                "bbox_mAP_s": float number in a string,
+                                "bbox_mAP_m": float number in a string,
+                                "bbox_mAP_l": float number in a string,
+                                "fps": float number in a string
+                                ...
+```
 """
 import os
-import json as json_lib
+import json as json
 from pprint import pprint
 
 
-def parse_json(f, results):
-    with open(f) as json_file:
-        json = json_lib.load(json_file)
+def parse(input, output):
+    for key in input:
+        try:
+            if isinstance(input[key], dict):
+                if key not in output:
+                    output[key] = {}
+                parse(input[key], output[key])
+            elif key in output:
+                print(f"Duplicate entry found!")
+                raise Exception
+            else:
+                output[key] = input[key]
+        except Exception as e:
+            print(f"{key}", end=" ")
+            raise
 
-    for device_name in json:
-        if device_name not in results:
-            results[device_name] = {}
 
-        for model_name in json[device_name]:
-            if model_name not in results[device_name]:
-                results[device_name][model_name] = {}
+def parse_json(filepath, results):
 
-            for input_shape in json[device_name][model_name]:
-                if input_shape not in results[device_name][model_name]:
-                    results[device_name][model_name][input_shape] = {}
+    with open(filepath) as f:
+        data = json.load(f)
 
-                for backend in json[device_name][model_name][input_shape]:
-                    if backend not in results[device_name][model_name][input_shape]:
-                        results[device_name][model_name][input_shape][backend] = {}
-
-                    for quant in json[device_name][model_name][input_shape][backend]:
-                        if quant not in results[device_name][model_name][input_shape][backend]:
-                            results[device_name][model_name][input_shape][backend][quant] = {}
-
-                        for model_shape in json[device_name][model_name][input_shape][backend][quant]:
-                            if model_shape not in results[device_name][model_name][input_shape][backend][quant]:
-                                results[device_name][model_name][input_shape][backend][quant][model_shape] = {}
-
-                            for batch_size in json[device_name][model_name][input_shape][backend][quant][model_shape]:
-                                if batch_size not in results[device_name][model_name][input_shape][backend][quant][model_shape]:
-                                    results[device_name][model_name][input_shape][backend][quant][model_shape][batch_size] \
-                                            = json[device_name][model_name][input_shape][backend][quant][model_shape][batch_size]
-                                else:
-                                    print(f"Duplicate entry found: "
-                                        "{device_name}, {model_name}, {input_shape}, {backend}, {quant}, {model_shape}, {batch_size}: "
-                                        "{json[device_name][model_name][input_shape][backend][quant][model_shape][batch_size]}")
-                                    print(f"In {f}")
+    try:
+        parse(data, results)
+    except:
+        print(filepath)
+        raise
 
 
 def main():
@@ -87,7 +99,7 @@ def main():
     for f in files:
         parse_json(f, results)
 
-    results_json = json_lib.dumps(results, indent=2)
+    results_json = json.dumps(results, indent=2)
 
     # print("Results:")
     # print(results_json)
