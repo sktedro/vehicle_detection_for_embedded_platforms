@@ -65,7 +65,7 @@ num_gpus = 2
 # max_epochs = 500
 # base_lr = 0.01
 
-# TODO YOLOv8-p 448x256
+# YOLOv8-p 448x256
 img_scale = (448, 256)
 max_epochs = 500
 base_lr = 0.01

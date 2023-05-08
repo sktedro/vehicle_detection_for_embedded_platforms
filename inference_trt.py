@@ -188,9 +188,6 @@ def main(args):
 
 if __name__ == "__main__":
 
-    # TODO remove
-    # deploy_cfg = "/home/user/proj/deploy/detection_tensorrt_static-640x640.py"
-
     # TODO engine filename from deploy cfg?
     parser = argparse.ArgumentParser()
     parser.add_argument("deploy_cfg",           type=str,

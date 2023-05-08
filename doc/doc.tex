@@ -76,8 +76,6 @@
 \usepackage{framed}
 \usepackage{appendix}
 \usepackage{booktabs}
-% TODO remove?
-% \usepackage{changepage}
 
 \usepackage{siunitx}
 \sisetup{
@@ -152,7 +150,7 @@
   \def\subparagraphautorefname{Subparagraph}
 }
 
-% TODO (nie tu) vloženie zadania (čítaj "moje záverečné práce" v studise)
+% (nie tu) vloženie zadania (čítaj "moje záverečné práce" v studise)
 
 % Informace o práci/projektu / Information about the thesis
 %---------------------------------------------------------------------------
@@ -161,7 +159,7 @@
   project={BP},            %typ práce BP/SP/DP/DR  / thesis type (SP = term project)
   year={2023},             % rok odevzdání / year of submission
   date=\today,             % datum odevzdání / submission date
-  %Nazev prace / thesis title TODO treba česky? A je to dobre preložené?
+  %Nazev prace / thesis title treba česky? A je to dobre preložené?
   title.cs={Detekce a klasifikace vozidel pro vestavěné platformy},  % název práce v češtině či slovenštině (dle zadání) / thesis title in czech language (according to assignment)
   title.en={Detection and Classification of Vehicles for Embedded Platforms}, % název práce v angličtině / thesis title in english
   %title.length={14.5cm}, % nastavení délky bloku s titulkem pro úpravu zalomení řádku (lze definovat zde nebo níže) / setting the length of a block with a thesis title for adjusting a line break (can be defined here or below)
@@ -179,17 +177,17 @@
   supervisor.surname={Špaňhel},   % příjmení školitele / supervisor surname
   supervisor.title.p={Ing.},   %titul před jménem (nepovinné) / title before the name (optional)
   % supervisor.title.a={},    %titul za jménem (nepovinné) / title after the name (optional)
-  % keywords anglicky TODO
+  % keywords anglicky 
   keywords.en={vehicle detection, traffic surveillance, object detection,
   convolutional neural networks, real-time, trade-offs, embedded devices,
   low-performance devices, YOLO, YOLOv8, NVIDIA Jetson, Raspberry Pi, OpenMMLab,
   MMYOLO, quantization, ONNX Runtime, TensorRT},
-  % keywords slovensky TODO
+  % keywords slovensky 
   keywords.cs={detekcia vozidiel, monitorovanie dopravy, detekcia objektov,
   konvolučné neurónové siete, detekcia v reálnom čase, kompromisy, vstavané
   zariadenia, nízkovýkonné zariadenia, YOLO, YOLOv8, NVIDIA Jetson, Raspberry
   Pi, OpenMMLab, MMYOLO, kvantizácia, ONNX Runtime, TensorRT},
-  % Abstrakt anglicky TODO
+  % Abstrakt anglicky 
   abstract.en={
     This paper evaluates the performance trade-offs of state-of-the-art YOLOv8
     object detectors for vehicle detection in surveillance-type images on
@@ -217,14 +215,14 @@
     nasadeniu detektorov vozidiel na širokú škálu zariadení, od nízkovýkonných
     procesorov po špecializované vstavané platformy.
   },
-  % Prohlášení TODO u anglicky psané práce anglicky
+  % Prohlášení u anglicky psané práce anglicky
   declaration={
     I hereby declare that this Bachelor's thesis was prepared as an
     original work by the author under the supervision of Ing. Jakub Špaňhel. I
     have listed all the literary sources, publications and other sources, which
     were used during the preparation of this thesis.
   },
-  % Poděkování TODO (nepovinné, nejlépe v jazyce práce; nechcete-li, zakomentujte pro skrytí nadpisu) / Acknowledgement (optional, ideally in the language of the thesis; comment out for hiding including heading)
+  % Poděkování (nepovinné, nejlépe v jazyce práce; nechcete-li, zakomentujte pro skrytí nadpisu) / Acknowledgement (optional, ideally in the language of the thesis; comment out for hiding including heading)
   acknowledgment={I would like to express my gratitude to my supervisor, Ing.
   Jakub Špaňhel, for his valuable advice throughout the course of this
   research. His guidance and expertise helped me overcome difficult challenges
@@ -232,10 +230,10 @@
   complete this thesis.
   },
   faculty={FIT} % FIT/FEKT/FSI/FA/FCH/FP/FAST/FAVU/USI/DEF
-  % TODO REMOVE faculty.cs={Fakulta informačních technologií}, % Fakulta v češtině - pro využití této položky výše zvolte fakultu DEF / Faculty in Czech - for use of this entry select DEF above
-  % TODO REMOVE faculty.en={Faculty of Information Technology}, % Fakulta v angličtině - pro využití této položky výše zvolte fakultu DEF / Faculty in English - for use of this entry select DEF above
-  % TODO REMOVE department.cs={Ústav počítačové grafiky a multimédií}, % Ústav v češtině - pro využití této položky výše zvolte ústav DEF nebo jej zakomentujte / Department in Czech - for use of this entry select DEF above or comment it out
-  % TODO REMOVE department.en={Department of Computer Graphics and Multimedia} % Ústav v angličtině - pro využití této položky výše zvolte ústav DEF nebo jej zakomentujte / Department in English - for use of this entry select DEF above or comment it out
+  % REMOVE faculty.cs={Fakulta informačních technologií}, % Fakulta v češtině - pro využití této položky výše zvolte fakultu DEF / Faculty in Czech - for use of this entry select DEF above
+  % REMOVE faculty.en={Faculty of Information Technology}, % Fakulta v angličtině - pro využití této položky výše zvolte fakultu DEF / Faculty in English - for use of this entry select DEF above
+  % REMOVE department.cs={Ústav počítačové grafiky a multimédií}, % Ústav v češtině - pro využití této položky výše zvolte ústav DEF nebo jej zakomentujte / Department in Czech - for use of this entry select DEF above or comment it out
+  % REMOVE department.en={Department of Computer Graphics and Multimedia} % Ústav v angličtině - pro využití této položky výše zvolte ústav DEF nebo jej zakomentujte / Department in English - for use of this entry select DEF above or comment it out
 }
 
 % Rozšířený abstrakt (cca 3 normostrany) - lze definovat zde nebo výše /

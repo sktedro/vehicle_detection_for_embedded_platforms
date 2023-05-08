@@ -111,7 +111,6 @@ def main(args):
 
     # Get model and deploy configs
     model_cfg = load_config(model_config_filepath)
-    # TODO TODO TODO use this in inference scripts
     deploy_cfg = deploy_common.get_deploy_config(args.deploy_cfg, model_cfg, args.output_filename)
 
     # create work_dir if not

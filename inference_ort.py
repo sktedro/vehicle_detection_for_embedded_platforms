@@ -19,15 +19,12 @@ DEFAULT_THRESHOLD = 0.3
 DEFAULT_DEVICE = "cpu"
 
 
-# TODO inference_common.py alebo niečo, kde bude väčšina tohto kódu...
-# Môžem napríklad z onnxruntime vrátiť bboxes labels scores alebo dokonca
-# PackDetInputs či ako sa volá to, čo vracia model od task_processora, a také
+# TODO inference_common.py or something, for inference scripts
+# We could call MM functions from this script to use their nicer visualizer
 
 # TODO number of threads instead of -m flag
 # TODO option to run optimized (speed-test)
 # TODO option to keep original image shape (transform back to it after inference)
-
-# TODO use MM visualizer?
 
 
 def main(args):

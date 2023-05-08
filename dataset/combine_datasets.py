@@ -49,7 +49,6 @@ def combineDatasets():
     img_id_counter = 0
     anno_id_counter = 0
 
-    # TODO update file_name to be relative to datasets path, not dataset path
     # Optimize by first creating a set of image IDs in each set and then going through
     # the annotations list only once?
     # Wait what? Why do I have to read the annotations?
@@ -64,6 +63,7 @@ def combineDatasets():
                 # Update image ID and save it to the img ID map
                 img_id_map[img["id"]] = img_id_counter
                 img["id"] = img_id_counter
+                # Update file_name to be relative to datasets path, not dataset path
                 img["file_name"] = os.path.join(
                     common.datasets[img["dataset_name"]]["path"],
                     img["file_name"])

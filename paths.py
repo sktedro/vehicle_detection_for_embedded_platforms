@@ -20,7 +20,7 @@ mmdeploy_dirpath = os.path.join(proj_path, "..", "mmdeploy")
 mmrazor_dirpath = os.path.join(proj_path, "..", "mmrazor")
 
 
-##### TODO WORK DIR #####
+##### WORK DIR #####
 
 # !!! Don't forget to update configs/settings.py when changing the model config
 

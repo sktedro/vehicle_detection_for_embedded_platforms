@@ -17,11 +17,6 @@ def main():
     cmd += [str(cfg.num_gpus)]
     cmd += ["--work-dir", paths.working_dirpath]
 
-    # TODO allow --options from argv of this script?
-    # opts = ["--cfg-options"]
-    # if len(opts) > 1:
-    #     cmd += opts
-
     print(cmd)
     subprocess.call(cmd)
 
@@ -44,10 +39,6 @@ def main():
     args += [paths.model_config_filepath]
     args += [os.path.join(paths.mmyolo_dirpath, "tools", "train.py")]
     args += ["--work-dir", paths.working_dirpath]
-    # args += ["--launcher", "pytorch"]
-    # opts = ["--cfg-options"] # TODO allow options from argv of this script?
-    # if len(opts) != 1:
-    #     args += opts
 
     run.main(args)
     """
