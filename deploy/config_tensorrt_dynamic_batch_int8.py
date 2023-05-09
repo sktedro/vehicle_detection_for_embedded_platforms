@@ -58,6 +58,7 @@ backend_config = dict(
 
 # Uncomment this to only generate the calib data once for each input resolution
 # !!! It only works if executed from project directory
+# !!! Additionally, `mmdeploy/utils/config_utils.py:340` needs to be edited for this. Read README.md in root project dir
 # from os.path import exists as exists
 # calib_filename = f"calib_data_{w}x{h}.h5"
 # calib_config = dict(
