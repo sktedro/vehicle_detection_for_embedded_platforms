@@ -1,0 +1,4 @@
+config_*
+!config_example
+done/
+scout_511/
