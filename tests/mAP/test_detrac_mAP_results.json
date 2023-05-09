@@ -1,0 +1,237 @@
+{
+  "mx150": {
+    "yolov8_f": {
+      "352x192": {
+        "onnxruntime": {
+          "none": {
+            "dynamic": {
+              "8": {
+                "bbox_mAP": "0.3620",
+                "bbox_mAP_50": "0.5940",
+                "bbox_mAP_75": "0.4140",
+                "bbox_mAP_s": "0.0770",
+                "bbox_mAP_m": "0.3390",
+                "bbox_mAP_l": "0.4750",
+                "fps": "144.72"
+              }
+            }
+          }
+        }
+      },
+      "384x224": {
+        "onnxruntime": {
+          "none": {
+            "dynamic": {
+              "8": {
+                "bbox_mAP": "0.3340",
+                "bbox_mAP_50": "0.5400",
+                "bbox_mAP_75": "0.3820",
+                "bbox_mAP_s": "0.0560",
+                "bbox_mAP_m": "0.3160",
+                "bbox_mAP_l": "0.4570",
+                "fps": "123.94"
+              }
+            }
+          }
+        }
+      },
+      "448x256": {
+        "onnxruntime": {
+          "none": {
+            "dynamic": {
+              "8": {
+                "bbox_mAP": "0.3580",
+                "bbox_mAP_50": "0.5800",
+                "bbox_mAP_75": "0.3890",
+                "bbox_mAP_s": "0.1100",
+                "bbox_mAP_m": "0.2920",
+                "bbox_mAP_l": "0.4830",
+                "fps": "99.21"
+              }
+            }
+          }
+        }
+      },
+      "512x288": {
+        "onnxruntime": {
+          "none": {
+            "dynamic": {
+              "8": {
+                "bbox_mAP": "0.4170",
+                "bbox_mAP_50": "0.6330",
+                "bbox_mAP_75": "0.4840",
+                "bbox_mAP_s": "0.0920",
+                "bbox_mAP_m": "0.3850",
+                "bbox_mAP_l": "0.6080",
+                "fps": "80.09"
+              }
+            }
+          }
+        }
+      }
+    },
+    "yolov8_l_mobilenet_v2": {
+      "512x288": {
+        "onnxruntime": {
+          "none": {
+            "dynamic": {
+              "8": {
+                "bbox_mAP": "0.5500",
+                "bbox_mAP_50": "0.7590",
+                "bbox_mAP_75": "0.6270",
+                "bbox_mAP_s": "0.2930",
+                "bbox_mAP_m": "0.4760",
+                "bbox_mAP_l": "0.8150",
+                "fps": "17.96"
+              }
+            }
+          }
+        }
+      }
+    },
+    "yolov8_m": {
+      "640x384": {
+        "onnxruntime": {
+          "none": {
+            "dynamic": {
+              "8": {
+                "bbox_mAP": "0.6620",
+                "bbox_mAP_50": "0.8500",
+                "bbox_mAP_75": "0.7920",
+                "bbox_mAP_s": "0.2110",
+                "bbox_mAP_m": "0.5700",
+                "bbox_mAP_l": "0.7930",
+                "fps": "4.69"
+              }
+            }
+          }
+        }
+      }
+    },
+    "yolov8_n": {
+      "448x256": {
+        "onnxruntime": {
+          "none": {
+            "dynamic": {
+              "8": {
+                "bbox_mAP": "0.4700",
+                "bbox_mAP_50": "0.6630",
+                "bbox_mAP_75": "0.5610",
+                "bbox_mAP_s": "0.1360",
+                "bbox_mAP_m": "0.4310",
+                "bbox_mAP_l": "0.6900",
+                "fps": "48.24"
+              }
+            }
+          }
+        }
+      },
+      "512x288": {
+        "onnxruntime": {
+          "none": {
+            "dynamic": {
+              "8": {
+                "bbox_mAP": "0.3900",
+                "bbox_mAP_50": "0.5480",
+                "bbox_mAP_75": "0.4630",
+                "bbox_mAP_s": "0.1430",
+                "bbox_mAP_m": "0.3700",
+                "bbox_mAP_l": "0.5690",
+                "fps": "38.04"
+              }
+            }
+          }
+        }
+      },
+      "640x384": {
+        "onnxruntime": {
+          "none": {
+            "dynamic": {
+              "8": {
+                "bbox_mAP": "0.6130",
+                "bbox_mAP_50": "0.8300",
+                "bbox_mAP_75": "0.7270",
+                "bbox_mAP_s": "0.3290",
+                "bbox_mAP_m": "0.5640",
+                "bbox_mAP_l": "0.7300",
+                "fps": "22.52"
+              }
+            }
+          }
+        }
+      }
+    },
+    "yolov8_p": {
+      "384x224": {
+        "onnxruntime": {
+          "none": {
+            "dynamic": {
+              "8": {
+                "bbox_mAP": "0.4390",
+                "bbox_mAP_50": "0.6540",
+                "bbox_mAP_75": "0.5230",
+                "bbox_mAP_s": "0.0900",
+                "bbox_mAP_m": "0.3790",
+                "bbox_mAP_l": "0.6240",
+                "fps": "101.78"
+              }
+            }
+          }
+        }
+      },
+      "448x256": {
+        "onnxruntime": {
+          "none": {
+            "dynamic": {
+              "8": {
+                "bbox_mAP": "0.4400",
+                "bbox_mAP_50": "0.6440",
+                "bbox_mAP_75": "0.5270",
+                "bbox_mAP_s": "0.1490",
+                "bbox_mAP_m": "0.4100",
+                "bbox_mAP_l": "0.6840",
+                "fps": "81.62"
+              }
+            }
+          }
+        }
+      },
+      "512x288": {
+        "onnxruntime": {
+          "none": {
+            "dynamic": {
+              "8": {
+                "bbox_mAP": "0.5110",
+                "bbox_mAP_50": "0.7490",
+                "bbox_mAP_75": "0.5260",
+                "bbox_mAP_s": "0.1120",
+                "bbox_mAP_m": "0.4370",
+                "bbox_mAP_l": "0.6750",
+                "fps": "65.80"
+              }
+            }
+          }
+        }
+      }
+    },
+    "yolov8_s": {
+      "640x384": {
+        "onnxruntime": {
+          "none": {
+            "dynamic": {
+              "8": {
+                "bbox_mAP": "0.6680",
+                "bbox_mAP_50": "0.8680",
+                "bbox_mAP_75": "0.7950",
+                "bbox_mAP_s": "0.2340",
+                "bbox_mAP_m": "0.5870",
+                "bbox_mAP_l": "0.7940",
+                "fps": "10.76"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

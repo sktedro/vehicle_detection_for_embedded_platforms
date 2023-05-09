@@ -1,0 +1,728 @@
+./configs/yolov8_f_352x192.py
+WARNING: paths.py: Path None does not exist
+loading annotations into memory...
+Done (t=0.14s)
+creating index...
+index created!
+04/28 10:49:32 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:49:32 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:49:32 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:49:32 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:49:32 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:49:32 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:49:32 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:49:32 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:49:32 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:49:32 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:49:32 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:49:32 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:49:32 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:49:32 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:49:32 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:49:32 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:49:32 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:49:32 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:49:32 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:49:32 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:49:32 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:49:32 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:49:32 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:49:32 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:49:32 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:49:32 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:49:32 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:49:32 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:49:32 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:49:32 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:49:32 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:49:32 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:49:34 - mmengine - WARNING - Unsupported operator aten::silu_ encountered 53 time(s)
+04/28 10:49:34 - mmengine - WARNING - Unsupported operator aten::add encountered 4 time(s)
+04/28 10:49:34 - mmengine - WARNING - Unsupported operator aten::max_pool2d encountered 3 time(s)
+04/28 10:49:34 - mmengine - WARNING - Unsupported operator aten::mul encountered 3 time(s)
+04/28 10:49:34 - mmengine - WARNING - Unsupported operator aten::softmax encountered 3 time(s)
+04/28 10:49:34 - mmengine - WARNING - The following submodules of the model were never called during the trace of the graph. They may be unused, or they were accessed by direct calls to .forward() or via other python methods. In the latter case they will have zeros for statistics, though their statistics will still contribute to their parent calling module.
+bbox_head.assigner, bbox_head.loss_bbox, bbox_head.loss_cls, bbox_head.loss_dfl, data_preprocessor
+04/28 10:49:34 - mmengine - WARNING - Unsupported operator aten::batch_norm encountered 53 time(s)
+04/28 10:49:34 - mmengine - WARNING - Unsupported operator aten::upsample_nearest2d encountered 2 time(s)
+==============================
+Use size divisor set input shape from (480, 720) to (256, 448)
+==============================
+Compute type: dataloader: load a picture from the dataset
+Input shape: (256, 448)
+Flops: 0.183G
+Params: 0.302M
+==============================
+!!!Please be cautious if you use the results in papers. You may need to check if all ops are supported and verify that the flops computation is correct.
+./configs/yolov8_f_384x224.py
+WARNING: paths.py: Path None does not exist
+loading annotations into memory...
+Done (t=0.21s)
+creating index...
+index created!
+04/28 10:50:08 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:50:08 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:50:08 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:50:08 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:50:08 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:50:08 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:50:08 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:50:08 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:50:08 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:50:08 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:50:08 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:50:08 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:50:08 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:50:08 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:50:08 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:50:08 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:50:08 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:50:08 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:50:08 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:50:08 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:50:08 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:50:08 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:50:08 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:50:08 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:50:08 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:50:08 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:50:08 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:50:08 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:50:08 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:50:08 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:50:08 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:50:08 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:50:10 - mmengine - WARNING - Unsupported operator aten::silu_ encountered 53 time(s)
+04/28 10:50:10 - mmengine - WARNING - Unsupported operator aten::add encountered 4 time(s)
+04/28 10:50:10 - mmengine - WARNING - Unsupported operator aten::max_pool2d encountered 3 time(s)
+04/28 10:50:10 - mmengine - WARNING - Unsupported operator aten::mul encountered 3 time(s)
+04/28 10:50:10 - mmengine - WARNING - Unsupported operator aten::softmax encountered 3 time(s)
+04/28 10:50:10 - mmengine - WARNING - The following submodules of the model were never called during the trace of the graph. They may be unused, or they were accessed by direct calls to .forward() or via other python methods. In the latter case they will have zeros for statistics, though their statistics will still contribute to their parent calling module.
+bbox_head.assigner, bbox_head.loss_bbox, bbox_head.loss_cls, bbox_head.loss_dfl, data_preprocessor
+04/28 10:50:10 - mmengine - WARNING - Unsupported operator aten::batch_norm encountered 53 time(s)
+04/28 10:50:10 - mmengine - WARNING - Unsupported operator aten::upsample_nearest2d encountered 2 time(s)
+==============================
+Use size divisor set input shape from (480, 720) to (256, 448)
+==============================
+Compute type: dataloader: load a picture from the dataset
+Input shape: (256, 448)
+Flops: 0.183G
+Params: 0.302M
+==============================
+!!!Please be cautious if you use the results in papers. You may need to check if all ops are supported and verify that the flops computation is correct.
+./configs/yolov8_f_448x256.py
+WARNING: paths.py: Path None does not exist
+loading annotations into memory...
+Done (t=0.21s)
+creating index...
+index created!
+04/28 10:50:44 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:50:44 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:50:44 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:50:44 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:50:44 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:50:44 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:50:44 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:50:44 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:50:44 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:50:44 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:50:44 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:50:44 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:50:44 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:50:44 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:50:44 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:50:44 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:50:44 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:50:44 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:50:44 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:50:44 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:50:44 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:50:44 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:50:44 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:50:44 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:50:44 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:50:44 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:50:44 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:50:44 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:50:44 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:50:44 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:50:44 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:50:44 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:50:46 - mmengine - WARNING - Unsupported operator aten::silu_ encountered 53 time(s)
+04/28 10:50:46 - mmengine - WARNING - Unsupported operator aten::add encountered 4 time(s)
+04/28 10:50:46 - mmengine - WARNING - Unsupported operator aten::max_pool2d encountered 3 time(s)
+04/28 10:50:46 - mmengine - WARNING - Unsupported operator aten::mul encountered 3 time(s)
+04/28 10:50:46 - mmengine - WARNING - Unsupported operator aten::softmax encountered 3 time(s)
+04/28 10:50:46 - mmengine - WARNING - The following submodules of the model were never called during the trace of the graph. They may be unused, or they were accessed by direct calls to .forward() or via other python methods. In the latter case they will have zeros for statistics, though their statistics will still contribute to their parent calling module.
+bbox_head.assigner, bbox_head.loss_bbox, bbox_head.loss_cls, bbox_head.loss_dfl, data_preprocessor
+04/28 10:50:46 - mmengine - WARNING - Unsupported operator aten::batch_norm encountered 53 time(s)
+04/28 10:50:46 - mmengine - WARNING - Unsupported operator aten::upsample_nearest2d encountered 2 time(s)
+==============================
+Use size divisor set input shape from (480, 720) to (256, 448)
+==============================
+Compute type: dataloader: load a picture from the dataset
+Input shape: (256, 448)
+Flops: 0.183G
+Params: 0.302M
+==============================
+!!!Please be cautious if you use the results in papers. You may need to check if all ops are supported and verify that the flops computation is correct.
+./configs/yolov8_f_512x288.py
+WARNING: paths.py: Path None does not exist
+loading annotations into memory...
+Done (t=0.14s)
+creating index...
+index created!
+04/28 10:51:18 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:51:18 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:51:18 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:51:18 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:51:18 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:51:18 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:51:18 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:51:18 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:51:18 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:51:18 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:51:18 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:51:18 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:51:18 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:51:18 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:51:18 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:51:18 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:51:18 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:51:18 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:51:18 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:51:18 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:51:18 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:51:18 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:51:18 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:51:18 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:51:18 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:51:18 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:51:18 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:51:18 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:51:18 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:51:18 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:51:18 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:51:18 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:51:19 - mmengine - WARNING - Unsupported operator aten::silu_ encountered 53 time(s)
+04/28 10:51:19 - mmengine - WARNING - Unsupported operator aten::add encountered 4 time(s)
+04/28 10:51:19 - mmengine - WARNING - Unsupported operator aten::max_pool2d encountered 3 time(s)
+04/28 10:51:19 - mmengine - WARNING - Unsupported operator aten::mul encountered 3 time(s)
+04/28 10:51:19 - mmengine - WARNING - Unsupported operator aten::softmax encountered 3 time(s)
+04/28 10:51:19 - mmengine - WARNING - The following submodules of the model were never called during the trace of the graph. They may be unused, or they were accessed by direct calls to .forward() or via other python methods. In the latter case they will have zeros for statistics, though their statistics will still contribute to their parent calling module.
+bbox_head.assigner, bbox_head.loss_bbox, bbox_head.loss_cls, bbox_head.loss_dfl, data_preprocessor
+04/28 10:51:20 - mmengine - WARNING - Unsupported operator aten::batch_norm encountered 53 time(s)
+04/28 10:51:20 - mmengine - WARNING - Unsupported operator aten::upsample_nearest2d encountered 2 time(s)
+==============================
+Use size divisor set input shape from (480, 720) to (256, 448)
+==============================
+Compute type: dataloader: load a picture from the dataset
+Input shape: (256, 448)
+Flops: 0.183G
+Params: 0.302M
+==============================
+!!!Please be cautious if you use the results in papers. You may need to check if all ops are supported and verify that the flops computation is correct.
+./configs/yolov8_l_mobilenet_v2_512x288_indices_246.py
+WARNING: paths.py: Path None does not exist
+loading annotations into memory...
+Done (t=0.20s)
+creating index...
+index created!
+04/28 10:51:53 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:51:53 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:51:53 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:51:53 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:51:53 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:51:53 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:51:53 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:51:53 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:51:53 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:51:53 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:51:53 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:51:53 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:51:53 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:51:53 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:51:53 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:51:53 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:51:53 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:51:53 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:51:53 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:51:53 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:51:53 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:51:53 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:51:53 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:51:53 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:51:53 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:51:53 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:51:53 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:51:53 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:51:53 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:51:53 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:51:53 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:51:53 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:51:55 - mmengine - WARNING - Unsupported operator aten::leaky_relu_ encountered 34 time(s)
+04/28 10:51:55 - mmengine - WARNING - Unsupported operator aten::add encountered 10 time(s)
+04/28 10:51:55 - mmengine - WARNING - Unsupported operator aten::silu_ encountered 46 time(s)
+04/28 10:51:55 - mmengine - WARNING - Unsupported operator aten::mul encountered 3 time(s)
+04/28 10:51:55 - mmengine - WARNING - Unsupported operator aten::softmax encountered 3 time(s)
+04/28 10:51:55 - mmengine - WARNING - The following submodules of the model were never called during the trace of the graph. They may be unused, or they were accessed by direct calls to .forward() or via other python methods. In the latter case they will have zeros for statistics, though their statistics will still contribute to their parent calling module.
+backbone.conv2, backbone.conv2.activate, backbone.conv2.bn, backbone.conv2.conv, bbox_head.assigner, bbox_head.loss_bbox, bbox_head.loss_cls, bbox_head.loss_dfl, data_preprocessor
+04/28 10:51:55 - mmengine - WARNING - Unsupported operator aten::batch_norm encountered 97 time(s)
+04/28 10:51:55 - mmengine - WARNING - Unsupported operator aten::upsample_nearest2d encountered 2 time(s)
+==============================
+Use size divisor set input shape from (480, 720) to (256, 448)
+==============================
+Compute type: dataloader: load a picture from the dataset
+Input shape: (256, 448)
+Flops: 1.313G
+Params: 5.001M
+==============================
+!!!Please be cautious if you use the results in papers. You may need to check if all ops are supported and verify that the flops computation is correct.
+./configs/yolov8_m.py
+WARNING: paths.py: Path None does not exist
+loading annotations into memory...
+Done (t=0.15s)
+creating index...
+index created!
+04/28 10:52:48 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:52:48 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:52:48 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:52:48 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:52:48 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:52:48 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:52:48 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:52:48 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:52:48 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:52:48 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:52:48 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:52:48 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:52:48 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:52:48 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:52:48 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:52:48 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:52:48 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:52:48 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:52:48 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:52:48 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:52:48 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:52:48 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:52:48 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:52:48 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:52:48 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:52:48 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:52:48 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:52:48 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:52:48 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:52:48 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:52:48 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:52:48 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:52:51 - mmengine - WARNING - Unsupported operator aten::silu_ encountered 77 time(s)
+04/28 10:52:51 - mmengine - WARNING - Unsupported operator aten::add encountered 12 time(s)
+04/28 10:52:51 - mmengine - WARNING - Unsupported operator aten::max_pool2d encountered 3 time(s)
+04/28 10:52:51 - mmengine - WARNING - Unsupported operator aten::mul encountered 3 time(s)
+04/28 10:52:51 - mmengine - WARNING - Unsupported operator aten::softmax encountered 3 time(s)
+04/28 10:52:51 - mmengine - WARNING - The following submodules of the model were never called during the trace of the graph. They may be unused, or they were accessed by direct calls to .forward() or via other python methods. In the latter case they will have zeros for statistics, though their statistics will still contribute to their parent calling module.
+bbox_head.assigner, bbox_head.loss_bbox, bbox_head.loss_cls, bbox_head.loss_dfl, data_preprocessor
+04/28 10:52:51 - mmengine - WARNING - Unsupported operator aten::batch_norm encountered 77 time(s)
+04/28 10:52:51 - mmengine - WARNING - Unsupported operator aten::upsample_nearest2d encountered 2 time(s)
+==============================
+Use size divisor set input shape from (480, 720) to (256, 448)
+==============================
+Compute type: dataloader: load a picture from the dataset
+Input shape: (256, 448)
+Flops: 11.046G
+Params: 25.862M
+==============================
+!!!Please be cautious if you use the results in papers. You may need to check if all ops are supported and verify that the flops computation is correct.
+./configs/yolov8_n_448x256.py
+WARNING: paths.py: Path None does not exist
+loading annotations into memory...
+Done (t=0.17s)
+creating index...
+index created!
+04/28 10:53:44 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:53:44 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:53:44 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:53:44 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:53:44 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:53:44 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:53:44 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:53:44 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:53:44 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:53:44 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:53:44 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:53:44 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:53:44 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:53:44 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:53:44 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:53:44 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:53:44 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:53:44 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:53:44 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:53:44 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:53:44 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:53:44 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:53:44 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:53:44 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:53:44 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:53:44 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:53:44 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:53:44 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:53:44 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:53:44 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:53:44 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:53:44 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:53:46 - mmengine - WARNING - Unsupported operator aten::silu_ encountered 57 time(s)
+04/28 10:53:46 - mmengine - WARNING - Unsupported operator aten::add encountered 6 time(s)
+04/28 10:53:46 - mmengine - WARNING - Unsupported operator aten::max_pool2d encountered 3 time(s)
+04/28 10:53:46 - mmengine - WARNING - Unsupported operator aten::mul encountered 3 time(s)
+04/28 10:53:46 - mmengine - WARNING - Unsupported operator aten::softmax encountered 3 time(s)
+04/28 10:53:46 - mmengine - WARNING - The following submodules of the model were never called during the trace of the graph. They may be unused, or they were accessed by direct calls to .forward() or via other python methods. In the latter case they will have zeros for statistics, though their statistics will still contribute to their parent calling module.
+bbox_head.assigner, bbox_head.loss_bbox, bbox_head.loss_cls, bbox_head.loss_dfl, data_preprocessor
+04/28 10:53:46 - mmengine - WARNING - Unsupported operator aten::batch_norm encountered 57 time(s)
+04/28 10:53:46 - mmengine - WARNING - Unsupported operator aten::upsample_nearest2d encountered 2 time(s)
+==============================
+Use size divisor set input shape from (480, 720) to (256, 448)
+==============================
+Compute type: dataloader: load a picture from the dataset
+Input shape: (256, 448)
+Flops: 1.067G
+Params: 2.375M
+==============================
+!!!Please be cautious if you use the results in papers. You may need to check if all ops are supported and verify that the flops computation is correct.
+./configs/yolov8_n_512x288.py
+WARNING: paths.py: Path None does not exist
+loading annotations into memory...
+Done (t=0.21s)
+creating index...
+index created!
+04/28 10:54:20 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:54:20 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:54:20 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:54:20 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:54:20 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:54:20 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:54:20 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:54:20 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:54:20 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:54:20 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:54:20 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:54:20 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:54:20 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:54:20 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:54:20 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:54:20 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:54:20 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:54:20 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:54:20 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:54:20 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:54:20 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:54:20 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:54:20 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:54:20 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:54:20 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:54:20 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:54:20 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:54:20 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:54:20 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:54:20 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:54:20 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:54:20 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:54:22 - mmengine - WARNING - Unsupported operator aten::silu_ encountered 57 time(s)
+04/28 10:54:22 - mmengine - WARNING - Unsupported operator aten::add encountered 6 time(s)
+04/28 10:54:22 - mmengine - WARNING - Unsupported operator aten::max_pool2d encountered 3 time(s)
+04/28 10:54:22 - mmengine - WARNING - Unsupported operator aten::mul encountered 3 time(s)
+04/28 10:54:22 - mmengine - WARNING - Unsupported operator aten::softmax encountered 3 time(s)
+04/28 10:54:22 - mmengine - WARNING - The following submodules of the model were never called during the trace of the graph. They may be unused, or they were accessed by direct calls to .forward() or via other python methods. In the latter case they will have zeros for statistics, though their statistics will still contribute to their parent calling module.
+bbox_head.assigner, bbox_head.loss_bbox, bbox_head.loss_cls, bbox_head.loss_dfl, data_preprocessor
+04/28 10:54:22 - mmengine - WARNING - Unsupported operator aten::batch_norm encountered 57 time(s)
+04/28 10:54:22 - mmengine - WARNING - Unsupported operator aten::upsample_nearest2d encountered 2 time(s)
+==============================
+Use size divisor set input shape from (480, 720) to (256, 448)
+==============================
+Compute type: dataloader: load a picture from the dataset
+Input shape: (256, 448)
+Flops: 1.067G
+Params: 2.375M
+==============================
+!!!Please be cautious if you use the results in papers. You may need to check if all ops are supported and verify that the flops computation is correct.
+./configs/yolov8_n_640x384.py
+WARNING: paths.py: Path None does not exist
+loading annotations into memory...
+Done (t=0.14s)
+creating index...
+index created!
+04/28 10:54:56 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:54:56 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:54:56 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:54:56 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:54:56 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:54:56 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:54:56 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:54:56 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:54:56 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:54:56 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:54:56 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:54:56 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:54:56 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:54:56 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:54:56 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:54:56 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:54:56 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:54:56 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:54:56 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:54:56 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:54:56 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:54:56 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:54:56 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:54:56 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:54:56 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:54:56 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:54:56 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:54:56 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:54:56 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:54:56 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:54:56 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:54:56 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:54:58 - mmengine - WARNING - Unsupported operator aten::silu_ encountered 57 time(s)
+04/28 10:54:58 - mmengine - WARNING - Unsupported operator aten::add encountered 6 time(s)
+04/28 10:54:58 - mmengine - WARNING - Unsupported operator aten::max_pool2d encountered 3 time(s)
+04/28 10:54:58 - mmengine - WARNING - Unsupported operator aten::mul encountered 3 time(s)
+04/28 10:54:58 - mmengine - WARNING - Unsupported operator aten::softmax encountered 3 time(s)
+04/28 10:54:58 - mmengine - WARNING - The following submodules of the model were never called during the trace of the graph. They may be unused, or they were accessed by direct calls to .forward() or via other python methods. In the latter case they will have zeros for statistics, though their statistics will still contribute to their parent calling module.
+bbox_head.assigner, bbox_head.loss_bbox, bbox_head.loss_cls, bbox_head.loss_dfl, data_preprocessor
+04/28 10:54:58 - mmengine - WARNING - Unsupported operator aten::batch_norm encountered 57 time(s)
+04/28 10:54:58 - mmengine - WARNING - Unsupported operator aten::upsample_nearest2d encountered 2 time(s)
+==============================
+Use size divisor set input shape from (480, 720) to (256, 448)
+==============================
+Compute type: dataloader: load a picture from the dataset
+Input shape: (256, 448)
+Flops: 1.067G
+Params: 2.375M
+==============================
+!!!Please be cautious if you use the results in papers. You may need to check if all ops are supported and verify that the flops computation is correct.
+./configs/yolov8_p_384x224.py
+WARNING: paths.py: Path None does not exist
+loading annotations into memory...
+Done (t=0.20s)
+creating index...
+index created!
+04/28 10:55:34 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:55:34 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:55:34 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:55:34 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:55:34 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:55:34 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:55:34 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:55:34 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:55:34 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:55:34 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:55:34 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:55:34 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:55:34 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:55:34 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:55:34 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:55:34 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:55:34 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:55:34 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:55:34 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:55:34 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:55:34 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:55:34 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:55:34 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:55:34 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:55:34 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:55:34 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:55:34 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:55:34 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:55:34 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:55:34 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:55:34 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:55:34 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:55:36 - mmengine - WARNING - Unsupported operator aten::silu_ encountered 53 time(s)
+04/28 10:55:36 - mmengine - WARNING - Unsupported operator aten::add encountered 4 time(s)
+04/28 10:55:36 - mmengine - WARNING - Unsupported operator aten::max_pool2d encountered 3 time(s)
+04/28 10:55:36 - mmengine - WARNING - Unsupported operator aten::mul encountered 3 time(s)
+04/28 10:55:36 - mmengine - WARNING - Unsupported operator aten::softmax encountered 3 time(s)
+04/28 10:55:36 - mmengine - WARNING - The following submodules of the model were never called during the trace of the graph. They may be unused, or they were accessed by direct calls to .forward() or via other python methods. In the latter case they will have zeros for statistics, though their statistics will still contribute to their parent calling module.
+bbox_head.assigner, bbox_head.loss_bbox, bbox_head.loss_cls, bbox_head.loss_dfl, data_preprocessor
+04/28 10:55:36 - mmengine - WARNING - Unsupported operator aten::batch_norm encountered 53 time(s)
+04/28 10:55:36 - mmengine - WARNING - Unsupported operator aten::upsample_nearest2d encountered 2 time(s)
+==============================
+Use size divisor set input shape from (480, 720) to (256, 448)
+==============================
+Compute type: dataloader: load a picture from the dataset
+Input shape: (256, 448)
+Flops: 0.354G
+Params: 0.719M
+==============================
+!!!Please be cautious if you use the results in papers. You may need to check if all ops are supported and verify that the flops computation is correct.
+./configs/yolov8_p_448x256.py
+WARNING: paths.py: Path None does not exist
+loading annotations into memory...
+Done (t=0.21s)
+creating index...
+index created!
+04/28 10:56:11 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:56:11 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:56:11 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:56:11 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:56:11 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:56:11 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:56:11 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:56:11 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:56:11 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:56:11 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:56:11 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:56:11 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:56:11 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:56:11 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:56:11 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:56:11 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:56:11 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:56:11 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:56:11 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:56:11 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:56:11 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:56:11 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:56:11 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:56:11 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:56:11 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:56:11 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:56:11 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:56:11 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:56:11 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:56:11 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:56:11 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:56:11 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:56:13 - mmengine - WARNING - Unsupported operator aten::silu_ encountered 53 time(s)
+04/28 10:56:13 - mmengine - WARNING - Unsupported operator aten::add encountered 4 time(s)
+04/28 10:56:13 - mmengine - WARNING - Unsupported operator aten::max_pool2d encountered 3 time(s)
+04/28 10:56:13 - mmengine - WARNING - Unsupported operator aten::mul encountered 3 time(s)
+04/28 10:56:13 - mmengine - WARNING - Unsupported operator aten::softmax encountered 3 time(s)
+04/28 10:56:13 - mmengine - WARNING - The following submodules of the model were never called during the trace of the graph. They may be unused, or they were accessed by direct calls to .forward() or via other python methods. In the latter case they will have zeros for statistics, though their statistics will still contribute to their parent calling module.
+bbox_head.assigner, bbox_head.loss_bbox, bbox_head.loss_cls, bbox_head.loss_dfl, data_preprocessor
+04/28 10:56:13 - mmengine - WARNING - Unsupported operator aten::batch_norm encountered 53 time(s)
+04/28 10:56:13 - mmengine - WARNING - Unsupported operator aten::upsample_nearest2d encountered 2 time(s)
+==============================
+Use size divisor set input shape from (480, 720) to (256, 448)
+==============================
+Compute type: dataloader: load a picture from the dataset
+Input shape: (256, 448)
+Flops: 0.354G
+Params: 0.719M
+==============================
+!!!Please be cautious if you use the results in papers. You may need to check if all ops are supported and verify that the flops computation is correct.
+./configs/yolov8_p_512x288.py
+WARNING: paths.py: Path None does not exist
+loading annotations into memory...
+Done (t=0.13s)
+creating index...
+index created!
+04/28 10:56:45 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:56:45 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:56:45 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:56:45 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:56:45 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:56:45 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:56:45 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:56:45 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:56:45 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:56:45 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:56:45 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:56:45 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:56:45 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:56:45 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:56:45 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:56:45 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:56:45 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:56:45 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:56:45 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:56:45 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:56:45 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:56:45 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:56:45 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:56:45 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:56:45 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:56:45 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:56:45 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:56:45 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:56:45 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:56:45 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:56:45 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:56:45 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:56:47 - mmengine - WARNING - Unsupported operator aten::silu_ encountered 53 time(s)
+04/28 10:56:47 - mmengine - WARNING - Unsupported operator aten::add encountered 4 time(s)
+04/28 10:56:47 - mmengine - WARNING - Unsupported operator aten::max_pool2d encountered 3 time(s)
+04/28 10:56:47 - mmengine - WARNING - Unsupported operator aten::mul encountered 3 time(s)
+04/28 10:56:47 - mmengine - WARNING - Unsupported operator aten::softmax encountered 3 time(s)
+04/28 10:56:47 - mmengine - WARNING - The following submodules of the model were never called during the trace of the graph. They may be unused, or they were accessed by direct calls to .forward() or via other python methods. In the latter case they will have zeros for statistics, though their statistics will still contribute to their parent calling module.
+bbox_head.assigner, bbox_head.loss_bbox, bbox_head.loss_cls, bbox_head.loss_dfl, data_preprocessor
+04/28 10:56:47 - mmengine - WARNING - Unsupported operator aten::batch_norm encountered 53 time(s)
+04/28 10:56:47 - mmengine - WARNING - Unsupported operator aten::upsample_nearest2d encountered 2 time(s)
+==============================
+Use size divisor set input shape from (480, 720) to (256, 448)
+==============================
+Compute type: dataloader: load a picture from the dataset
+Input shape: (256, 448)
+Flops: 0.354G
+Params: 0.719M
+==============================
+!!!Please be cautious if you use the results in papers. You may need to check if all ops are supported and verify that the flops computation is correct.
+./configs/yolov8_s.py
+WARNING: paths.py: Path None does not exist
+loading annotations into memory...
+Done (t=0.17s)
+creating index...
+index created!
+04/28 10:57:22 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:57:22 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:57:22 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:57:22 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:57:22 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:57:22 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:57:22 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:57:22 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:57:22 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:57:22 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:57:22 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:57:22 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:57:22 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:57:22 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:57:22 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:57:22 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:57:22 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:57:22 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:57:22 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:57:22 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:57:22 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:57:22 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:57:22 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:57:22 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:57:22 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:57:22 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:57:22 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:57:22 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:57:22 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:57:22 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:57:22 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+04/28 10:57:22 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+04/28 10:57:24 - mmengine - WARNING - Unsupported operator aten::silu_ encountered 57 time(s)
+04/28 10:57:24 - mmengine - WARNING - Unsupported operator aten::add encountered 6 time(s)
+04/28 10:57:24 - mmengine - WARNING - Unsupported operator aten::max_pool2d encountered 3 time(s)
+04/28 10:57:24 - mmengine - WARNING - Unsupported operator aten::mul encountered 3 time(s)
+04/28 10:57:24 - mmengine - WARNING - Unsupported operator aten::softmax encountered 3 time(s)
+04/28 10:57:24 - mmengine - WARNING - The following submodules of the model were never called during the trace of the graph. They may be unused, or they were accessed by direct calls to .forward() or via other python methods. In the latter case they will have zeros for statistics, though their statistics will still contribute to their parent calling module.
+bbox_head.assigner, bbox_head.loss_bbox, bbox_head.loss_cls, bbox_head.loss_dfl, data_preprocessor
+04/28 10:57:24 - mmengine - WARNING - Unsupported operator aten::batch_norm encountered 57 time(s)
+04/28 10:57:24 - mmengine - WARNING - Unsupported operator aten::upsample_nearest2d encountered 2 time(s)
+==============================
+Use size divisor set input shape from (480, 720) to (256, 448)
+==============================
+Compute type: dataloader: load a picture from the dataset
+Input shape: (256, 448)
+Flops: 3.71G
+Params: 8.663M
+==============================
+!!!Please be cautious if you use the results in papers. You may need to check if all ops are supported and verify that the flops computation is correct.
