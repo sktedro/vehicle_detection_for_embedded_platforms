@@ -3,6 +3,7 @@
 - Warning
 - Brief overview
 - Not so brief overview
+- Results
 - Project structure (folders and files with brief explaination)
 - Datasets (detailed)
 - Models FLOPS and params table
@@ -90,6 +91,14 @@ We recommend reading the project structure before using this repository, because
 the project is a bit of a mess. Or just don't use this repository.
 
 
+# Results
+
+How the models performed on the test set: https://youtube.com/playlist?list=PLt6xFMYrdS_r923yO-dadzoD1YIBi0zNL
+
+Paper can be found in root as `paper.pdf`. URL at the publishers website will be
+out soon TODO
+
+
 # Project Structure
 
 Not sorted by name!
@@ -165,14 +174,18 @@ Not sorted by name!
 │       ├── README.md
 │       └── save_stream.py
 ├── tests/ # Results of tests, their and deploy logs and so on..
-│   ├── device_name/
+│   ├── device_name/ # Not provided in repository!
 │   │   ├── work_dir_name/
 │   │   │   └── test_tensorrt_dynamic_batch_engine_batch16.log # example
 │   │   ├── test_script_logs...
 │   │   ├── deploy_script_logs...
 │   │   └── test_all_results.json # Containing the complete test results from the device
+│   ├── mAP/ # Tests which were run just for mAP values. For whole test dataset, for DETRAC only and for MIO-TCD only. With: i7, onnxruntime, dynamic, batch 8, "none" quantization
+│   │   ├── test_all_mAP_results.json
+│   │   ├── test_detrac_mAP_results.json
+│   │   └── test_mio-tcd_mAP_results.json
 │   ├── test_results.json # Merged test results from all devices
-│   └── models_analysis_log.txt # Containing the log of getting FLOPS and number of params of all models
+│   ├── models_analysis_log.txt # Containing the log of getting FLOPS and number of params of all models
 │   └── tensorflow_dump.png # Validation mAP metrics when training all models. It's a mess!
 ├── vid/ # Sample videos used, for example, for inference
 │   └── MVI_40701.mp4 # Example video we used to visually assess model performance (from DETRAC dataset)
