@@ -19,7 +19,7 @@ onnxruntime_gpu==1.14.0
 opencv_python==4.7.0.72
 Pillow==9.5.0
 requests==2.31.0
-torch==1.13.0+cu117
+torch==1.13.1+cu117
 torchinfo==1.7.2
 torchvision==0.14.0+cu117
 tqdm==4.64.1
