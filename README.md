@@ -95,8 +95,9 @@ the project is a bit of a mess. Or just don't use this repository.
 
 How the models performed on the test set: https://youtube.com/playlist?list=PLt6xFMYrdS_r923yO-dadzoD1YIBi0zNL
 
-Paper can be found in root as `paper.pdf`. URL at the publishers website will be
-out soon TODO
+Paper can be found in root as `paper.pdf` or at the publisher's website: https://www.vut.cz/www_base/zav_prace_soubor_verejne.php?file_id=252433.
+
+Training checkpoints - .pth files (some of them) can be found here: https://drive.google.com/drive/folders/12dLInS5LaBuHbThuOophZli-DyCh7t9h?usp=sharing
 
 
 # Project Structure
